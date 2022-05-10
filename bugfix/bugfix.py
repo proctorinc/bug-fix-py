@@ -226,15 +226,12 @@ def main():
         print(f'{Colors.WARNING}\n1. Close CHLRQ (add the commit in as a comment){Colors.WHITE}')
 
         # Print fix messages
-        print('Commit:')
         for message in fix_messages:
             print(f'\t{message}')
 
         print(f'{Colors.ENDC}{Colors.WARNING}2. Link CHLRQ to challenge CHLC (choose \'relates to\'){Colors.ENDC}')
 
-        # If parameter not entered, prompt user for CHLC
-        if not chlc:
-            chlc = getCHLC()
+        chlc = input('Enter challenge CHLC number [Ex: 1234]: ')
 
         webbrowser.open(f'https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC')
 
