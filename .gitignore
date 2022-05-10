@@ -1,2 +1,3 @@
-/bugfix/.env
-
+.env
+__pycache__
+repos/*
