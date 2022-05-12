@@ -25,11 +25,7 @@ def parseArguments():
 
     # Required repository positional argument
     parser.add_argument('-r', '--repository', type=str, help='Name of git repository to do bug-fix')
-    
-    # Debug switch
-    parser.add_argument('--debug', action='store_true',
-                    help='Enable debug mode. Shows output of all commands and api calls')
-    
+
     # No push switch
     parser.add_argument('--test', action='store_true',
                     help='Enable no push mode. Does not push to git repository for testing')
