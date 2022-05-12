@@ -35,12 +35,6 @@ from constants import (
     FA_SECURE_BRANCH
 )
 
-# Matt's current Todo List:###########
-#
-# TODO: make into portable application
-#
-######################################
-
 # Main function runs bug-fix program
 def main():
 
@@ -68,6 +62,7 @@ def main():
     no_pick = args.no_pick
     only_transition = args.transition
     api_enabled = args.api
+    debug = args.debug
     
     # If setup mode is on, run setup
     if setup_mode:
@@ -166,7 +161,7 @@ def main():
     while not done_fixing:
 
         # Fix the branch and retrieve the name and fix explanation
-        fix_message, fixed_branch = fixAndCommitBranch(repository, repository_url, branches, is_full_app)
+        fix_message, fixed_branch = fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug)
 
         # Remove initial_branch from branches to avoid cherry-picking it
         branches.remove(fixed_branch)
@@ -188,7 +183,7 @@ def main():
             if not no_pick:
 
                 # Run cherry-pick method
-                cherrypick(repository_url, branches, commit_id)
+                cherrypick(repository_url, branches, commit_id, debug)
 
             # Confirm that cherrypick occurred
             did_cherrypick = True
@@ -205,13 +200,14 @@ def main():
     # If test mode, don't push to repository
     if test_mode:
         input(f'{Colors.HEADER}\nPush Disabled. Press [ENTER] to continue{Colors.ENDC}')
-    
-    if api_enabled:
+    else:
         input(f'{Colors.UNDERLINE}{Colors.OKGREEN}{Colors.BOLD}\nPress [ENTER] to push to repo{Colors.ENDC}')
 
         # Push commit to the repository
         subprocess.check_output(f'git -C {repository_url} push --all', shell=True)
 
+    # If api is enabled, transition tickets through the jira api
+    if api_enabled:
         # If parameter not entered, prompt user for CHRLQ
         if not chlrq:
             chlrq = getCHLRQ()
@@ -222,6 +218,8 @@ def main():
 
         # Automatically transition jira tickets
         transitionJiraTickets(chlrq, chlc, formatMessages(fix_messages), did_cherrypick)
+    
+    # Otherwise prompt user to transition manually
     else:
         print(f'{Colors.WARNING}\n1. Close CHLRQ (add the commit in as a comment){Colors.WHITE}')
 
@@ -231,26 +229,27 @@ def main():
 
         print(f'{Colors.ENDC}{Colors.WARNING}2. Link CHLRQ to challenge CHLC (choose \'relates to\'){Colors.ENDC}')
 
-        chlc = input('Enter challenge CHLC number [Ex: 1234]: ')
+        chlc = input('Enter application CHLC number [Ex: 1234]: ')
 
+        # Open web browser to bulk transition tickets linked to the application CHLC
         webbrowser.open(f'https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC')
 
         print(f'\n{Colors.WARNING}Follow these steps in the open tab')
-        print('1. Bulk transition all -> Select all -> Transition -> FEEDBACK OPEN')
-        print('2. Bulk transition all -> Select all -> Transition -> FEEDBACK REVIEW')
-        print(f'3. Edit -> Change assignee to Thomas and add CHLRQ number in comment [ex: CHLRQ-1234]{Colors.ENDC}')
+        print('1. Bulk change all -> Select all -> Transition -> FEEDBACK OPEN -> confirm')
+        print('2. Bulk change all -> Select all -> Transition -> FEEDBACK REVIEW -> confirm')
+        print(f'3. Bulk change all -> Select all -> Edit -> Change assignee to \'Thomas Pieters\' -> add CHLRQ-#### in comment [ex: CHLRQ-1234] -> confirm{Colors.ENDC}')
 
-    print(f'{Colors.WARNING}\nCOMPLETE THE FOLLOWING TASKS:')
-
-    print(f'{Colors.HEADER}\n####################################')
+    print(f'{Colors.HEADER}\nCOMPLETE THE FOLLOWING TASKS:')
+    print(f'####################################')
     print('# 1. Update CMS branches to latest #')
 
+    # Notify user to check chunks if lines were added
     if fix_chunks_required:
         print('#                                  #')
         print('# 2. Commit added or removed lines #')
         print('#    Make sure chunks are correct  #')
     
-    print('####################################')
+    print(f'####################################{Colors.ENDC}')
 
     print(f'{Colors.OKGREEN}{Colors.BOLD}{Colors.UNDERLINE}\nBug Fix Complete.{Colors.ENDC}')
 

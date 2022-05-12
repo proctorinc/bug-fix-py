@@ -6,7 +6,7 @@ from text import (
     Colors
 )
 
-def cherrypick(repository_url, branches, commit_id):
+def cherrypick(repository_url, branches, commit_id, debug):
 
     print(f'\nCherry-picking Branches...')
 
@@ -30,7 +30,9 @@ def cherrypick(repository_url, branches, commit_id):
             # # Cherry-pick branch
             cherrypick_result = subprocess.check_output(f'git -C {repository_url} cherry-pick {commit_id} &>/dev/null', shell=True)
 
-            if not cherrypick_result.decode('utf-8'):
+            if debug:
+                print(f'{Colors.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), ']')
+            if not cherrypick_result.decode('utf-8') or 'Auto-merging' in cherrypick_result.decode('utf-8'):
 
                 # Alert user of merge conflict
                 print(f'{Colors.WARNING}[ !!! ]{Colors.ENDC} {branch}: {Colors.WARNING}MERGE CONFLICT')

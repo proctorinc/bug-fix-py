@@ -11,9 +11,12 @@ from constants import (
     FA_SECURE_BRANCH
 )
 
-def fixAndCommitBranch(repository, repository_url, branches, is_full_app):
+def fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug):
     """
-    
+    Checks the user out to a branch of their choice, making sure it is a valid branch.
+    Opens VS Code for user to make the fix and prompts user to press ENTER when done.
+    Continues process if changes were made successfully and commits with a message.
+    Returns the commit message and the branch the user successfully fixed.
     """
     # Default commit to unsuccessful
     successful_commit = False
@@ -81,7 +84,9 @@ def fixAndCommitBranch(repository, repository_url, branches, is_full_app):
             repository.git.commit('-m', fix_message)
             # subprocess.check_output(f'git -C {repository_url} commit -m \'{fix_message}\'', shell=True)
 
-        except git.exc.GitCommandError:
+        except git.exc.GitCommandError as e:
+            if debug:
+                print(f'{Colors.FAIL}DEBUG: error=[{e}]')
             # Alert user that no change has been made
             print(f'{Colors.ENDC}{Colors.FAIL}No Changes have been made, please make a fix before continuing')
             print(f'Press {Colors.UNDERLINE}ctrl+s{Colors.ENDC}{Colors.FAIL} to confirm changes')

@@ -79,7 +79,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     if is_cherrypick_required:
         # Get creation CHLC
         # parent_chlc = apiGetCreationCHLC(chlc)
-        print('/n[Enter Creation CHLC below]')
+        print('\n[Enter Creation CHLC below]')
         parent_chlc = getCHLC()
 
         # Notify user of parent CHLC number

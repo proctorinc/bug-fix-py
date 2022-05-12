@@ -50,6 +50,11 @@ def parseArguments():
     parser.add_argument('--api', action='store_true',
                     help='Enable automatic transitioning tickets through the Jira API')
 
+    # Auto transitioning on switch
+    parser.add_argument('--debug', action='store_true',
+                    help='Enable debug mode (In development)')
+
+
     # Required repository positional argument
     parser.add_argument('--chlrq', type=str, help='CHLRQ ticket number')
 
