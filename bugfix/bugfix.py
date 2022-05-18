@@ -229,15 +229,23 @@ def main():
 
         print(f'{Colors.ENDC}{Colors.WARNING}2. Link CHLRQ to challenge CHLC (choose \'relates to\'){Colors.ENDC}')
 
-        chlc = input('Enter application CHLC number [Ex: 1234]: ')
+        if did_cherrypick:
+            chlc = input('Enter application CHLC number [Ex: 1234]: ')
 
-        # Open web browser to bulk transition tickets linked to the application CHLC
-        webbrowser.open(f'https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC')
+            # Open web browser to bulk transition tickets linked to the application CHLC
+            webbrowser.open(f'https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC')
 
-        print(f'\n{Colors.WARNING}Follow these steps in the open tab')
-        print('1. Bulk change all -> Select all -> Transition -> FEEDBACK OPEN -> confirm')
-        print('2. Bulk change all -> Select all -> Transition -> FEEDBACK REVIEW -> confirm')
-        print(f'3. Bulk change all -> Select all -> Edit -> Change assignee to \'Thomas Pieters\' -> add CHLRQ-#### in comment [ex: CHLRQ-1234] -> confirm{Colors.ENDC}')
+            print(f'\n{Colors.WARNING}Follow these steps in the open tab')
+            print('1. Bulk change all -> Select all -> Transition -> FEEDBACK OPEN -> confirm')
+            print('2. Bulk change all -> Select all -> Transition -> FEEDBACK REVIEW -> confirm')
+            print(f'3. Bulk change all -> Select all -> Edit -> Change assignee to \'Thomas Pieters\' -> add CHLRQ-#### in comment [ex: CHLRQ-1234] -> confirm{Colors.ENDC}')
+        
+        else:
+            print(f'\n{Colors.WARNING}Transition the challenge CHLC')
+            print('1. Transition to FEEDBACK OPEN')
+            print('2. Transition to FEEDBACK REVIEW')
+            print(f'3. Set assignee to \'Thomas Pieters\'')
+            print(f'4. In comment, add link to CHLRQ{Colors.ENDC}')
 
     print(f'{Colors.HEADER}\nCOMPLETE THE FOLLOWING TASKS:')
     print(f'####################################')

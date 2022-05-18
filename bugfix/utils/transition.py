@@ -99,6 +99,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
 
     # Transition all challenges
     for challenge in challenges:
+        print('Up now:', challenge)
 
         print(f'Transitioning {Colors.HEADER}{challenge}{Colors.ENDC}:')
 
@@ -107,27 +108,30 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
         
         # If api returns 204, transition was successful
         feedbackOpenResult = apiTransitionToFeedbackOpen(challenge)
-        if feedbackOpenResult == 204:
+        if feedbackOpenResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
-            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackOpenResult}]{Colors.ENDC}')
+            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackOpenResult.status_code}]{Colors.ENDC}')
+            print(f'{Colors.FAIL}{feedbackOpenResult.text}')
 
         # Transition challenge to Feedback Review w/ fix message and set assignee to Thomas
         print('\tTo Feedback Review', end='')
 
         # If api returns 204, transition was successful
         feedbackReviewResult = apiTransitionToFeedbackReview(challenge)
-        if feedbackReviewResult == 204:
+        if feedbackReviewResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
-            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackReviewResult}]{Colors.ENDC}')
+            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackReviewResult.status_code}]{Colors.ENDC}')
+            print(f'{Colors.FAIL}{feedbackReviewResult.text}')
 
         # Sets assignee and adds CHLRQ as comment
         print('\tAdding assignee and comment', end='')
 
         # If api returns 204, transition was successful
         editResult = apiEditAssigneeAndComment(challenge, chlrq)
-        if editResult == 204:
+        if editResult.status_code == 204:
             print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
-            print(f'\t{Colors.FAIL}[FAILED - {editResult}]{Colors.ENDC}')
+            print(f'\t{Colors.FAIL}[FAILED - {editResult.status_code}]{Colors.ENDC}')
+            print(f'{Colors.FAIL}{editResult.text}')

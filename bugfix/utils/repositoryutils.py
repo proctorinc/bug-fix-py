@@ -100,7 +100,17 @@ def commitAddedOrRemovedLines(repository):
     for edited_file_stat in diff:
         stat = edited_file_stat.split()
 
-        if int(stat[0]) - int(stat[1]) != 0:
+        if stat[0] == '-':
+            added = 0
+        else:
+            added = int(stat[0])
+        
+        if stat[1] == '-':
+            removed = 0
+        else:
+            removed = stat[1]
+        
+        if added - removed != 0:
             added_or_removed_lines = True
         
     return added_or_removed_lines

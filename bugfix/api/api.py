@@ -159,6 +159,7 @@ def apiTransitionToClosed(chlrq, comment):
     return response.status_code
 
 def apiTransitionToFeedbackOpen(chlc):
+    print('Transitioning:', chlc)
     """
     POST
     Transition CHLC to feedback open
@@ -167,9 +168,10 @@ def apiTransitionToFeedbackOpen(chlc):
     data = {'transition':{'id':'511'}}
     response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
 
-    return response.status_code
+    return response
 
 def apiTransitionToFeedbackReview(chlc):
+    print('Transitioning:', chlc)
     """
     POST
     Transition CHLC to feedback review and add comment and change assignee to Thomas
@@ -177,10 +179,12 @@ def apiTransitionToFeedbackReview(chlc):
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}/transitions'
     data = {'transition':{'id':'521'}}
     response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
-    
-    return response.status_code
+
+    return response
 
 def apiEditAssigneeAndComment(chlc, chlrq):
+    print('Transitioning:', chlc)
+    print('Transitioning:', chlrq)
     """
     PUT
     Jira edit query. Changes CHLC's assignee to Thomas and adds comment
@@ -189,7 +193,7 @@ def apiEditAssigneeAndComment(chlc, chlrq):
     data = {'fields':{'assignee':{'accountId':THOMAS_ACCT_ID}}, 'update':{'comment':[{'add':{'body':f'CHLRQ-{chlrq}'}}]}}
     response = requests.put(url, headers=HEADERS, auth=AUTH, json=data)
 
-    return response.status_code
+    return response
 
 
 def apiConfirmCHLC(chlc):
