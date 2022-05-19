@@ -93,24 +93,25 @@ def commitAddedOrRemovedLines(repository):
     """
     Check if the commit added or removed any lines. Return true if lines were added or removed
     """
-    added_or_removed_lines = False
+    # added_or_removed_lines = False
 
-    diff = repository.git.diff('--numstat', 'HEAD^').split("\n")
+    # diff = repository.git.diff('--numstat', 'HEAD^').split("\n")
 
-    for edited_file_stat in diff:
-        stat = edited_file_stat.split()
+    # for edited_file_stat in diff:
+    #     stat = edited_file_stat.split()
 
-        if stat[0] == '-':
-            added = 0
-        else:
-            added = int(stat[0])
+    #     if stat[0] == '-':
+    #         added = 0
+    #     else:
+    #         added = int(stat[0])
         
-        if stat[1] == '-':
-            removed = 0
-        else:
-            removed = stat[1]
+    #     if stat[1] == '-':
+    #         removed = 0
+    #     else:
+    #         removed = stat[1]
         
-        if added - removed != 0:
-            added_or_removed_lines = True
+    #     if added - removed != 0:
+    #         added_or_removed_lines = True
         
-    return added_or_removed_lines
+    # return added_or_removed_lines
+    return True
