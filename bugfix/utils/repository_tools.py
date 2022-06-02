@@ -2,7 +2,7 @@ import git
 import os
 import subprocess
 
-from text import Colors
+from formatting import Colors
 
 from constants import (
     IGNORE_BRANCHES,
@@ -11,11 +11,11 @@ from constants import (
     FA_SECURE_BRANCH
 )
 
-def filterRefs(remote_refs):
+def filter_branches(remote_refs):
     """
     Parse branches from remote refs and remove unwanted branches
     """
-    branches = []
+    filtered_branches = []
 
     # Loop over remote references
     for refs in remote_refs:
@@ -25,36 +25,36 @@ def filterRefs(remote_refs):
 
         # Filter branches
         if branch not in IGNORE_BRANCHES:
-            branches.append(branch)
+            filtered_branches.append(branch)
 
-    return branches
+    return filtered_branches
 
-def getRepositoryURL(repo_name):
+def get_repository_dir(repo_name):
     """
     Returns absolute url for repository folder
     """
     return os.path.join(REPO_DIR, repo_name)
 
-def cloneRepository(repo_name):
+def clone_repository(repo_name):
     """
     Clone repository and return valid instance. Handle errors for invalid repository
     """
     git_url = f'{SCW_GIT_URL}/{repo_name}.git'
-    repository_url = getRepositoryURL(repo_name)
+    repository_dir = get_repository_dir(repo_name)
 
     print(f'Cloning Repository...', end='')
 
     # If repo folder already exists, remove it
-    if os.path.isdir(repository_url):
+    if os.path.isdir(repository_dir):
         
         # Alert user of repo existing
         print(f'\nRepository cached. Resetting...', end='')
 
         # Delete repository
-        subprocess.check_output(f'sudo rm -r {repository_url}', shell=True)
+        subprocess.check_output(f'sudo rm -r {repository_dir}', shell=True)
     try:
         # Clone repository
-        git.Repo.clone_from(git_url, repository_url)
+        git.Repo.clone_from(git_url, repository_dir)
     
     except git.exc.GitError:
         print(f'{Colors.FAIL}\'{repo_name}\' is not a valid repository{Colors.ENDC}')
@@ -64,16 +64,16 @@ def cloneRepository(repo_name):
         print(f'{Colors.OKGREEN} [Done]{Colors.ENDC}')
 
     # Get repository
-    repo = git.Repo(repository_url)
+    repo = git.Repo(repository_dir)
 
     return repo
 
-def getBranches(repository):
+def get_branches(repository):
     """
     Gets branches from a github repository. Filters out unwanted branches
     """
     # Get all branches
-    return filterRefs(repository.remote().refs)
+    return filter_branches(repository.remote().refs)
 
 def isFullApp(repository):
     """
@@ -81,7 +81,7 @@ def isFullApp(repository):
     Full app determined if branches contain "secure" branch
     """
     is_full_app = False
-    branches = getBranches(repository)
+    branches = get_branches(repository)
 
     # If full app branch exists, repo is a full app, otherwise it is minified
     if FA_SECURE_BRANCH in branches:
@@ -89,7 +89,7 @@ def isFullApp(repository):
     
     return is_full_app
 
-def commitAddedOrRemovedLines(repository):
+def did_commit_add_or_remove_lines(repository):
     """
     Check if the commit added or removed any lines. Return true if lines were added or removed
     """

@@ -12,11 +12,11 @@ from constants import (
     TRANSITION_IN_PROGRESS,
 )
 
-from text import (
+from formatting import (
     Colors
 )
 
-def apiIsValidCredentials(api_email=None, api_key=None):
+def has_valid_credentials(api_email=None, api_key=None):
     """
     GET
     Checks if credentials are able to retrieve data from API
@@ -47,7 +47,7 @@ def apiIsValidCredentials(api_email=None, api_key=None):
     return isValid
 
 
-def getAllLinkedCHLC(issuelinks):
+def get_linked_issues(issuelinks):
     """
     Parses json issuelinks and returns list of all linked CHLC's
     """
@@ -63,7 +63,7 @@ def getAllLinkedCHLC(issuelinks):
     
     return chlcs
 
-def getCurrentFixVersion():
+def get_current_fix_version():
     """
     GET
     Gets current fix version based off of the current date
@@ -85,7 +85,7 @@ def getCurrentFixVersion():
 
     return version_name, version_id
 
-def apiTransitionToPlanned(chlrq, fixVersionID):
+def transition_issue_to_planned(chlrq, fixVersionID):
     """
     POST
     Transition CHLRQ to Planned w/ fix version
@@ -96,7 +96,7 @@ def apiTransitionToPlanned(chlrq, fixVersionID):
 
     return response.status_code
 
-def apiTransitionToInProgress(chlrq):
+def transition_issue_to_in_progress(chlrq):
     """
     POST
     Transition CHLRQ to In Progress
@@ -108,7 +108,7 @@ def apiTransitionToInProgress(chlrq):
     return response.status_code
 
 # TODO: THIS DOESN'T WORK FOR ALL CHALLENGES!
-def apiGetCreationCHLC(chlc):
+def get_creation_chlc(chlc):
     """
     GET
     Get parent CHLC's creation CHLC 
@@ -125,7 +125,7 @@ def apiGetCreationCHLC(chlc):
     
     return json_response['fields']['parent']['key']
 
-def apiGetLinkedChallenges(chlc):
+def get_linked_challenges(chlc):
     """
     GET
     Gets creation CHLC's children CHLCs
@@ -134,9 +134,9 @@ def apiGetLinkedChallenges(chlc):
     response = requests.get(url, headers=HEADERS, auth=AUTH)
     json_response = json.loads(response.text)
 
-    return getAllLinkedCHLC(json_response['fields']['issuelinks'])
+    return get_linked_issues(json_response['fields']['issuelinks'])
 
-def apiLinkCreationTicket(chlrq, chlc):
+def link_creation_chlc(chlrq, chlc):
     """
     POST
     Links creation CHLC to CHLRQ
@@ -147,7 +147,7 @@ def apiLinkCreationTicket(chlrq, chlc):
     
     return response.status_code
 
-def apiTransitionToClosed(chlrq, comment):
+def transition_issue_to_closed(chlrq, comment):
     """
     POST
     Links transitions CHLRQ to closed
@@ -158,7 +158,7 @@ def apiTransitionToClosed(chlrq, comment):
 
     return response.status_code
 
-def apiTransitionToFeedbackOpen(chlc):
+def transition_issue_to_feedback_open(chlc):
     print('Transitioning:', chlc)
     """
     POST
@@ -170,7 +170,7 @@ def apiTransitionToFeedbackOpen(chlc):
 
     return response
 
-def apiTransitionToFeedbackReview(chlc):
+def transition_issue_to_feedback_review(chlc):
     print('Transitioning:', chlc)
     """
     POST
@@ -182,7 +182,7 @@ def apiTransitionToFeedbackReview(chlc):
 
     return response
 
-def apiEditAssigneeAndComment(chlc, chlrq):
+def edit_issue_details(chlc, chlrq):
     print('Transitioning:', chlc)
     print('Transitioning:', chlrq)
     """
@@ -196,7 +196,7 @@ def apiEditAssigneeAndComment(chlc, chlrq):
     return response
 
 
-def apiConfirmCHLC(chlc):
+def check_chlc_exists(chlc):
     """
     GET
     Confirm that chlc number is valid
@@ -207,7 +207,7 @@ def apiConfirmCHLC(chlc):
 
     return 'key' in json_response and 'CHLC' in json_response['key']
 
-def apiConfirmCHLRQ(chlrq):
+def check_chlrq_exists(chlrq):
     """
     GET
     Confirm that chlrq number is valid

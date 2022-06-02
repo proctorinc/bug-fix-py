@@ -1,24 +1,24 @@
 import argparse
 
 from api import (
-    apiIsValidCredentials,
+    has_valid_credentials,
 )
 from constants import (
     API_EMAIL,
     API_KEY,
 )
 from .validation import (
-    isValidCHLRQ,
-    isValidCHLC,
+    is_valid_chlrq,
+    is_valid_chlc,
 )
 
-from text import (
+from formatting import (
     Colors
 )
 
-def parseArguments():
+def parse_arguments():
     """
-    Parse arguments for program. Handle argument errors.
+    Parse command line arguments for program. Handle argument errors.
     """
     # Instantiate the parser
     parser = argparse.ArgumentParser(description='bug-fix.py automates the bug-fixing process')
@@ -78,20 +78,20 @@ def getCHLRQ():
     print(Colors.ENDC, end='')
 
     # Check that user input chlrq is valid
-    while not isValidCHLRQ(chlrq):
+    while not is_valid_chlrq(chlrq):
 
         # Alert user chlrq is invalid
         print(f'{Colors.OKCYAN}CHLRQ-{chlrq}{Colors.ENDC} is not valid. Enter 2-4 digits.')
 
         # Prompt user for CHLRQ number
-        chlrq = input(f'Enter {Colors.OKCYAN}CHLRQ{Colors.ENDC} ticket number: {Colors.WHITE}')
+        chlrq = input(f'{Colors.ENDC}Enter {Colors.OKCYAN}CHLRQ{Colors.ENDC} ticket number: {Colors.WHITE}')
 
         # Reset colors
         print(Colors.ENDC, end='')
 
     return chlrq
 
-def getCHLC():
+def get_chlc():
     """
     Prompt user to input CHLC number. Validate format
     """
@@ -101,7 +101,7 @@ def getCHLC():
     print(Colors.ENDC, end='')
 
     # Check that user input chlc is valid
-    while not isValidCHLC(chlc):
+    while not is_valid_chlc(chlc):
 
         # Alert user chlc is invalid
         print(f'{Colors.HEADER}CHLC-{chlc}{Colors.ENDC} is not valid. Enter 2-4 digits')
@@ -146,13 +146,13 @@ def setupCredentials():
         f.write(f'API_EMAIL={api_email}\n')
         f.write(f'API_KEY={api_key}\n')
 
-    if apiIsValidCredentials(api_email, api_key):
+    if has_valid_credentials(api_email, api_key):
         print('Jira API Credentials are valid.')
         print('Run program: bug-fix.py -r <repository>')
 
     exit(0)
 
-def formatMessages(messages):
+def format_messages(messages):
     """
     Formats all messages from list into multiple lines
     """

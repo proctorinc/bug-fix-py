@@ -1,8 +1,8 @@
 from api import (
-    apiGetLinkedChallenges,
-    apiGetCreationCHLC,
+    get_linked_challenges,
+    get_creation_chlc,
 )
-parent = apiGetCreationCHLC(6142)
+parent = get_creation_chlc(6142)
 print(parent)
-challenges = apiGetLinkedChallenges(parent)
+challenges = get_linked_challenges(parent)
 print(challenges)

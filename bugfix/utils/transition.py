@@ -1,30 +1,30 @@
 from api import (
-    getCurrentFixVersion,
-    apiTransitionToPlanned,
-    apiTransitionToInProgress,
-    apiLinkCreationTicket,
-    apiTransitionToClosed,
-    apiGetCreationCHLC,
-    apiTransitionToFeedbackOpen,
-    apiGetLinkedChallenges,
-    apiTransitionToFeedbackReview,
-    apiEditAssigneeAndComment,
+    get_current_fix_version,
+    transition_issue_to_planned,
+    transition_issue_to_in_progress,
+    link_creation_chlc,
+    transition_issue_to_closed,
+    get_creation_chlc,
+    transition_issue_to_feedback_open,
+    get_linked_challenges,
+    transition_issue_to_feedback_review,
+    edit_issue_details,
 )
 
 from .input import (
-    getCHLC
+    get_chlc
 )
 
-from text import (
+from formatting import (
     Colors
 )
 
-def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
+def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
     """
     Use Jira API to transition tickets through Jira workflow
     """
     # API call to get current version name and id
-    fixVersionName, fixVersionID = getCurrentFixVersion()
+    fixVersionName, fixVersionID = get_current_fix_version()
 
     # Check that version id was successfully got
     if not fixVersionID:
@@ -39,7 +39,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     print(f'\tTo Planned [Fix Version: {fixVersionName}]', end='')
     
     # If api returns 204, transition was successful
-    plannedResult = apiTransitionToPlanned(chlrq, fixVersionID)
+    plannedResult = transition_issue_to_planned(chlrq, fixVersionID)
     if plannedResult == 204:
         print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
@@ -49,7 +49,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     print(f'\tTo In Progress', end='')
     
     # If api returns 204, transition was successful
-    inProgressResult = apiTransitionToInProgress(chlrq)
+    inProgressResult = transition_issue_to_in_progress(chlrq)
     if inProgressResult == 204:
         print(f'\t\t\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
@@ -59,7 +59,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     print(f'\tLinking {Colors.HEADER}{chlc}{Colors.ENDC} [relates to]', end='')
     
     # If api returns 204, transition was successful
-    linkResult = apiLinkCreationTicket(chlrq, chlc[-4:])
+    linkResult = link_creation_chlc(chlrq, chlc[-4:])
     if linkResult == 201:
         print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
@@ -69,7 +69,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     print(f'\tTo Closed [with description of fix]', end='')
     
     # If api returns 204, transition was successful
-    closedResult = apiTransitionToClosed(chlrq, fix_message)
+    closedResult = transition_issue_to_closed(chlrq, fix_message)
     if closedResult == 204:
         print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
@@ -78,15 +78,15 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     # If full app and fix was on the secure branch, transition all CHLC's
     if is_cherrypick_required:
         # Get creation CHLC
-        # parent_chlc = apiGetCreationCHLC(chlc)
+        # parent_chlc = get_creation_chlc(chlc)
         print('\n[Enter Creation CHLC below]')
-        parent_chlc = getCHLC()
+        parent_chlc = get_chlc()
 
         # Notify user of parent CHLC number
         print(f'Parent CHLC: {Colors.WARNING}{parent_chlc}{Colors.ENDC}')
 
         # Get all CHLC's linked to the creation ticket
-        challenges = apiGetLinkedChallenges(parent_chlc)
+        challenges = get_linked_challenges(parent_chlc)
 
         # Print number of challenges to bulk transition
         print(f'Challenges to bulk transition: {len(challenges)}')
@@ -107,7 +107,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
         print('\tTo Feedback Open', end='')
         
         # If api returns 204, transition was successful
-        feedbackOpenResult = apiTransitionToFeedbackOpen(challenge)
+        feedbackOpenResult = transition_issue_to_feedback_open(challenge)
         if feedbackOpenResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
@@ -118,7 +118,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
         print('\tTo Feedback Review', end='')
 
         # If api returns 204, transition was successful
-        feedbackReviewResult = apiTransitionToFeedbackReview(challenge)
+        feedbackReviewResult = transition_issue_to_feedback_review(challenge)
         if feedbackReviewResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
@@ -129,7 +129,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
         print('\tAdding assignee and comment', end='')
 
         # If api returns 204, transition was successful
-        editResult = apiEditAssigneeAndComment(challenge, chlrq)
+        editResult = edit_issue_details(challenge, chlrq)
         if editResult.status_code == 204:
             print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:

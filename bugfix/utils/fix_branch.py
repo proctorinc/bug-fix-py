@@ -2,7 +2,7 @@ import subprocess
 import git
 import readline
 
-from text import (
+from formatting import (
     Completer,
     Colors
 )
@@ -11,7 +11,7 @@ from constants import (
     FA_SECURE_BRANCH
 )
 
-def fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug):
+def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug):
     """
     Checks the user out to a branch of their choice, making sure it is a valid branch.
     Opens VS Code for user to make the fix and prompts user to press ENTER when done.
@@ -28,7 +28,7 @@ def fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug)
     readline.parse_and_bind("tab: complete")
     
     # Set completion to list of branches
-    readline.set_completer(Completer().getListCompleter(branches))
+    readline.set_completer(Completer().get_list_completer(branches))
 
     # Prompt user for branch where the fix will be made
     initial_branch = input(f'\nEnter branch where the fix will be made: {Colors.WHITE}')
@@ -64,7 +64,7 @@ def fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug)
     print(f'{Colors.UNDERLINE}{Colors.OKGREEN}{Colors.BOLD}\nMake the fix in VS Code{Colors.ENDC}')
 
     # Open VS Code to make fix
-    subprocess.check_output(f'code {repository_url}', shell=True)
+    subprocess.check_output(f'code {repository_dir}', shell=True)
 
     # Continue until fix message is entered
     while not fix_message:
@@ -78,11 +78,11 @@ def fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug)
         try:
             # Add files for commit
             repository.git.add(u=True)
-            # subprocess.check_output(f'git -C {repository_url} add --all', shell=True)
+            # subprocess.check_output(f'git -C {repository_dir} add --all', shell=True)
 
             # Commit
             repository.git.commit('-m', fix_message)
-            # subprocess.check_output(f'git -C {repository_url} commit -m \'{fix_message}\'', shell=True)
+            # subprocess.check_output(f'git -C {repository_dir} commit -m \'{fix_message}\'', shell=True)
 
         except git.exc.GitCommandError as e:
             if debug:

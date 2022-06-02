@@ -7,27 +7,27 @@
 import subprocess
 import webbrowser
 from utils import (
-    cherrypick,
-    isValidCHLRQ,
-    isValidCHLC,
+    cherry_pick,
+    is_valid_chlrq,
+    is_valid_chlc,
     getCHLRQ,
-    getCHLC,
+    get_chlc,
     setupCredentials,
-    cloneRepository,
-    getBranches,
+    clone_repository,
+    get_branches,
     isFullApp,
-    parseArguments,
-    getRepositoryURL,
-    fixAndCommitBranch,
-    formatMessages,
-    commitAddedOrRemovedLines,
-    transitionJiraTickets,
+    parse_arguments,
+    get_repository_dir,
+    fix_and_commit_branch,
+    format_messages,
+    did_commit_add_or_remove_lines,
+    transition_jira_issues,
 )
-from text import (
+from formatting import (
     Colors,
 )
 from api import (
-    apiIsValidCredentials,
+    has_valid_credentials,
 )
 from constants import (
     API_EMAIL,
@@ -39,7 +39,7 @@ from constants import (
 def main():
 
     # Parse commandline arguments
-    args = parseArguments()
+    args = parse_arguments()
 
     # Default user is not done fixing branches
     done_fixing = False
@@ -60,15 +60,15 @@ def main():
     chlrq = args.chlrq
     chlc = args.chlc
     no_pick = args.no_pick
-    only_transition = args.transition
-    api_enabled = args.api
+    only_transition_mode = args.transition
+    is_api_enabled = args.api
     debug = args.debug
     
     # If setup mode is on, run setup
     if setup_mode:
         setupCredentials()
 
-    elif only_transition:
+    elif only_transition_mode:
 
         # If parameter not entered, prompt user for CHRLQ
         if not chlrq:
@@ -76,7 +76,7 @@ def main():
 
         # If parameter not entered, prompt user for CHLC
         if not chlc:
-            chlc = getCHLC()
+            chlc = get_chlc()
 
         # Ask user if bulk transition is required
         if input(f'Is bulk transition required? ({Colors.BOLD}{Colors.WHITE}Y{Colors.ENDC}/n): {Colors.WHITE}') != 'n':
@@ -87,12 +87,12 @@ def main():
         print(Colors.ENDC)
 
         # Automatically transition jira tickets
-        transitionJiraTickets(chlrq, f'CHLC-{chlc}', fix_messages, did_cherrypick)
+        transition_jira_issues(chlrq, f'CHLC-{chlc}', fix_messages, did_cherrypick)
 
         exit(0)
 
     # Check if environment variables do not exist
-    elif (not test_mode) and api_enabled and (not API_EMAIL or not API_KEY):
+    elif (not test_mode) and is_api_enabled and (not API_EMAIL or not API_KEY):
         print(f'{Colors.FAIL}Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables{Colors.ENDC}')
 
         # Notify that no email is present
@@ -106,21 +106,21 @@ def main():
         exit(1)
 
     # Check if API credentials are valid, otherwise exit program
-    if not test_mode and api_enabled and not apiIsValidCredentials():
+    if not test_mode and is_api_enabled and not has_valid_credentials():
         print(f'{Colors.FAIL}Invalid API credentials. Run with --setup to change credentials{Colors.ENDC}')
         exit(1)
 
     # Only get ticket numbers if API is enabled
-    if api_enabled:
+    if is_api_enabled:
 
         # Check that CHLRQ is valid
-        if chlrq and not isValidCHLRQ(chlrq):
+        if chlrq and not is_valid_chlrq(chlrq):
             # Alert user chlrq is invalid
             print(f'{Colors.FAIL}CHLRQ-{chlrq} is not valid.{Colors.ENDC}')
             exit(1)
 
         # Check that CHLC is valid
-        if chlc and not isValidCHLC(chlc):
+        if chlc and not is_valid_chlc(chlc):
             # Alert user chlrq is invalid
             print(f'{Colors.FAIL}CHLRQ-{chlc} is not valid.{Colors.ENDC}')
             exit(1)
@@ -132,16 +132,16 @@ def main():
     if no_pick:
         print(f'{Colors.HEADER}######## Cherry-pick disabled - will not cherry-pick all branches{Colors.ENDC}')
 
-    if api_enabled:
+    if is_api_enabled:
         print(f'{Colors.HEADER}######## API Auto transitioning Jira tickets enabled{Colors.ENDC}')
     else:
         print(f'{Colors.HEADER}######## API disabled{Colors.ENDC}')
 
     # Get all repository information
-    repository = cloneRepository(repo_name)
-    branches = getBranches(repository)
+    repository = clone_repository(repo_name)
+    branches = get_branches(repository)
     is_full_app = isFullApp(repository)
-    repository_url = getRepositoryURL(repo_name)
+    repository_dir = get_repository_dir(repo_name)
 
     # Print Details about the repository
     print(f'Repo:{Colors.OKCYAN} {repo_name}{Colors.ENDC}')
@@ -152,7 +152,7 @@ def main():
     else:
         print(f'Type: {Colors.OKCYAN}Minified App{Colors.ENDC}')
 
-    if not api_enabled:
+    if not is_api_enabled:
         print(f'{Colors.WARNING}\n1. Transition CHLRQ to Planned (choose this month)')
         print('2. Transition CHLRQ to In Progress')
         print(f'3. Locate the branch to make the fix on (if secure, choose secure){Colors.ENDC}')
@@ -161,7 +161,7 @@ def main():
     while not done_fixing:
 
         # Fix the branch and retrieve the name and fix explanation
-        fix_message, fixed_branch = fixAndCommitBranch(repository, repository_url, branches, is_full_app, debug)
+        fix_message, fixed_branch = fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug)
 
         # Remove initial_branch from branches to avoid cherry-picking it
         branches.remove(fixed_branch)
@@ -170,7 +170,7 @@ def main():
         fix_messages.append(fix_message)
 
         # Keep track of chunks needing to be fixed
-        if commitAddedOrRemovedLines(repository):
+        if did_commit_add_or_remove_lines(repository):
             fix_chunks_required = True
 
         # If full app and fix was on the secure branch, cherry-pick branches
@@ -183,7 +183,7 @@ def main():
             if not no_pick:
 
                 # Run cherry-pick method
-                cherrypick(repository_url, branches, commit_id, debug)
+                cherry_pick(repository_dir, branches, commit_id, debug)
 
             # Confirm that cherrypick occurred
             did_cherrypick = True
@@ -204,20 +204,20 @@ def main():
         input(f'{Colors.UNDERLINE}{Colors.OKGREEN}{Colors.BOLD}\nPress [ENTER] to push to repo{Colors.ENDC}')
 
         # Push commit to the repository
-        subprocess.check_output(f'git -C {repository_url} push --all', shell=True)
+        subprocess.check_output(f'git -C {repository_dir} push --all', shell=True)
 
     # If api is enabled, transition tickets through the jira api
-    if api_enabled:
+    if is_api_enabled:
         # If parameter not entered, prompt user for CHRLQ
         if not chlrq:
             chlrq = getCHLRQ()
 
         # If parameter not entered, prompt user for CHLC
         if not chlc:
-            chlc = getCHLC()
+            chlc = get_chlc()
 
         # Automatically transition jira tickets
-        transitionJiraTickets(chlrq, chlc, formatMessages(fix_messages), did_cherrypick)
+        transition_jira_issues(chlrq, chlc, format_messages(fix_messages), did_cherrypick)
     
     # Otherwise prompt user to transition manually
     else:
