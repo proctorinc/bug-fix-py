@@ -93,7 +93,7 @@ def transitionJiraTickets(chlrq, chlc, fix_message, is_cherrypick_required):
     
     else:
         # Set challenges to the initial chlc
-        challenges = [chlc]
+        challenges = ['CHLC-' + chlc[-4]]
 
     print(f'\nTransitioning [{Colors.OKCYAN}{len(challenges)}{Colors.ENDC}] {Colors.HEADER}CHLC\'s{Colors.ENDC}')
 
