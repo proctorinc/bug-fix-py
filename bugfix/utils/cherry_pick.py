@@ -20,7 +20,15 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
 
         if 'error' in checkout_result.decode('utf-8') or 'fatal' in checkout_result.decode('utf-8'):
             print('ERROR: Checkout failed')
-            exit(1)
+            print(checkout_result.decode('utf-8'))
+
+            print('\nAn error may have occured. Review the above message and determine if you should exit or continue.')
+            exit_program = input('Would you like to exit? (Y/n): ')
+
+            if exit_program.upper() == 'N':
+                print('Continuing..')
+            else:
+                exit(1)
 
         # Successful checkout to branch
         else:
