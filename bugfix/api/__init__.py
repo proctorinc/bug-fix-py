@@ -159,7 +159,6 @@ def transition_issue_to_closed(chlrq, comment):
     return response.status_code
 
 def transition_issue_to_feedback_open(chlc):
-    # print('Transitioning:', chlc)
     """
     POST
     Transition CHLC to feedback open
@@ -171,7 +170,6 @@ def transition_issue_to_feedback_open(chlc):
     return response
 
 def transition_issue_to_feedback_review(chlc):
-    print('Transitioning:', chlc)
     """
     POST
     Transition CHLC to feedback review and add comment and change assignee to Thomas
@@ -183,8 +181,6 @@ def transition_issue_to_feedback_review(chlc):
     return response
 
 def edit_issue_details(chlc, chlrq):
-    # print('Transitioning:', chlc)
-    # print('Transitioning:', chlrq)
     """
     PUT
     Jira edit query. Changes CHLC's assignee to Thomas and adds comment

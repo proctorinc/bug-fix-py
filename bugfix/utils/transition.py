@@ -55,15 +55,18 @@ def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
     else:
         print(f'\t\t\t\t{Colors.FAIL}[FAILED - {inProgressResult}]{Colors.ENDC}')
 
-    # Link CHLC to CHLRQ
-    print(f'\tLinking {Colors.HEADER}{chlc}{Colors.ENDC} [relates to]', end='')
+    #################################################################################
+    # Linking CHLC to CHLRQ no longer required. Step is now done on ticket creation #
+    #################################################################################
+    # # Link CHLC to CHLRQ
+    # print(f'\tLinking {Colors.HEADER}{chlc}{Colors.ENDC} [relates to]', end='')
     
-    # If api returns 204, transition was successful
-    linkResult = link_creation_chlc(chlrq, chlc[-4:])
-    if linkResult == 201:
-        print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
-    else:
-        print(f'\t\t{Colors.FAIL}[FAILED - {linkResult}]{Colors.ENDC}')
+    # # If api returns 204, transition was successful
+    # linkResult = link_creation_chlc(chlrq, chlc[-4:])
+    # if linkResult == 201:
+    #     print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
+    # else:
+    #     print(f'\t\t{Colors.FAIL}[FAILED - {linkResult}]{Colors.ENDC}')
 
     # Transition CHLRQ to closed w/ fix message
     print(f'\tTo Closed [with description of fix]', end='')
