@@ -2,9 +2,7 @@ from api import (
     get_current_fix_version,
     transition_issue_to_planned,
     transition_issue_to_in_progress,
-    link_creation_chlc,
     transition_issue_to_closed,
-    get_creation_chlc,
     transition_issue_to_feedback_open,
     get_linked_challenges,
     transition_issue_to_feedback_review,
@@ -19,7 +17,7 @@ from formatting import (
     Colors
 )
 
-def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
+def transition_jira_issues(chlrq, fix_message, is_cherrypick_required):
     """
     Use Jira API to transition tickets through Jira workflow
     """
@@ -40,20 +38,20 @@ def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
     
     # If api returns 204, transition was successful
     plannedResult = transition_issue_to_planned(chlrq, fixVersionID)
-    if plannedResult == 204:
+    if plannedResult.status_code == 204:
         print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
-        print(f'\t{Colors.FAIL}[FAILED - {plannedResult}]{Colors.ENDC}')
+        print(f'\t{Colors.FAIL}[FAILED - {plannedResult.status_code}: {plannedResult.reason}]{Colors.ENDC}')
 
     # Transition to in progress
     print(f'\tTo In Progress', end='')
     
     # If api returns 204, transition was successful
     inProgressResult = transition_issue_to_in_progress(chlrq)
-    if inProgressResult == 204:
+    if inProgressResult.status_code == 204:
         print(f'\t\t\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
-        print(f'\t\t\t\t{Colors.FAIL}[FAILED - {inProgressResult}]{Colors.ENDC}')
+        print(f'\t\t\t\t{Colors.FAIL}[FAILED - {inProgressResult.status_code}: {inProgressResult.reason}]{Colors.ENDC}')
 
     #################################################################################
     # Linking CHLC to CHLRQ no longer required. Step is now done on ticket creation #
@@ -73,30 +71,33 @@ def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
     
     # If api returns 204, transition was successful
     closedResult = transition_issue_to_closed(chlrq, fix_message)
-    if closedResult == 204:
+    if closedResult.status_code == 204:
         print(f'\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
     else:
-        print(f'\t{Colors.FAIL}[FAILED - {closedResult}]{Colors.ENDC}')
+        print(f'\t{Colors.FAIL}[FAILED - {closedResult.status_code}: {closedResult.reason}]{Colors.ENDC}')
 
     # If full app and fix was on the secure branch, transition all CHLC's
     if is_cherrypick_required:
-        # Get creation CHLC
-        # parent_chlc = get_creation_chlc(chlc)
-        print('\n[Enter Creation CHLC below]')
-        parent_chlc = get_chlc()
+        # Get application CHLC
+        print('\n[Enter Application CHLC]')
+        application_chlc = get_chlc()
 
         # Notify user of parent CHLC number
-        print(f'Parent CHLC: {Colors.WARNING}{parent_chlc}{Colors.ENDC}')
+        print(f'Application CHLC: {Colors.WARNING}{application_chlc}{Colors.ENDC}')
 
         # Get all CHLC's linked to the creation ticket
-        challenges = get_linked_challenges(parent_chlc)
+        challenges = get_linked_challenges(application_chlc)
 
         # Print number of challenges to bulk transition
         print(f'Challenges to bulk transition: {len(challenges)}')
     
     else:
+        # Get challenge chlc
+        print('\n[Enter Challenge CHLC]')
+        challenge_chlc = get_chlc()
+
         # Set challenges to the initial chlc
-        challenges = ['CHLC-' + chlc[-4:]]
+        challenges = ['CHLC-' + challenge_chlc[-4:]]
 
     print(f'\nTransitioning [{Colors.OKCYAN}{len(challenges)}{Colors.ENDC}] {Colors.HEADER}CHLC\'s{Colors.ENDC}')
 
@@ -114,8 +115,7 @@ def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
         if feedbackOpenResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
-            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackOpenResult.status_code}]{Colors.ENDC}')
-            print(f'{Colors.FAIL}{feedbackOpenResult.text}')
+            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackOpenResult.status_code}: {feedbackOpenResult.reason}]{Colors.ENDC}')
 
         # Transition challenge to Feedback Review w/ fix message and set assignee to Thomas
         print('\tTo Feedback Review', end='')
@@ -125,8 +125,7 @@ def transition_jira_issues(chlrq, chlc, fix_message, is_cherrypick_required):
         if feedbackReviewResult.status_code == 204:
             print(f'\t\t{Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
         else:
-            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackReviewResult.status_code}]{Colors.ENDC}')
-            print(f'{Colors.FAIL}{feedbackReviewResult.text}')
+            print(f'\t\t{Colors.FAIL}[FAILED - {feedbackReviewResult.status_code}: {feedbackReviewResult.reason}]{Colors.ENDC}')
 
         # Sets assignee and adds CHLRQ as comment
         print('\tAdding assignee and comment', end='')

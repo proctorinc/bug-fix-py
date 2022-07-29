@@ -94,7 +94,7 @@ def transition_issue_to_planned(chlrq, fixVersionID):
     data = {"transition": {"id": TRANSITION_PLANNED}, "update": {"fixVersions": [{"add": {"id": fixVersionID}}]}}
     response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
 
-    return response.status_code
+    return response
 
 def transition_issue_to_in_progress(chlrq):
     """
@@ -105,7 +105,7 @@ def transition_issue_to_in_progress(chlrq):
     data = {"transition":{"id":TRANSITION_IN_PROGRESS}}
     response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
 
-    return response.status_code
+    return response
 
 # TODO: THIS DOESN'T WORK FOR ALL CHALLENGES!
 def get_creation_chlc(chlc):
@@ -145,7 +145,7 @@ def link_creation_chlc(chlrq, chlc):
     body = {'type':{'name':'Relates'},'outwardIssue':{'key':f'CHLRQ-{chlrq}'},'inwardIssue':{'key':f'CHLC-{chlc}'}}
     response = requests.post(url, json=body, headers=HEADERS, auth=AUTH)
     
-    return response.status_code
+    return response
 
 def transition_issue_to_closed(chlrq, comment):
     """
@@ -156,7 +156,7 @@ def transition_issue_to_closed(chlrq, comment):
     data = {'transition':{'id':'191'},'update':{'comment':[{'add':{'body':comment}}]}}
     response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
 
-    return response.status_code
+    return response
 
 def transition_issue_to_feedback_open(chlc):
     """

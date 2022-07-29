@@ -75,8 +75,8 @@ def main():
             chlrq = getCHLRQ()
 
         # If parameter not entered, prompt user for CHLC
-        if not chlc:
-            chlc = get_chlc()
+        # if not chlc:
+        #     chlc = get_chlc()
 
         # Ask user if bulk transition is required
         if input(f'Is bulk transition required? ({Colors.BOLD}{Colors.WHITE}Y{Colors.ENDC}/n): {Colors.WHITE}') != 'n':
@@ -87,7 +87,7 @@ def main():
         print(Colors.ENDC)
 
         # Automatically transition jira tickets
-        transition_jira_issues(chlrq, f'CHLC-{chlc}', fix_messages, did_cherrypick)
+        transition_jira_issues(chlrq, fix_messages, did_cherrypick)
 
         exit(0)
 
@@ -122,7 +122,7 @@ def main():
         # Check that CHLC is valid
         if chlc and not is_valid_chlc(chlc):
             # Alert user chlrq is invalid
-            print(f'{Colors.FAIL}CHLRQ-{chlc} is not valid.{Colors.ENDC}')
+            print(f'{Colors.FAIL}CHLC-{chlc} is not valid.{Colors.ENDC}')
             exit(1)
 
     # Check if push is disabled
@@ -212,12 +212,15 @@ def main():
         if not chlrq:
             chlrq = getCHLRQ()
 
-        # If parameter not entered, prompt user for CHLC
-        if not chlc:
-            chlc = get_chlc()
+        ###############################################
+        # CHLC no longer required. Linking not needed #
+        ###############################################
+        # # If parameter not entered, prompt user for CHLC
+        # if not chlc:
+        #     chlc = get_chlc()
 
         # Automatically transition jira tickets
-        transition_jira_issues(chlrq, chlc, format_messages(fix_messages), did_cherrypick)
+        transition_jira_issues(chlrq, format_messages(fix_messages), did_cherrypick)
     
     # Otherwise prompt user to transition manually
     else:
