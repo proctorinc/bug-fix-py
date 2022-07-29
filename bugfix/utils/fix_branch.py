@@ -8,7 +8,7 @@ from formatting import (
 )
 
 from constants import (
-    FA_SECURE_BRANCH
+    JIRA_FA_SECURE_BRANCH
 )
 
 def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug):
@@ -42,7 +42,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
         print(f'{Colors.FAIL}\"{initial_branch}\" is not a valid branch name{Colors.ENDC}')
 
         # Check if user entered "secure" on a minified app. Suggest minified secure branch
-        if (not is_full_app) and initial_branch == FA_SECURE_BRANCH:
+        if (not is_full_app) and initial_branch == JIRA_FA_SECURE_BRANCH:
             minified_secure_branches = getMinifiedSecureBranch(branches)
             print(f'\nThis app is {Colors.OKCYAN}Minified{Colors.ENDC}, enter the correct secure branch: {Colors.HEADER}')
             for branch in minified_secure_branches:
@@ -108,7 +108,7 @@ def getMinifiedSecureBranch(branches):
     for branch in branches:
         
         # Check if branch starts with 'secure'
-        if FA_SECURE_BRANCH in branch:
+        if JIRA_FA_SECURE_BRANCH in branch:
             secure_branches.append(branch)
 
     return secure_branches

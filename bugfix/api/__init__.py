@@ -5,11 +5,11 @@ import datetime
 from datetime import date
 
 from constants import (
-    THOMAS_ACCT_ID,
-    AUTH,
-    HEADERS,
-    TRANSITION_PLANNED,
-    TRANSITION_IN_PROGRESS,
+    JIRA_THOMAS_ACCT_ID,
+    JIRA_AUTH,
+    JIRA_REQUEST_HEADERS,
+    JIRA_TRANSITION_PLANNED,
+    JIRA_TRANSITION_IN_PROGRESS,
 )
 
 from formatting import (
@@ -26,11 +26,11 @@ def has_valid_credentials(api_email=None, api_key=None):
     if api_email and api_key:
         auth = HTTPBasicAuth(api_email, api_key)
     else:
-        auth = AUTH
+        auth = JIRA_AUTH
 
     try:
         url = 'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-1520/'
-        response = requests.get(url, headers=HEADERS, auth=auth)
+        response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=auth)
         json_response = json.loads(response.text)
 
         if 'errorMessages' in json_response:
@@ -75,7 +75,7 @@ def get_current_fix_version():
     version_id = None
 
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/project/CHLRQ/versions'
-    response = requests.get(url, headers=HEADERS, auth=AUTH)
+    response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     json_response = json.loads(response.text)
 
     for version in json_response:
@@ -91,8 +91,8 @@ def transition_issue_to_planned(chlrq, fixVersionID):
     Transition CHLRQ to Planned w/ fix version
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions'
-    data = {"transition": {"id": TRANSITION_PLANNED}, "update": {"fixVersions": [{"add": {"id": fixVersionID}}]}}
-    response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
+    data = {"transition": {"id": JIRA_TRANSITION_PLANNED}, "update": {"fixVersions": [{"add": {"id": fixVersionID}}]}}
+    response = requests.post(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -102,8 +102,8 @@ def transition_issue_to_in_progress(chlrq):
     Transition CHLRQ to In Progress
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions'
-    data = {"transition":{"id":TRANSITION_IN_PROGRESS}}
-    response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
+    data = {"transition":{"id":JIRA_TRANSITION_IN_PROGRESS}}
+    response = requests.post(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -114,7 +114,7 @@ def get_creation_chlc(chlc):
     Get parent CHLC's creation CHLC 
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}/'
-    response = requests.get(url, headers=HEADERS, auth=AUTH)
+    response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     json_response = json.loads(response.text)
 
     if response.text:
@@ -131,7 +131,7 @@ def get_linked_challenges(chlc):
     Gets creation CHLC's children CHLCs
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}'
-    response = requests.get(url, headers=HEADERS, auth=AUTH)
+    response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     json_response = json.loads(response.text)
 
     return get_linked_issues(json_response['fields']['issuelinks'])
@@ -143,7 +143,7 @@ def link_creation_chlc(chlrq, chlc):
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issueLink'
     body = {'type':{'name':'Relates'},'outwardIssue':{'key':f'CHLRQ-{chlrq}'},'inwardIssue':{'key':f'CHLC-{chlc}'}}
-    response = requests.post(url, json=body, headers=HEADERS, auth=AUTH)
+    response = requests.post(url, json=body, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     
     return response
 
@@ -154,7 +154,7 @@ def transition_issue_to_closed(chlrq, comment):
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions'
     data = {'transition':{'id':'191'},'update':{'comment':[{'add':{'body':comment}}]}}
-    response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
+    response = requests.post(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -165,7 +165,7 @@ def transition_issue_to_feedback_open(chlc):
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}/transitions'
     data = {'transition':{'id':'511'}}
-    response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
+    response = requests.post(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -176,7 +176,7 @@ def transition_issue_to_feedback_review(chlc):
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}/transitions'
     data = {'transition':{'id':'521'}}
-    response = requests.post(url, headers=HEADERS, auth=AUTH, json=data)
+    response = requests.post(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -186,8 +186,8 @@ def edit_issue_details(chlc, chlrq):
     Jira edit query. Changes CHLC's assignee to Thomas and adds comment
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}'
-    data = {'fields':{'assignee':{'accountId':THOMAS_ACCT_ID}}, 'update':{'comment':[{'add':{'body':f'CHLRQ-{chlrq}'}}]}}
-    response = requests.put(url, headers=HEADERS, auth=AUTH, json=data)
+    data = {'fields':{'assignee':{'accountId':JIRA_THOMAS_ACCT_ID}}, 'update':{'comment':[{'add':{'body':f'CHLRQ-{chlrq}'}}]}}
+    response = requests.put(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH, json=data)
 
     return response
 
@@ -198,7 +198,7 @@ def check_chlc_exists(chlc):
     Confirm that chlc number is valid
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}/'
-    response = requests.get(url, headers=HEADERS, auth=AUTH)
+    response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     json_response = json.loads(response.text)
 
     return 'key' in json_response and 'CHLC' in json_response['key']
@@ -209,7 +209,7 @@ def check_chlrq_exists(chlrq):
     Confirm that chlrq number is valid
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/'
-    response = requests.get(url, headers=HEADERS, auth=AUTH)
+    response = requests.get(url, headers=JIRA_REQUEST_HEADERS, auth=JIRA_AUTH)
     json_response = json.loads(response.text)
     
     return 'key' in json_response and 'CHLRQ' in json_response['key']

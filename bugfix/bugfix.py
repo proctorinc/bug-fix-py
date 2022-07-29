@@ -6,12 +6,12 @@
 
 import subprocess
 import webbrowser
+from cms import (
+    CmsScraper
+)
 from utils import (
     cherry_pick,
-    is_valid_chlrq,
-    is_valid_chlc,
     getCHLRQ,
-    get_chlc,
     setupCredentials,
     clone_repository,
     get_branches,
@@ -30,9 +30,11 @@ from api import (
     has_valid_credentials,
 )
 from constants import (
-    API_EMAIL,
-    API_KEY,
-    FA_SECURE_BRANCH
+    JIRA_API_EMAIL,
+    JIRA_API_KEY,
+    JIRA_FA_SECURE_BRANCH,
+    CMS_EMAIL,
+    CMS_PASSWORD
 )
 
 # Main function runs bug-fix program
@@ -54,15 +56,17 @@ def main():
     fix_chunks_required = False
 
     # define variables from arguments
-    repo_name = args.repository
     test_mode = args.test
     setup_mode = args.setup
-    chlrq = args.chlrq
-    chlc = args.chlc
-    no_pick = args.no_pick
     only_transition_mode = args.transition
     is_api_enabled = args.api
     debug = args.debug
+
+    # Removed arguments
+    # repo_name = args.repository
+    # chlrq = args.chlrq
+    # chlc = args.chlc
+    # no_pick = args.no_pick
     
     # If setup mode is on, run setup
     if setup_mode:
@@ -71,8 +75,7 @@ def main():
     elif only_transition_mode:
 
         # If parameter not entered, prompt user for CHRLQ
-        if not chlrq:
-            chlrq = getCHLRQ()
+        chlrq = getCHLRQ()
 
         # If parameter not entered, prompt user for CHLC
         # if not chlc:
@@ -92,16 +95,24 @@ def main():
         exit(0)
 
     # Check if environment variables do not exist
-    elif (not test_mode) and is_api_enabled and (not API_EMAIL or not API_KEY):
+    elif (not test_mode) and is_api_enabled and (not JIRA_API_EMAIL or not JIRA_API_KEY or not CMS_EMAIL or not CMS_PASSWORD):
         print(f'{Colors.FAIL}Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables{Colors.ENDC}')
 
         # Notify that no email is present
-        if not API_EMAIL:
+        if not JIRA_API_EMAIL:
             print(f'{Colors.FAIL}No API email present{Colors.ENDC}')
 
         # Notify that no api key is present
-        if not API_KEY:
+        if not JIRA_API_KEY:
             print(f'{Colors.FAIL}No API key present{Colors.ENDC}')
+
+        # Notify that no email is present
+        if not CMS_EMAIL:
+            print(f'{Colors.FAIL}No CMS email present{Colors.ENDC}')
+
+        # Notify that no api key is present
+        if not CMS_PASSWORD:
+            print(f'{Colors.FAIL}No CMS password present{Colors.ENDC}')
 
         exit(1)
 
@@ -111,26 +122,31 @@ def main():
         exit(1)
 
     # Only get ticket numbers if API is enabled
-    if is_api_enabled:
+    # if is_api_enabled:
 
-        # Check that CHLRQ is valid
-        if chlrq and not is_valid_chlrq(chlrq):
-            # Alert user chlrq is invalid
-            print(f'{Colors.FAIL}CHLRQ-{chlrq} is not valid.{Colors.ENDC}')
-            exit(1)
+    #     # Check that CHLRQ is valid
+    #     if chlrq and not is_valid_chlrq(chlrq):
+    #         # Alert user chlrq is invalid
+    #         print(f'{Colors.FAIL}CHLRQ-{chlrq} is not valid.{Colors.ENDC}')
+    #         exit(1)
 
-        # Check that CHLC is valid
-        if chlc and not is_valid_chlc(chlc):
-            # Alert user chlrq is invalid
-            print(f'{Colors.FAIL}CHLC-{chlc} is not valid.{Colors.ENDC}')
-            exit(1)
+    #     # Check that CHLC is valid
+    #     if chlc and not is_valid_chlc(chlc):
+    #         # Alert user chlrq is invalid
+    #         print(f'{Colors.FAIL}CHLC-{chlc} is not valid.{Colors.ENDC}')
+    #         exit(1)
+
+    challenge_id = input('Enter Challenge ID: ')
+    scraper = CmsScraper(challenge_id)
+
+    print('App CHLC:', scraper.get_application_chlc())
+    print('Chall CHLC:', scraper.get_challenge_chlc())
+    print('Git Repo:', scraper.get_git_repo())
+    exit(0)
 
     # Check if push is disabled
     if test_mode:
         print(f'{Colors.HEADER}######## TEST MODE - GIT PUSH & API CALLS ARE DISABLED{Colors.ENDC}')
-
-    if no_pick:
-        print(f'{Colors.HEADER}######## Cherry-pick disabled - will not cherry-pick all branches{Colors.ENDC}')
 
     if is_api_enabled:
         print(f'{Colors.HEADER}######## API Auto transitioning Jira tickets enabled{Colors.ENDC}')
@@ -174,16 +190,13 @@ def main():
             fix_chunks_required = True
 
         # If full app and fix was on the secure branch, cherry-pick branches
-        if is_full_app and fixed_branch == FA_SECURE_BRANCH:
+        if is_full_app and fixed_branch == JIRA_FA_SECURE_BRANCH:
 
             # Get the commit ID
             commit_id = repository.rev_parse('HEAD')
 
-            # If cherry pick is not disabled
-            if not no_pick:
-
-                # Run cherry-pick method
-                cherry_pick(repository_dir, branches, commit_id, debug)
+            # Run cherry-pick method
+            cherry_pick(repository_dir, branches, commit_id, debug)
 
             # Confirm that cherrypick occurred
             did_cherrypick = True

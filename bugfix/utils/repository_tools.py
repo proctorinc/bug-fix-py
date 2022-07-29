@@ -5,10 +5,10 @@ import subprocess
 from formatting import Colors
 
 from constants import (
-    IGNORE_BRANCHES,
-    SCW_GIT_URL,
-    REPO_DIR,
-    FA_SECURE_BRANCH
+    JIRA_IGNORE_BRANCHES,
+    JIRA_SCW_GIT_URL,
+    JIRA_REPO_DIR,
+    JIRA_FA_SECURE_BRANCH
 )
 
 def filter_branches(remote_refs):
@@ -24,7 +24,7 @@ def filter_branches(remote_refs):
         branch = refs.name.split("origin/",1)[1]
 
         # Filter branches
-        if branch not in IGNORE_BRANCHES:
+        if branch not in JIRA_IGNORE_BRANCHES:
             filtered_branches.append(branch)
 
     return filtered_branches
@@ -33,13 +33,13 @@ def get_repository_dir(repo_name):
     """
     Returns absolute url for repository folder
     """
-    return os.path.join(REPO_DIR, repo_name)
+    return os.path.join(JIRA_REPO_DIR, repo_name)
 
 def clone_repository(repo_name):
     """
     Clone repository and return valid instance. Handle errors for invalid repository
     """
-    git_url = f'{SCW_GIT_URL}/{repo_name}.git'
+    git_url = f'{JIRA_SCW_GIT_URL}/{repo_name}.git'
     repository_dir = get_repository_dir(repo_name)
 
     print(f'Cloning Repository...', end='')
@@ -84,7 +84,7 @@ def isFullApp(repository):
     branches = get_branches(repository)
 
     # If full app branch exists, repo is a full app, otherwise it is minified
-    if FA_SECURE_BRANCH in branches:
+    if JIRA_FA_SECURE_BRANCH in branches:
         is_full_app = True
     
     return is_full_app

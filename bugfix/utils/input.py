@@ -1,11 +1,14 @@
 import argparse
+from getpass import getpass
 
 from api import (
     has_valid_credentials,
 )
 from constants import (
-    API_EMAIL,
-    API_KEY,
+    JIRA_API_EMAIL,
+    JIRA_API_KEY,
+    CMS_EMAIL,
+    CMS_PASSWORD
 )
 from .validation import (
     is_valid_chlrq,
@@ -24,7 +27,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='bug-fix.py automates the bug-fixing process')
 
     # Required repository positional argument
-    parser.add_argument('-r', '--repository', type=str, help='Name of git repository to do bug-fix')
+    # parser.add_argument('-r', '--repository', type=str, help='Name of git repository to do bug-fix')
 
     # No push switch
     parser.add_argument('--test', action='store_true',
@@ -60,11 +63,11 @@ def parse_arguments():
     # Parse arguments
     args = parser.parse_args()
 
-    # If not in setup mode, require -r flag
-    if not args.setup and not args.transition and not args.repository:
-        parser.error('-r <repository> required if not in setup mode')
-        # parser.error('Try: bug-fix.py -r <repository_name> [--debug] [--test] [--setup] [--chlrq CHLRQ] [--chlc CHLC]')
-        exit(1)
+    # # If not in setup mode, require -r flag
+    # if not args.setup and not args.transition and not args.repository:
+    #     parser.error('-r <repository> required if not in setup mode')
+    #     # parser.error('Try: bug-fix.py -r <repository_name> [--debug] [--test] [--setup] [--chlrq CHLRQ] [--chlc CHLC]')
+    #     exit(1)
 
     return args
 
@@ -119,16 +122,20 @@ def setupCredentials():
     Setup credentials process. Get user input to change credentials in environment
     """
     # Set Defaults
-    api_email = API_EMAIL
-    api_key = API_KEY
+    api_email = JIRA_API_EMAIL
+    api_key = JIRA_API_KEY
+    cms_email = CMS_EMAIL
+    cms_password = CMS_PASSWORD
 
-    if api_email and api_key:
+    if api_email and api_key and cms_email and cms_password:
         print('All credentials are setup')
         reset_credentials = input('Would you like to reset change your credentials? (y/n) ')
 
         if reset_credentials == 'y':
             api_email = None
             api_key = None
+            cms_email = None
+            cms_password = None
         else:
             exit(0)
 
@@ -141,14 +148,24 @@ def setupCredentials():
         print('Get a Jira API key here: https://id.atlassian.com/manage-profile/security/api-tokens')
         api_key = input("Enter Jira API key: ")
 
+    while not cms_email:
+        cms_email = input("Enter CMS Email: ")
+
+    while not cms_password:
+        print('Enter CMS Password:', end='')
+        cms_password = getpass()
+
     # Write to env
     with open(".env", "w") as f:
-        f.write(f'API_EMAIL={api_email}\n')
-        f.write(f'API_KEY={api_key}\n')
+        f.write(f'JIRA_API_EMAIL={api_email}\n')
+        f.write(f'JIRA_API_KEY={api_key}\n')
+        f.write(f'CMS_EMAIL={cms_email}\n')
+        f.write(f'CMS_PASSWORD={cms_password}\n')
 
+    # ADD VALIDATIONS FOR CMS CREDENTIALS
     if has_valid_credentials(api_email, api_key):
         print('Jira API Credentials are valid.')
-        print('Run program: bug-fix.py -r <repository>')
+        print('Run program: ./bug-fix.py')
 
     exit(0)
 
