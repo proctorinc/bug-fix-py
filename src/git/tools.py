@@ -1,15 +1,7 @@
 import git
 import os
 import subprocess
-
-from formatting import Colors
-
-from constants import (
-    JIRA_IGNORE_BRANCHES,
-    JIRA_SCW_GIT_URL,
-    JIRA_REPO_DIR,
-    JIRA_FA_SECURE_BRANCH
-)
+from src import constants
 
 def filter_branches(remote_refs):
     """
@@ -57,11 +49,11 @@ def clone_repository(repo_name):
         git.Repo.clone_from(git_url, repository_dir)
     
     except git.exc.GitError:
-        print(f'{Colors.FAIL}\'{repo_name}\' is not a valid repository{Colors.ENDC}')
+        print(f'{constants.FAIL}\'{repo_name}\' is not a valid repository{constants.ENDC}')
         exit(1)
 
     else:
-        print(f'{Colors.OKGREEN} [Done]{Colors.ENDC}')
+        print(f'{constants.OKGREEN} [Done]{constants.ENDC}')
 
     # Get repository
     repo = git.Repo(repository_dir)

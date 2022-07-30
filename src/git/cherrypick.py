@@ -1,9 +1,7 @@
 import subprocess
-from formatting import (
-    Colors
-)
+from src import constants
 
-def cherry_pick(repository_dir, branches, commit_id, debug):
+def cherrypick(repository_dir, branches, commit_id, debug):
 
     print(f'\nCherry-picking Branches...')
 
@@ -36,16 +34,16 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
             cherrypick_result = subprocess.check_output(f'git -C {repository_dir} cherry-pick {commit_id} &>/dev/null', shell=True)
 
             if debug:
-                print(f'{Colors.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), ']')
+                print(f'{constants.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), ']')
             if not cherrypick_result.decode('utf-8') or 'Auto-merging' in cherrypick_result.decode('utf-8'):
 
                 # Alert user of merge conflict
-                print(f'{Colors.WARNING}[ !!! ]{Colors.ENDC} {branch}: {Colors.WARNING}MERGE CONFLICT')
+                print(f'{constants.WARNING}[ !!! ]{constants.ENDC} {branch}: {constants.WARNING}MERGE CONFLICT')
 
                 # Open VS Code to solve merge conflict
                 subprocess.check_output(f'code {repository_dir}', shell=True)
 
-                input(f'\n{Colors.ENDC}{Colors.BOLD}Press {Colors.OKGREEN}[ENTER] {Colors.ENDC}{Colors.BOLD}when changes have been made{Colors.ENDC}')
+                input(f'\n{constants.ENDC}{constants.BOLD}Press {constants.OKGREEN}[ENTER] {constants.ENDC}{constants.BOLD}when changes have been made{constants.ENDC}')
 
                 try:
                     subprocess.call(f'git -C {repository_dir} add .',
@@ -66,4 +64,4 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
                         stderr=subprocess.DEVNULL)
 
         # Inform user of successful cherry-pick, branch complete
-        print(f'[{Colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{Colors.ENDC}]{Colors.ENDC} {branch}: {Colors.OKGREEN}[COMPLETE]{Colors.ENDC}')
+        print(f'[{constants.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{constants.ENDC}]{constants.ENDC} {branch}: {constants.OKGREEN}[COMPLETE]{constants.ENDC}')

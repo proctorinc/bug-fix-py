@@ -1,13 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from constants import (
-    CMS_EMAIL,
-    CMS_PASSWORD,
-    CMS_URL,
-    CMS_LOGIN_URL,
-    CMS_SEARCH_URL
-)
+from src import constants
 
 class CmsScraper:
     """
@@ -53,16 +47,14 @@ class CmsScraper:
         Get request to retrieve the CSRF token for logging in
         """
         # Get csrf token and cookies
-        result = self.__session.get(CMS_LOGIN_URL)
+        result = self.__session.get(constants.CMS_LOGIN_URL)
 
         # Check if result was successful
         if not result.ok:
             print('Scraper Error: fetching CSRF token failed')
             return None
 
-        # Parse CSRF token
-        soup = BeautifulSoup(result.content, 'html.parser')
-        csrf_token = soup.find('input', {'name': '_csrf_token'}).get('value')
+        csrf_token = utils.parse_csrf_token(result)
 
         return csrf_token
 
@@ -72,14 +64,14 @@ class CmsScraper:
         """
         # Create the login payload
         payload = {
-            '_username': CMS_EMAIL,
-            '_password': CMS_PASSWORD,
+            '_username': constants.CMS_EMAIL,
+            '_password': constants.CMS_PASSWORD,
             '_csrf_token': csrf_token
         }
 
         # Login to CMS
         login_result = self.__session.post(
-            CMS_LOGIN_URL,
+            constants.CMS_LOGIN_URL,
             data=payload,
         )
 
@@ -97,7 +89,7 @@ class CmsScraper:
         """
         # Query for CID
         result = self.__session.get(
-            f'{CMS_SEARCH_URL}?q={self.__challenge_id}',
+            f'{constants.CMS_SEARCH_URL}?q={self.__challenge_id}',
             cookies=cookies
         )
 
@@ -106,14 +98,11 @@ class CmsScraper:
             print('Scraper Error: scraping application page failed')
             return None
 
-        # Get page text + beautify
-        soup = BeautifulSoup(result.content, 'html.parser') #, parse_only=SoupStrainer('a', href=True))
-
         # Initialize Challenge CHLC
-        self.__challenge_chlc = self.__get_challenge_chlc(soup)
+        self.__challenge_chlc = utils.get_challenge_chlc(result)
 
         # Get application page url
-        application_endpoint = self.__get_application_endpoint(soup)
+        application_endpoint = utils.get_application_endpoint(result)
 
         return application_endpoint
 
@@ -124,7 +113,7 @@ class CmsScraper:
         """
         # Query application page
         result = self.__session.get(
-            f'{CMS_URL}{application_endpoint}',
+            f'{constants.CMS_URL}{application_endpoint}',
             cookies=cookies
         )
 
@@ -132,49 +121,9 @@ class CmsScraper:
         if not result.ok:
             print('Scraper Error: scraping application page failed')
             return None
-            
-        # Get page text + beautify
-        soup = BeautifulSoup(result.content, 'html.parser')
 
         # Initialize Application CHLC
-        self.__application_chlc = self.__get_challenge_chlc(soup)
+        self.__application_chlc = utils.get_challenge_chlc(result)
 
         # Initialize Github repository name
-        self.__git_repo = self.__get_git_repository(soup)
-
-    def __get_challenge_chlc(self, soup):
-        """
-        Get the value of the challenge CHLC that is located in a link
-        that contains SCW's base Jira url
-        """
-        JIRA_URL = 'https://securecodewarrior.atlassian.net/browse/'
-        return self.__get_value_from_link(soup, JIRA_URL)
-
-    def __get_git_repository(self, soup):
-        """
-        Get the value of the Github repository that is located in a link
-        that contains SCW's base Github url
-        """
-        GIT_URL = 'https://github.com/SCWContent/'
-        return self.__get_value_from_link(soup, GIT_URL)
-
-    def __get_value_from_link(self, soup, url_pattern):
-        """
-        Searches all links on page and returns the value after the url pattern in the href
-        """
-        links = soup.findAll('a', href=True)
-
-        for link in links:
-            href = link['href']
-            if (url_pattern in href):
-                return href.split(url_pattern)[1]
-
-    def __get_application_endpoint(self, soup):
-        """
-        Searches all links on the page for the applications/id/show url 
-        """
-        links = soup.findAll('a', href=True)
-        for link in links:
-            href = link['href']
-            if re.search('/show$', href):
-                return href
+        self.__git_repo = utils.get_git_repository(result)

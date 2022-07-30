@@ -1,9 +1,6 @@
-from api import (
-    check_chlrq_exists,
-    check_chlc_exists,
-)
+from src import api
 
-def isValidTicketNumber(ticket):
+def is_valid_ticket_number(ticket):
     """
     Validate ticket number input format
     """
@@ -16,7 +13,7 @@ def is_valid_chlrq(chlrq):
     isValid = False
 
     # Confirm chlrq is valid number and is a chlrq in Jira
-    if chlrq and isValidTicketNumber(chlrq) and check_chlrq_exists(chlrq):
+    if chlrq and is_valid_ticket_number(chlrq) and api.check_chlrq_exists(chlrq):
         isValid = True
 
     return isValid
@@ -28,7 +25,7 @@ def is_valid_chlc(chlc):
     isValid = False
 
     # Confirm chlc is valid number and is a chlc in Jira
-    if chlc and isValidTicketNumber(chlc) and check_chlc_exists(chlc):
+    if chlc and is_valid_ticket_number(chlc) and api.check_chlc_exists(chlc):
         isValid = True
 
     return isValid

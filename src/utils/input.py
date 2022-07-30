@@ -1,22 +1,11 @@
 import argparse
 from getpass import getpass
 
-from api import (
-    has_valid_credentials,
-)
-from constants import (
-    JIRA_API_EMAIL,
-    JIRA_API_KEY,
-    CMS_EMAIL,
-    CMS_PASSWORD
-)
+from src import api
+from src import constants
 from .validation import (
     is_valid_chlrq,
     is_valid_chlc,
-)
-
-from formatting import (
-    Colors
 )
 
 def parse_arguments():
@@ -71,26 +60,26 @@ def parse_arguments():
 
     return args
 
-def getCHLRQ():
+def get_chlrq():
     """
     Prompt user to input CHLRQ number. Validate format
     """
     # Prompt user for CHLRQ number
-    chlrq = input(f'Enter {Colors.OKCYAN}CHLRQ{Colors.ENDC} ticket number: {Colors.WHITE}')
+    chlrq = input(f'Enter {constants.OKCYAN}CHLRQ{constants.ENDC} ticket number: {constants.WHITE}')
 
-    print(Colors.ENDC, end='')
+    print(constants.ENDC, end='')
 
     # Check that user input chlrq is valid
     while not is_valid_chlrq(chlrq):
 
         # Alert user chlrq is invalid
-        print(f'{Colors.OKCYAN}CHLRQ-{chlrq}{Colors.ENDC} is not valid. Enter 2-4 digits.')
+        print(f'{constants.OKCYAN}CHLRQ-{chlrq}{constants.ENDC} is not valid. Enter 2-4 digits.')
 
         # Prompt user for CHLRQ number
-        chlrq = input(f'{Colors.ENDC}Enter {Colors.OKCYAN}CHLRQ{Colors.ENDC} ticket number: {Colors.WHITE}')
+        chlrq = input(f'{constants.ENDC}Enter {constants.OKCYAN}CHLRQ{constants.ENDC} ticket number: {constants.WHITE}')
 
         # Reset colors
-        print(Colors.ENDC, end='')
+        print(constants.ENDC, end='')
 
     return chlrq
 
@@ -99,75 +88,23 @@ def get_chlc():
     Prompt user to input CHLC number. Validate format
     """
     # Prompt user for CHLC number
-    chlc = input(f'Enter {Colors.HEADER}CHLC{Colors.ENDC} ticket number: {Colors.WHITE}')
+    chlc = input(f'Enter {constants.HEADER}CHLC{constants.ENDC} ticket number: {constants.WHITE}')
 
-    print(Colors.ENDC, end='')
+    print(constants.ENDC, end='')
 
     # Check that user input chlc is valid
     while not is_valid_chlc(chlc):
 
         # Alert user chlc is invalid
-        print(f'{Colors.HEADER}CHLC-{chlc}{Colors.ENDC} is not valid. Enter 2-4 digits')
+        print(f'{constants.HEADER}CHLC-{chlc}{constants.ENDC} is not valid. Enter 2-4 digits')
 
         # Prompt user for CHLRQ number
-        chlc = input(f'Enter {Colors.HEADER}CHLC{Colors.ENDC} ticket number: {Colors.WHITE}')
+        chlc = input(f'Enter {constants.HEADER}CHLC{constants.ENDC} ticket number: {constants.WHITE}')
 
         # Reset colors
-        print(Colors.ENDC, end='')
+        print(constants.ENDC, end='')
 
     return chlc
-
-def setupCredentials():
-    """
-    Setup credentials process. Get user input to change credentials in environment
-    """
-    # Set Defaults
-    api_email = JIRA_API_EMAIL
-    api_key = JIRA_API_KEY
-    cms_email = CMS_EMAIL
-    cms_password = CMS_PASSWORD
-
-    if api_email and api_key and cms_email and cms_password:
-        print('All credentials are setup')
-        reset_credentials = input('Would you like to reset change your credentials? (y/n) ')
-
-        if reset_credentials == 'y':
-            api_email = None
-            api_key = None
-            cms_email = None
-            cms_password = None
-        else:
-            exit(0)
-
-    # If jira email does not exist, prompt for it
-    while not api_email:
-        api_email = input("Enter Jira Email: ")
-
-    # If api key does not exist, prompt for it
-    while not api_key:
-        print('Get a Jira API key here: https://id.atlassian.com/manage-profile/security/api-tokens')
-        api_key = input("Enter Jira API key: ")
-
-    while not cms_email:
-        cms_email = input("Enter CMS Email: ")
-
-    while not cms_password:
-        print('Enter CMS Password:', end='')
-        cms_password = getpass()
-
-    # Write to env
-    with open(".env", "w") as f:
-        f.write(f'JIRA_API_EMAIL={api_email}\n')
-        f.write(f'JIRA_API_KEY={api_key}\n')
-        f.write(f'CMS_EMAIL={cms_email}\n')
-        f.write(f'CMS_PASSWORD={cms_password}\n')
-
-    # ADD VALIDATIONS FOR CMS CREDENTIALS
-    if has_valid_credentials(api_email, api_key):
-        print('Jira API Credentials are valid.')
-        print('Run program: ./bug-fix.py')
-
-    exit(0)
 
 def format_messages(messages):
     """

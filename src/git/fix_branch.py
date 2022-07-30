@@ -2,14 +2,8 @@ import subprocess
 import git
 import readline
 
-from formatting import (
-    Completer,
-    Colors
-)
-
-from constants import (
-    JIRA_FA_SECURE_BRANCH
-)
+from src.utils import Completer
+from src import constants
 
 def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug):
     """
@@ -31,28 +25,28 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
     readline.set_completer(Completer().get_list_completer(branches))
 
     # Prompt user for branch where the fix will be made
-    initial_branch = input(f'\nEnter branch where the fix will be made: {Colors.WHITE}')
+    initial_branch = input(f'\nEnter branch where the fix will be made: {constants.WHITE}')
 
-    print(Colors.ENDC, end='')
+    print(constants.ENDC, end='')
 
     # Check that user input is a valid branch
     while initial_branch not in branches:
 
         # Alert user branch name is invalid
-        print(f'{Colors.FAIL}\"{initial_branch}\" is not a valid branch name{Colors.ENDC}')
+        print(f'{constants.FAIL}\"{initial_branch}\" is not a valid branch name{constants.ENDC}')
 
         # Check if user entered "secure" on a minified app. Suggest minified secure branch
         if (not is_full_app) and initial_branch == JIRA_FA_SECURE_BRANCH:
             minified_secure_branches = getMinifiedSecureBranch(branches)
-            print(f'\nThis app is {Colors.OKCYAN}Minified{Colors.ENDC}, enter the correct secure branch: {Colors.HEADER}')
+            print(f'\nThis app is {constants.OKCYAN}Minified{constants.ENDC}, enter the correct secure branch: {constants.HEADER}')
             for branch in minified_secure_branches:
                 print(branch, end=' ')
-            print(Colors.ENDC)
+            print(constants.ENDC)
 
         # Prompt user for branch again
-        initial_branch = input(f'Enter branch where the fix will be made: {Colors.WHITE}')
+        initial_branch = input(f'Enter branch where the fix will be made: {constants.WHITE}')
 
-        print(Colors.ENDC, end='')
+        print(constants.ENDC, end='')
 
     # Disable tab completion
     readline.parse_and_bind('tab: self-insert')
@@ -61,7 +55,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
     repository.git.checkout(initial_branch)
 
     # Prompt user to make fix
-    print(f'{Colors.UNDERLINE}{Colors.OKGREEN}{Colors.BOLD}\nMake the fix in VS Code{Colors.ENDC}')
+    print(f'{constants.UNDERLINE}{constants.OKGREEN}{constants.BOLD}\nMake the fix in VS Code{constants.ENDC}')
 
     # Open VS Code to make fix
     subprocess.check_output(f'code {repository_dir}', shell=True)
@@ -69,9 +63,9 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
     # Continue until fix message is entered
     while not fix_message:
         # Prompt user to input fix message
-        fix_message = input(f'Enter description of fix: {Colors.WHITE}')
+        fix_message = input(f'Enter description of fix: {constants.WHITE}')
 
-        print(Colors.ENDC, end='')
+        print(constants.ENDC, end='')
 
     # Continue until a valid commit is successful
     while not successful_commit:
@@ -86,13 +80,13 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
 
         except git.exc.GitCommandError as e:
             if debug:
-                print(f'{Colors.FAIL}DEBUG: error=[{e}]')
+                print(f'{constants.FAIL}DEBUG: error=[{e}]')
             # Alert user that no change has been made
-            print(f'{Colors.ENDC}{Colors.FAIL}No Changes have been made, please make a fix before continuing')
-            print(f'Press {Colors.UNDERLINE}ctrl+s{Colors.ENDC}{Colors.FAIL} to confirm changes')
+            print(f'{constants.ENDC}{constants.FAIL}No Changes have been made, please make a fix before continuing')
+            print(f'Press {constants.UNDERLINE}ctrl+s{constants.ENDC}{constants.FAIL} to confirm changes')
 
             # Prompt user to press enter when fix is made
-            input(f'{Colors.UNDERLINE}{Colors.OKGREEN}{Colors.BOLD}\nPress [Enter] after fix{Colors.ENDC}')
+            input(f'{constants.UNDERLINE}{constants.OKGREEN}{constants.BOLD}\nPress [Enter] after fix{constants.ENDC}')
 
         else:
             successful_commit = True
