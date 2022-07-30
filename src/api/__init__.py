@@ -3,18 +3,8 @@ import requests
 import json
 import datetime
 from datetime import date
-
-from constants import (
-    JIRA_THOMAS_ACCT_ID,
-    JIRA_AUTH,
-    JIRA_REQUEST_HEADERS,
-    JIRA_TRANSITION_PLANNED,
-    JIRA_TRANSITION_IN_PROGRESS,
-)
-
-from formatting import (
-    Colors
-)
+import consts
+from format import Colors
 
 def has_valid_credentials(api_email=None, api_key=None):
     """
