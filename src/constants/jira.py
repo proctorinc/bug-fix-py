@@ -40,3 +40,6 @@ JIRA_TRANSITION_PLANNED = 281
 
 # Jira id for transitioning to "in progress" in workflow
 JIRA_TRANSITION_IN_PROGRESS = 291
+
+# SCW base URL for ira
+JIRA_URL = 'https://securecodewarrior.atlassian.com'

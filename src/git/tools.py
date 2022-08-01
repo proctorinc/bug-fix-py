@@ -3,7 +3,7 @@ import os
 import subprocess
 from src import constants
 
-def filter_branches(remote_refs):
+def filter_branches(remote_refs): # only used here
     """
     Parse branches from remote refs and remove unwanted branches
     """
@@ -21,53 +21,18 @@ def filter_branches(remote_refs):
 
     return filtered_branches
 
-def get_repository_dir(repo_name):
-    """
-    Returns absolute url for repository folder
-    """
-    return os.path.join(JIRA_REPO_DIR, repo_name)
-
-def clone_repository(repo_name):
-    """
-    Clone repository and return valid instance. Handle errors for invalid repository
-    """
-    git_url = f'{JIRA_SCW_GIT_URL}/{repo_name}.git'
-    repository_dir = get_repository_dir(repo_name)
-
-    print(f'Cloning Repository...', end='')
-
-    # If repo folder already exists, remove it
-    if os.path.isdir(repository_dir):
-        
-        # Alert user of repo existing
-        print(f'\nRepository cached. Resetting...', end='')
-
-        # Delete repository
-        subprocess.check_output(f'sudo rm -r {repository_dir}', shell=True)
-    try:
-        # Clone repository
-        git.Repo.clone_from(git_url, repository_dir)
-    
-    except git.exc.GitError:
-        print(f'{constants.FAIL}\'{repo_name}\' is not a valid repository{constants.ENDC}')
-        exit(1)
-
-    else:
-        print(f'{constants.OKGREEN} [Done]{constants.ENDC}')
-
-    # Get repository
-    repo = git.Repo(repository_dir)
-
-    return repo
-
-def get_branches(repository):
+def get_branches(repository): # used in bugfix main
     """
     Gets branches from a github repository. Filters out unwanted branches
     """
     # Get all branches
     return filter_branches(repository.remote().refs)
 
-def isFullApp(repository):
+#
+# Need a better implementation of this using the scraper. This method is not reliable
+#
+
+def isFullApp(repository): # used in bugfix main
     """
     Returns true if repository is a full app, false if it is minified.
     Full app determined if branches contain "secure" branch
@@ -81,7 +46,11 @@ def isFullApp(repository):
     
     return is_full_app
 
-def did_commit_add_or_remove_lines(repository):
+#
+# This method does not work at all
+#
+
+def did_commit_add_or_remove_lines(repository): # used in bugfix main
     """
     Check if the commit added or removed any lines. Return true if lines were added or removed
     """

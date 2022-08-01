@@ -1,10 +1,14 @@
 import subprocess
 import webbrowser
 from src.scraper import CmsScraper
+from src.git import GitRepository
 from src import git, utils, api, constants
 
+def is_valid_cid(challenge_id):
+    return True
+
 # Main function runs bug-fix program
-def main():
+def run(auto_mode, test_mode):
 
     # Parse commandline arguments
     args = utils.parse_arguments()
@@ -21,14 +25,18 @@ def main():
     # Track whether chunks need to be fixed or not
     fix_chunks_required = False
 
-    # define variables from arguments
-    test_mode = args.test
-    only_transition_mode = args.transition
-    is_api_enabled = args.api
-    debug = args.debug
+    # # define variables from arguments
+    # test_mode = args.test
+    # only_transition_mode = args.transition
+    # auto_mode = args.api
+    # debug = args.debug
+
+    #
+    # Move this to new validate credentials method that returns true/false and prints out what is not present
+    #
 
     # Check if environment variables do not exist
-    if not test_mode and is_api_enabled and (not constants.JIRA_API_EMAIL or not constants.JIRA_API_KEY or not constants.CMS_EMAIL or not constants.CMS_PASSWORD):
+    if not test_mode and auto_mode and (not constants.JIRA_API_EMAIL or not constants.JIRA_API_KEY or not constants.CMS_EMAIL or not constants.CMS_PASSWORD):
         print(f'{constants.FAIL}Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables{constants.ENDC}')
 
         # Notify that no email is present
@@ -50,32 +58,60 @@ def main():
         exit(1)
 
     # Check if API credentials are valid, otherwise exit program
-    if not test_mode and is_api_enabled and not api.has_valid_credentials():
+    if not test_mode and auto_mode and not api.has_valid_credentials():
         print(f'{constants.FAIL}Invalid API credentials. Run with --setup to change credentials{constants.ENDC}')
         exit(1)
 
+    #
+    # Choice between starting with CID and application? 
+    #
+#####GIT#REPOSITORY#######################################################
+
+    # # This will come from the webscraper
+    # repo_name = 'opentasks'
+
+    # try:
+    #     repository = GitRepository(repo_name)
+    # except ValueError as e:
+    #     print(e)
+    #     exit(1)
+
+#####SCRAPER##############################################################
     challenge_id = input('Enter Challenge ID: ')
-    scraper = CmsScraper(challenge_id)
+
+    while not is_valid_cid(challenge_id):
+        print('Invalid Challenge ID. Try again')
+        challenge_id = input('Enter Challenge ID: ')
+
+    # Validate that all credentials work before scraping
+    # Handle errors with CmsScraper better. Try except blocks?
+    try:
+        scraper = CmsScraper(challenge_id)
+    except ValueError as e:
+        print(e)
+        exit(1)
 
     print('App CHLC:', scraper.get_application_chlc())
     print('Chall CHLC:', scraper.get_challenge_chlc())
     print('Git Repo:', scraper.get_git_repo())
     exit(0)
+##########################################################################
 
-    # Check if push is disabled
-    if test_mode:
-        print(f'{constants.HEADER}######## TEST MODE - GIT PUSH & API CALLS ARE DISABLED{constants.ENDC}')
 
-    if is_api_enabled:
-        print(f'{constants.HEADER}######## API Auto transitioning Jira tickets enabled{constants.ENDC}')
-    else:
-        print(f'{constants.HEADER}######## API disabled{constants.ENDC}')
+    # # Check if push is disabled
+    # if test_mode:
+    #     print(f'{constants.HEADER}######## TEST MODE - GIT PUSH & API CALLS ARE DISABLED{constants.ENDC}')
 
-    # Get all repository information
-    repository = clone_repository(repo_name)
-    branches = get_branches(repository)
-    is_full_app = isFullApp(repository)
-    repository_dir = get_repository_dir(repo_name)
+    # if auto_mode:
+    #     print(f'{constants.HEADER}######## API Auto transitioning Jira tickets enabled{constants.ENDC}')
+    # else:
+    #     print(f'{constants.HEADER}######## API disabled{constants.ENDC}')
+
+    # # Get all repository information
+    # repository = clone_repository(repo_name)
+    # branches = get_branches(repository)
+    # is_full_app = isFullApp(repository)
+    # repository_dir = get_repository_dir(repo_name)
 
     # Print Details about the repository
     print(f'Repo:{constants.OKCYAN} {repo_name}{constants.ENDC}')
@@ -86,13 +122,19 @@ def main():
     else:
         print(f'Type: {constants.OKCYAN}Minified App{constants.ENDC}')
 
-    if not is_api_enabled:
+    if not auto_mode:
         print(f'{constants.WARNING}\n1. Transition CHLRQ to Planned (choose this month)')
         print('2. Transition CHLRQ to In Progress')
         print(f'3. Locate the branch to make the fix on (if secure, choose secure){constants.ENDC}')
 
     # Continue to fix branches until user is done
     while not done_fixing:
+
+        ###########
+        #
+        # Allow user to stop fixing branch at anytime
+        #
+        ###########
 
         # Fix the branch and retrieve the name and fix explanation
         fix_message, fixed_branch = fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug)
@@ -138,7 +180,7 @@ def main():
         subprocess.check_output(f'git -C {repository_dir} push --all', shell=True)
 
     # If api is enabled, transition tickets through the jira api
-    if is_api_enabled:
+    if auto_mode:
         # If parameter not entered, prompt user for CHRLQ
         if not chlrq:
             chlrq = utils.get_chlrq()

@@ -13,7 +13,7 @@ def get_challenge_chlc(result):
     that contains SCW's base Jira url
     """
     soup = get_soup(result)
-    return self.__get_value_from_link(soup, constants.JIRA_URL)
+    return get_value_from_link(soup, constants.JIRA_URL)
 
 def get_git_repository(result):
     """
@@ -21,7 +21,7 @@ def get_git_repository(result):
     that contains SCW's base Github url
     """
     soup = get_soup(result)
-    return self.__get_value_from_link(soup, constants.GIT_URL)
+    return get_value_from_link(soup, constants.GIT_URL)
 
 def get_value_from_link(result, url_pattern):
     """

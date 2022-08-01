@@ -1,7 +1,7 @@
 # Different file to run setup
 from src import constants, api
 
-def main():
+def run():
     """
     Setup credentials process. Get user input to change credentials in environment
     """

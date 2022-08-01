@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from src import constants
+from . import utils
 
 class CmsScraper:
     """
@@ -49,6 +50,8 @@ class CmsScraper:
         # Get csrf token and cookies
         result = self.__session.get(constants.CMS_LOGIN_URL)
 
+        print(result)
+
         # Check if result was successful
         if not result.ok:
             print('Scraper Error: fetching CSRF token failed')
@@ -62,25 +65,33 @@ class CmsScraper:
         """
         Login to the CMS using the CSRF token and return cookies for scraping
         """
+
+        print(constants.CMS_EMAIL)
+        print(constants.CMS_PASSWORD)
+
         # Create the login payload
         payload = {
-            '_username': constants.CMS_EMAIL,
-            '_password': constants.CMS_PASSWORD,
+            # '_username': constants.CMS_EMAIL,
+            # '_password': constants.CMS_PASSWORD,
+            '_username': 'ok',
+            '_password': 'banana',
             '_csrf_token': csrf_token
         }
 
         # Login to CMS
-        login_result = self.__session.post(
+        result = self.__session.post(
             constants.CMS_LOGIN_URL,
             data=payload,
         )
 
+        print(result.status_code)
+
         # Check if login was successful
-        if not login_result.ok:
+        if not result.ok:
             print('Scraper Error: logging into CMS failed')
             return None
         
-        return login_result.cookies
+        return result.cookies
 
     def __scrape_challenge_screen(self, cookies):
         """
@@ -92,6 +103,9 @@ class CmsScraper:
             f'{constants.CMS_SEARCH_URL}?q={self.__challenge_id}',
             cookies=cookies
         )
+
+        print('Scraping challenge screen')
+        print(result)
 
         # Check if searching for challenge was successful
         if not result.ok:
@@ -116,6 +130,8 @@ class CmsScraper:
             f'{constants.CMS_URL}{application_endpoint}',
             cookies=cookies
         )
+
+        print(result)
 
         # Check if requesting application page was successful
         if not result.ok:
