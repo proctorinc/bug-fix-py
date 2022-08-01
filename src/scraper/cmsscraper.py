@@ -1,9 +1,8 @@
-from bs4 import BeautifulSoup
 import requests
-import re
-from src import constants
+from src import constants, exceptions
 from . import utils
 
+# todo: check for invalid challenge id input
 class CmsScraper:
     """
     Simple webscraper that scrapes data from the CMS
@@ -50,12 +49,9 @@ class CmsScraper:
         # Get csrf token and cookies
         result = self.__session.get(constants.CMS_LOGIN_URL)
 
-        print(result)
-
         # Check if result was successful
         if not result.ok:
-            print('Scraper Error: fetching CSRF token failed')
-            return None
+            raise exceptions.RequestFailedError('Scraper Error: Failed to fetch CSRF token')
 
         csrf_token = utils.parse_csrf_token(result)
 
@@ -65,16 +61,10 @@ class CmsScraper:
         """
         Login to the CMS using the CSRF token and return cookies for scraping
         """
-
-        print(constants.CMS_EMAIL)
-        print(constants.CMS_PASSWORD)
-
         # Create the login payload
         payload = {
-            # '_username': constants.CMS_EMAIL,
-            # '_password': constants.CMS_PASSWORD,
-            '_username': 'ok',
-            '_password': 'banana',
+            '_username': constants.CMS_EMAIL,
+            '_password': constants.CMS_PASSWORD,
             '_csrf_token': csrf_token
         }
 
@@ -84,12 +74,12 @@ class CmsScraper:
             data=payload,
         )
 
-        print(result.status_code)
+        # Check if login failed
+        login_failed = utils.did_login_fail(result)
 
         # Check if login was successful
-        if not result.ok:
-            print('Scraper Error: logging into CMS failed')
-            return None
+        if login_failed:
+            raise exceptions.RequestFailedError('Scraper Error: Failed to login to CMS. Incorrect credentials')
         
         return result.cookies
 
@@ -98,19 +88,14 @@ class CmsScraper:
         Get request to search for challenge id. Scrape challenge screen.
         Retrieve challenge CHLC and application screen endpoint.
         """
-        # Query for CID
         result = self.__session.get(
             f'{constants.CMS_SEARCH_URL}?q={self.__challenge_id}',
             cookies=cookies
         )
 
-        print('Scraping challenge screen')
-        print(result)
-
         # Check if searching for challenge was successful
-        if not result.ok:
-            print('Scraper Error: scraping application page failed')
-            return None
+        if not result.content:
+            raise exceptions.RequestFailedError('Scraper Error: scraping application page failed')
 
         # Initialize Challenge CHLC
         self.__challenge_chlc = utils.get_challenge_chlc(result)
@@ -131,12 +116,9 @@ class CmsScraper:
             cookies=cookies
         )
 
-        print(result)
-
         # Check if requesting application page was successful
         if not result.ok:
-            print('Scraper Error: scraping application page failed')
-            return None
+            raise exceptions.RequestFailedError('Scraper Error: scraping application page failed')
 
         # Initialize Application CHLC
         self.__application_chlc = utils.get_challenge_chlc(result)

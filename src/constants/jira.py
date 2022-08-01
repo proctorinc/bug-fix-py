@@ -17,9 +17,6 @@ JIRA_API_KEY = os.getenv('JIRA_API_KEY')
 # Create authentication object for API calls
 JIRA_AUTH = HTTPBasicAuth(JIRA_API_EMAIL, JIRA_API_KEY)
 
-# Directory to where the repositories exist
-JIRA_REPO_DIR = '../repos/'
-
 # Branches to ignore
 JIRA_IGNORE_BRANCHES = {'HEAD', 'master', 'review', 'main', 'temp' }
 
@@ -41,5 +38,5 @@ JIRA_TRANSITION_PLANNED = 281
 # Jira id for transitioning to "in progress" in workflow
 JIRA_TRANSITION_IN_PROGRESS = 291
 
-# SCW base URL for ira
-JIRA_URL = 'https://securecodewarrior.atlassian.com'
+# SCW base URL for Jira
+JIRA_SCW_BROWSE_URL = 'https://securecodewarrior.atlassian.net/browse/'

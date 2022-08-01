@@ -2,16 +2,13 @@ import subprocess
 import webbrowser
 from src.scraper import CmsScraper
 from src.git import GitRepository
-from src import git, utils, api, constants
+from src import git, utils, api, constants, exceptions
 
 def is_valid_cid(challenge_id):
     return True
 
 # Main function runs bug-fix program
 def run(auto_mode, test_mode):
-
-    # Parse commandline arguments
-    args = utils.parse_arguments()
 
     # Default user is not done fixing branches
     done_fixing = False
@@ -25,16 +22,9 @@ def run(auto_mode, test_mode):
     # Track whether chunks need to be fixed or not
     fix_chunks_required = False
 
-    # # define variables from arguments
-    # test_mode = args.test
-    # only_transition_mode = args.transition
-    # auto_mode = args.api
-    # debug = args.debug
-
     #
     # Move this to new validate credentials method that returns true/false and prints out what is not present
     #
-
     # Check if environment variables do not exist
     if not test_mode and auto_mode and (not constants.JIRA_API_EMAIL or not constants.JIRA_API_KEY or not constants.CMS_EMAIL or not constants.CMS_PASSWORD):
         print(f'{constants.FAIL}Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables{constants.ENDC}')
@@ -65,16 +55,6 @@ def run(auto_mode, test_mode):
     #
     # Choice between starting with CID and application? 
     #
-#####GIT#REPOSITORY#######################################################
-
-    # # This will come from the webscraper
-    # repo_name = 'opentasks'
-
-    # try:
-    #     repository = GitRepository(repo_name)
-    # except ValueError as e:
-    #     print(e)
-    #     exit(1)
 
 #####SCRAPER##############################################################
     challenge_id = input('Enter Challenge ID: ')
@@ -90,11 +70,24 @@ def run(auto_mode, test_mode):
     except ValueError as e:
         print(e)
         exit(1)
+    except exceptions.RequestFailedError as e:
+        print(e)
+        exit(1)
 
     print('App CHLC:', scraper.get_application_chlc())
     print('Chall CHLC:', scraper.get_challenge_chlc())
     print('Git Repo:', scraper.get_git_repo())
-    exit(0)
+
+    repo_name = scraper.get_git_repo()
+
+#####GIT#REPOSITORY#######################################################
+
+    try:
+        repository = GitRepository(repo_name)
+    except ValueError as e:
+        print(e)
+        exit(1)
+
 ##########################################################################
 
 
@@ -115,9 +108,9 @@ def run(auto_mode, test_mode):
 
     # Print Details about the repository
     print(f'Repo:{constants.OKCYAN} {repo_name}{constants.ENDC}')
-    print(f'Branches:{constants.OKCYAN} {len(branches)}{constants.ENDC}')
+    print(f'Branches:{constants.OKCYAN} {repository.get_num_branches()}{constants.ENDC}')
 
-    if is_full_app:
+    if repository.get_is_full_app():
         print(f'Type: {constants.OKCYAN}Full App{constants.ENDC}')
     else:
         print(f'Type: {constants.OKCYAN}Minified App{constants.ENDC}')

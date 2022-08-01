@@ -1,6 +1,3 @@
-import git
-import os
-import subprocess
 from src import constants
 
 def filter_branches(remote_refs): # only used here
@@ -16,12 +13,12 @@ def filter_branches(remote_refs): # only used here
         branch = refs.name.split("origin/",1)[1]
 
         # Filter branches
-        if branch not in JIRA_IGNORE_BRANCHES:
+        if branch not in constants.JIRA_IGNORE_BRANCHES:
             filtered_branches.append(branch)
 
     return filtered_branches
 
-def get_branches(repository): # used in bugfix main
+def retrieve_branches(repository): # used in bugfix main
     """
     Gets branches from a github repository. Filters out unwanted branches
     """
@@ -32,16 +29,15 @@ def get_branches(repository): # used in bugfix main
 # Need a better implementation of this using the scraper. This method is not reliable
 #
 
-def isFullApp(repository): # used in bugfix main
+def is_full_app(branches): # used in bugfix main
     """
     Returns true if repository is a full app, false if it is minified.
     Full app determined if branches contain "secure" branch
     """
     is_full_app = False
-    branches = get_branches(repository)
 
     # If full app branch exists, repo is a full app, otherwise it is minified
-    if JIRA_FA_SECURE_BRANCH in branches:
+    if constants.JIRA_FA_SECURE_BRANCH in branches:
         is_full_app = True
     
     return is_full_app

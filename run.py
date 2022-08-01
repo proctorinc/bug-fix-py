@@ -43,9 +43,8 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
-    if len(sys.argv) > 1 and not (args.test and args.auto):
+    if len(sys.argv) > 2 and not (args.test and args.auto):
         parser.error('Multiple flags cannot be enabled at the same time')
-        return
 
     if args.setup:
         setup_credentials.run()

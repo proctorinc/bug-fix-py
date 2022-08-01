@@ -2,24 +2,22 @@ import git
 import os
 import subprocess
 from src import constants
+from . import utils
 
 class GitRepository:
     """
     Class wrapper around GitPython for git repository functionality 
     """
     def __init__(self, repo_name):
-        print('Git Repo initialized')
-        # self.__repo_name = repo_name
         self.__repository = self.__clone_repository(repo_name)
-        # self.__repository_dir = get_repository_dir(repo_name)
-        self.__branches = get_branches()
-        self.__is_full_app = isFullApp()
+        self.__branches = utils.retrieve_branches(self.__repository)
+        self.__is_full_app = utils.is_full_app(self.__branches)
 
     def get_repository(self):
         return self.__repository
 
-    def get_branches(self):
-        return self.__branches
+    def get_num_branches(self):
+        return len(self.__branches)
 
     def get_is_full_app(self):
         return self.__is_full_app
@@ -28,10 +26,7 @@ class GitRepository:
         """
         Returns absolute url for repository folder
         """
-        #
-        # SHOULD BE GIT_REPO_DIR
-        #
-        return os.path.join(constants.JIRA_REPO_DIR, repo_name)
+        return os.path.join(constants.GIT_REPO_DIR, repo_name)
         
     def __clone_repository(self, repo_name):
         """
@@ -60,7 +55,7 @@ class GitRepository:
         else:
             print(f'{constants.OKGREEN} [Done]{constants.ENDC}')
 
-        # Get repository
+        # Create repository object
         repo = git.Repo(repository_dir)
 
         return repo
