@@ -33,8 +33,11 @@ def main():
     parser.add_argument('--test', action='store_true',
         help='Enable testing mode. Disabled pushing to git repository')
 
-    # Required repository positional argument
+    # Repository positional argument
     parser.add_argument('--repo', type=str, help='Enter repo name to run in repo mode. Opens repo in VS Code')
+
+    # Challenge ID positional argument
+    parser.add_argument('--cid', type=str, help='Enter challenge id of challenge to bug fix')
 
     # Auto transitioning on switch
     # parser.add_argument('--debug', action='store_true',
