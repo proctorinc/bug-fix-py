@@ -29,3 +29,9 @@ def is_valid_chlc(chlc):
         isValid = True
 
     return isValid
+
+def is_valid_cid(challenge_id):
+    """
+    Check whether the challenge id is valid or not
+    """
+    return True

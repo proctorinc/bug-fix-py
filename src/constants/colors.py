@@ -8,3 +8,15 @@ ENDC = '\033[0m'
 BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 WHITE = '\033[1;37m'
+COLORS = [
+    HEADER,
+    OKBLUE,
+    OKCYAN,
+    OKGREEN,
+    WARNING,
+    FAIL,
+    ENDC,
+    BOLD,
+    UNDERLINE,
+    WHITE
+]

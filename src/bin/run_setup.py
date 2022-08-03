@@ -1,7 +1,7 @@
-# Different file to run setup
+from getpass import getpass
 from src import constants, api
 
-def run():
+def main():
     """
     Setup credentials process. Get user input to change credentials in environment
     """
@@ -13,7 +13,7 @@ def run():
 
     if api_email and api_key and cms_email and cms_password:
         print('All credentials are setup')
-        reset_credentials = input('Would you like to reset change your credentials? (y/n) ')
+        reset_credentials = input('Would you like to reset your credentials? (y/n) ')
 
         if reset_credentials == 'y':
             api_email = None
@@ -32,12 +32,13 @@ def run():
         print('Get a Jira API key here: https://id.atlassian.com/manage-profile/security/api-tokens')
         api_key = input("Enter Jira API key: ")
 
+    # If CMS email address does not exist, prompt for it
     while not cms_email:
         cms_email = input("Enter CMS Email: ")
 
+    # If CMS password does not exist, prompt for it
     while not cms_password:
-        print('Enter CMS Password:', end='')
-        cms_password = getpass()
+        cms_password = getpass(prompt='Enter CMS Password: ')
 
     # Write to env
     with open(".env", "w") as f:
@@ -46,9 +47,9 @@ def run():
         f.write(f'CMS_EMAIL={cms_email}\n')
         f.write(f'CMS_PASSWORD={cms_password}\n')
 
-    # ADD VALIDATIONS FOR CMS CREDENTIALS
+    # TODO: ADD VALIDATIONS FOR CMS CREDENTIALS
     if api.has_valid_credentials(api_email, api_key):
         print('Jira API Credentials are valid.')
-        print('Run program: ./bug-fix.py')
+        print('Run program: ./run.py')
 
     exit(0)

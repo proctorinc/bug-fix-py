@@ -1,6 +1,6 @@
 from src import utils, constants
 
-def run():
+def main():
     # If parameter not entered, prompt user for CHRLQ
     chlrq = utils.get_chlrq()
 

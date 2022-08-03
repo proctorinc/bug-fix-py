@@ -11,4 +11,3 @@ install requirements.txt
 python3 bugfix.py [-r][--api][--transition][--setup][--test][...]
 
 # Version History
-

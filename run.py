@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
-
 import sys
 import argparse
-from src import (
-    bugfix,
-    setup_credentials,
-    transition,
-    revert
-)
+from src import bin, constants
 
 def main():
     # Instantiate the parser
@@ -49,14 +43,16 @@ def main():
     if len(sys.argv) > 2 and not (args.test and args.auto):
         parser.error('Multiple flags cannot be enabled at the same time')
 
+    # Check if push is disabled
+
     if args.setup:
-        setup_credentials.run()
+        bin.run_setup.main()
     elif args.transition:
-        transition.run()
+        bin.run_transition.main()
     elif args.revert:
-        revert.run()
+        bin.run_revert.main()
     else:
-        bugfix.run(args.auto, args.test)
+        bin.run_bugfix.main(args.auto, args.test)
 
 if __name__ == '__main__':
     main()

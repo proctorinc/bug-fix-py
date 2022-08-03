@@ -3,7 +3,7 @@ from getpass import getpass
 
 from src import api
 from src import constants
-from .validation import (
+from .validate import (
     is_valid_chlrq,
     is_valid_chlc,
 )
