@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import sys
 import argparse
-from src import bin, constants
+import os
+from src import bin
+from src.constants import colors
+from src.utils import Text
 
 def main():
     # Instantiate the parser
@@ -43,16 +46,24 @@ def main():
     if len(sys.argv) > 2 and not (args.test and args.auto):
         parser.error('Multiple flags cannot be enabled at the same time')
 
-    # Check if push is disabled
-
+    # Run program mode based off of flags input
     if args.setup:
         bin.run_setup.main()
     elif args.transition:
         bin.run_transition.main()
     elif args.revert:
         bin.run_revert.main()
+    elif args.auto:
+        bin.run_bugfix.main(args.test)
     else:
-        bin.run_bugfix.main(args.auto, args.test)
+        bin.run_bugfix_manual.main(args.test)
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        Text('\nExited program.', colors.FAIL).display()
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)

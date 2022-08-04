@@ -4,6 +4,7 @@ import json
 import datetime
 from datetime import date
 from src import constants
+from src.constants import colors
 
 def has_valid_credentials(api_email=None, api_key=None):
     """
@@ -80,7 +81,7 @@ def transition_issue_to_planned(chlrq, fixVersionID):
     Transition CHLRQ to Planned w/ fix version
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions'
-    data = {"transition": {"id": JIRA_TRANSITION_PLANNED}, "update": {"fixVersions": [{"add": {"id": fixVersionID}}]}}
+    data = {"transition": {"id": constants.JIRA_TRANSITION_PLANNED}, "update": {"fixVersions": [{"add": {"id": fixVersionID}}]}}
     response = requests.post(url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data)
 
     return response
@@ -91,7 +92,7 @@ def transition_issue_to_in_progress(chlrq):
     Transition CHLRQ to In Progress
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions'
-    data = {"transition":{"id":JIRA_TRANSITION_IN_PROGRESS}}
+    data = {"transition":{"id":constants.JIRA_TRANSITION_IN_PROGRESS}}
     response = requests.post(url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data)
 
     return response
@@ -110,7 +111,7 @@ def get_creation_chlc(chlc):
         json_response = json.loads(response.text)
 
         if 'errorMessages' in json_response:
-            print(f'{constants.FAIL}Error getting creation CHLC{constants.ENDC}')
+            print(f'{colors.FAIL}Error getting creation CHLC{colors.ENDC}')
     
     return json_response['fields']['parent']['key']
 
@@ -175,7 +176,7 @@ def edit_issue_details(chlc, chlrq):
     Jira edit query. Changes CHLC's assignee to Thomas and adds comment
     """
     url = f'https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}'
-    data = {'fields':{'assignee':{'accountId':JIRA_THOMAS_ACCT_ID}}, 'update':{'comment':[{'add':{'body':f'CHLRQ-{chlrq}'}}]}}
+    data = {'fields':{'assignee':{'accountId':constants.JIRA_THOMAS_ACCT_ID}}, 'update':{'comment':[{'add':{'body':f'CHLRQ-{chlrq}'}}]}}
     response = requests.put(url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data)
 
     return response

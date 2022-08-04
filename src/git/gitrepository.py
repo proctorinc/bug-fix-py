@@ -2,6 +2,7 @@ import git
 import os
 import subprocess
 from src import constants
+from src.constants import colors
 from . import utils
 
 class GitRepository:
@@ -104,10 +105,10 @@ class GitRepository:
             git.Repo.clone_from(git_url, repository_dir)
         
         except git.exc.GitError:
-            raise ValueError(f'{constants.FAIL}Either \'{repo_name}\' is not a valid repository\nor you do not have the correct rights to access this repo{constants.ENDC}')
+            raise ValueError(f'{colors.FAIL}Either \'{repo_name}\' is not a valid repository\nor you do not have the correct rights to access this repo{colors.ENDC}')
 
         else:
-            print(f'{constants.OKGREEN} [Done]{constants.ENDC}')
+            print(f'{colors.OKGREEN} [Done]{colors.ENDC}')
 
         # Create repository object
         repo = git.Repo(repository_dir)
@@ -166,9 +167,9 @@ class GitRepository:
                 did_cherrypick = True
 
             # Prompt user to fix another branch
-            fix_branch = input(f'\nFix another branch? (y/{constants.BOLD}{constants.WHITE}N{constants.ENDC}){constants.ENDC}: {constants.WHITE}')
+            fix_branch = input(f'\nFix another branch? (y/{colors.BOLD}{colors.WHITE}N{colors.ENDC}){colors.ENDC}: {colors.WHITE}')
 
-            print(constants.ENDC, end='')
+            print(colors.ENDC, end='')
 
             # If not yes, user is done fixing
             if fix_branch != 'y':

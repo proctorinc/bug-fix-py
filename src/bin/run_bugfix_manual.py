@@ -1,7 +1,6 @@
 import webbrowser
-from src.scraper import CmsScraper
 from src.git import GitRepository
-from src import utils, api, constants, exceptions
+from src import utils
 from src.constants import instructions, headers, colors
 from src.utils import Text
 
