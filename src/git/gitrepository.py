@@ -90,13 +90,8 @@ class GitRepository:
         git_url = f'{constants.JIRA_SCW_GIT_URL}/{repo_name}.git'
         repository_dir = self.__get_repository_dir(repo_name)
 
-        print(f'Cloning Repository...', end='')
-
         # If repo folder already exists, remove it
         if os.path.isdir(repository_dir):
-            
-            # Alert user of repo existing
-            print(f'\nRepository cached. Resetting...', end='')
 
             # Delete repository
             subprocess.check_output(f'sudo rm -r {repository_dir}', shell=True)
@@ -106,9 +101,6 @@ class GitRepository:
         
         except git.exc.GitError:
             raise ValueError(f'{colors.FAIL}Either \'{repo_name}\' is not a valid repository\nor you do not have the correct rights to access this repo{colors.ENDC}')
-
-        else:
-            print(f'{colors.OKGREEN} [Done]{colors.ENDC}')
 
         # Create repository object
         repo = git.Repo(repository_dir)
@@ -123,14 +115,8 @@ class GitRepository:
         # Default user is not done fixing branches
         done_fixing = False
 
-        # Set default cherrypick has not occurred
-        did_cherrypick = False
-
         # Hold fix messages for all branches in list
         fix_messages = []
-
-        # Track whether chunks need to be fixed or not
-        fix_chunks_required = False
 
         # Continue to fix branches until user is done
         while not done_fixing:
@@ -150,10 +136,6 @@ class GitRepository:
             # Add message to list of messages
             fix_messages.append(fix_message)
 
-            # Keep track of chunks needing to be fixed
-            if utils.did_commit_add_or_remove_lines(self.__repository):
-                fix_chunks_required = True
-
             # If full app and fix was on the secure branch, cherry-pick branches
             if self.__is_full_app and fixed_branch == constants.JIRA_FA_SECURE_BRANCH:
 
@@ -164,7 +146,7 @@ class GitRepository:
                 utils.cherrypick(self.__repository_dir, self.__branches, commit_id)
 
                 # Confirm that cherrypick occurred
-                did_cherrypick = True
+                self.__did_cherrypick = True
 
             # Prompt user to fix another branch
             fix_branch = input(f'\nFix another branch? (y/{colors.BOLD}{colors.WHITE}N{colors.ENDC}){colors.ENDC}: {colors.WHITE}')

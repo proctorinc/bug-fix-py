@@ -2,9 +2,9 @@
 import sys
 import argparse
 import os
-from src import bin
+from src import bin, utils
 from src.constants import colors
-from src.utils import Text
+from src.utils import Text, validate
 
 def main():
     # Instantiate the parser
@@ -46,6 +46,12 @@ def main():
     if len(sys.argv) > 2 and not (args.test and args.auto):
         parser.error('Multiple flags cannot be enabled at the same time')
 
+    #
+    #
+    # More validation checks for arguments
+    #
+    #
+
     # Run program mode based off of flags input
     if args.setup:
         bin.run_setup.main()
@@ -54,8 +60,12 @@ def main():
     elif args.revert:
         bin.run_revert.main()
     elif args.auto:
+        if not args.test and not validate.has_credentials():
+            utils.print_missing_credentials()
         bin.run_bugfix.main(args.test)
     else:
+        if not args.test and not validate.has_credentials():
+            utils.print_missing_credentials()
         bin.run_bugfix_manual.main(args.test)
 
 if __name__ == '__main__':

@@ -1,8 +1,5 @@
 from src.constants import colors
-from .validate import (
-    is_valid_chlrq,
-    is_valid_chlc,
-)
+from . import validate
 
 def get_chlrq():
     """
@@ -14,7 +11,7 @@ def get_chlrq():
     print(colors.ENDC, end='')
 
     # Check that user input chlrq is valid
-    while not is_valid_chlrq(chlrq):
+    while not validate.is_valid_chlrq(chlrq):
 
         # Alert user chlrq is invalid
         print(f'{colors.OKCYAN}CHLRQ-{chlrq}{colors.ENDC} is not valid. Enter 2-4 digits.')
@@ -37,7 +34,7 @@ def get_chlc():
     print(colors.ENDC, end='')
 
     # Check that user input chlc is valid
-    while not is_valid_chlc(chlc):
+    while not validate.is_valid_chlc(chlc):
 
         # Alert user chlc is invalid
         print(f'{colors.HEADER}CHLC-{chlc}{colors.ENDC} is not valid. Enter 2-4 digits')

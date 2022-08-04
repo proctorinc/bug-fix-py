@@ -1,8 +1,8 @@
 from src.scraper import CmsScraper
 from src.git import GitRepository
-from src import utils, api, constants, exceptions
+from src import utils, api, exceptions
 from src.constants import colors, headers, instructions
-from src.utils import Text
+from src.utils import Text, validate
 
 # Main function runs bug-fix program
 def main(test_mode):
@@ -15,34 +15,6 @@ def main(test_mode):
     if test_mode:
         print(Text(headers.TEST_MODE, colors.HEADER))
 
-    #
-    # Move this to new validate credentials method that returns true/false and prints out what is not present
-    #
-    # Check if environment variables do not exist
-    if not test_mode and (not constants.JIRA_API_EMAIL
-                        or not constants.JIRA_API_KEY
-                        or not constants.CMS_EMAIL
-                        or not constants.CMS_PASSWORD):
-        Text('Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables', colors.FAIL).display()
-
-        # Notify that no email is present
-        if not constants.JIRA_API_EMAIL:
-            Text('No API email present', colors.FAIL).display()
-
-        # Notify that no api key is present
-        if not constants.JIRA_API_KEY:
-            Text('No API key present', colors.FAIL).display()
-
-        # Notify that no email is present
-        if not constants.CMS_EMAIL:
-            Text('No CMS email present', colors.FAIL).display()
-
-        # Notify that no api key is present
-        if not constants.CMS_PASSWORD:
-            Text('No CMS password present', colors.FAIL).display()
-
-        exit(1)
-
     # Check if API credentials are valid, otherwise exit program
     if not test_mode and not api.has_valid_credentials():
         Text('Invalid API credentials. Run with --setup to change credentials', colors.FAIL).display()
@@ -52,7 +24,7 @@ def main(test_mode):
 
     challenge_id = input('Enter Challenge ID: ')
 
-    while not utils.is_valid_cid(challenge_id):
+    while not validate.is_valid_cid(challenge_id):
         Text('Invalid Challenge ID. Try again', colors.FAIL).display()
         challenge_id = input('Enter Challenge ID: ')
 
@@ -62,17 +34,18 @@ def main(test_mode):
 
     # Attempt to scrape CMS to get data
     try:
+        print('Collecting data from CMS...', end='')
         scraper = CmsScraper(challenge_id)
+        Text('[Done]', colors.OKGREEN).display()
     except ValueError as e:
         Text(e, colors.FAIL).display()
-        Text('CMS Error: Invalid Challenge ID', colors.FAIL).display()
         exit(1)
     except exceptions.RequestFailedError:
         Text(e, colors.FAIL).display()
-        Text('CMS Error: Failed Request', colors.FAIL).display()
         exit(1)
     except Exception:
         Text('Unknown Error', colors.FAIL).display()
+        exit(1)
 
     # Get data from scraper
     application_chlc = scraper.get_application_chlc()
@@ -81,7 +54,9 @@ def main(test_mode):
 
     # Attempt to create repository
     try:
+        print(f'Cloning Repository...', end='')
         repository = GitRepository(repo_name)
+        Text('[Done]', colors.OKGREEN).display()
     except ValueError as e:
         Text('Error getting repository', colors.FAIL).display()
         exit(1)
@@ -120,7 +95,7 @@ def main(test_mode):
     chlrq = utils.get_chlrq()
 
     # Automatically transition jira tickets
-    utils.transition_jira_issues(chlrq, utils.format_messages(fix_messages), repo_was_cherrypicked)
+    utils.transition_jira_issues(chlrq, fix_messages, repo_was_cherrypicked)
 
     # Notify user to check chunks if lines were added
     if is_chunk_fixing_required:

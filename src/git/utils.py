@@ -125,7 +125,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app):
     readline.set_completer(utils.Completer().get_list_completer(branches))
 
     # Prompt user for branch where the fix will be made
-    initial_branch = input(f'\nEnter branch where the fix will be made: {colors.WHITE}')
+    initial_branch = input(f'\nEnter name of branch to fix: {colors.WHITE}')
 
     print(colors.ENDC, end='')
 
@@ -137,14 +137,14 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app):
 
         # Check if user entered "secure" on a minified app. Suggest minified secure branch
         if (not is_full_app) and initial_branch == constants.JIRA_FA_SECURE_BRANCH:
-            minified_secure_branches = getMinifiedSecureBranch(branches)
+            minified_secure_branches = get_minified_secure_branch(branches)
             print(f'\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure branch: {colors.HEADER}')
             for branch in minified_secure_branches:
                 print(branch, end=' ')
             print(colors.ENDC)
 
         # Prompt user for branch again
-        initial_branch = input(f'Enter branch where the fix will be made: {colors.WHITE}')
+        initial_branch = input(f'Enter name of branch to fix: {colors.WHITE}')
 
         print(colors.ENDC, end='')
 
@@ -193,7 +193,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app):
 
     return fix_message, initial_branch
 
-def getMinifiedSecureBranch(branches):
+def get_minified_secure_branch(branches):
     """
     Gets the secure branch of a minified app. Minified app's secure branch starts with 'secure'
     """

@@ -1,14 +1,16 @@
-from src import api
+from src import api, utils
 from src.constants import colors
-
 from .input import get_chlc
 
-def transition_jira_issues(chlrq, fix_message, is_cherrypick_required):
+def transition_jira_issues(chlrq, fix_messages, is_cherrypick_required):
     """
     Use Jira API to transition tickets through Jira workflow
     """
     # API call to get current version name and id
     fixVersionName, fixVersionID = api.get_current_fix_version()
+
+    # Format fix messages
+    fix_message = utils.format_messages(fix_messages)
 
     # Check that version id was successfully got
     if not fixVersionID:

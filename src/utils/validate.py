@@ -1,4 +1,5 @@
-from src import api
+from operator import truediv
+from src import api, constants
 
 def is_valid_ticket_number(ticket):
     """
@@ -30,8 +31,22 @@ def is_valid_chlc(chlc):
 
     return isValid
 
+# TODO: finish method
 def is_valid_cid(challenge_id):
     """
     Check whether the challenge id is valid or not
     """
+    return True
+
+def has_credentials():
+    """
+    Validate that API and CMS credentials exists. Notify user if not
+    """
+    if (not constants.JIRA_API_EMAIL
+        or not constants.JIRA_API_KEY
+        or not constants.CMS_EMAIL
+        or not constants.CMS_PASSWORD):
+
+        return False
+    
     return True
