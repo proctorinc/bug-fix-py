@@ -6,5 +6,6 @@
 # Get the commit id
 # Revert commit
 
+
 def main():
-    print('Revert mode not created yet')
+    print("Revert mode not created yet")

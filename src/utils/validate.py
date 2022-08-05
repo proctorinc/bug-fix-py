@@ -1,11 +1,13 @@
 from operator import truediv
 from src import api, constants
 
+
 def is_valid_ticket_number(ticket):
     """
     Validate ticket number input format
     """
     return len(ticket) < 5 and len(ticket) > 1 and ticket.isdigit()
+
 
 def is_valid_chlrq(chlrq):
     """
@@ -19,6 +21,7 @@ def is_valid_chlrq(chlrq):
 
     return isValid
 
+
 def is_valid_chlc(chlc):
     """
     Validate CHLC format and through Jira API
@@ -31,6 +34,7 @@ def is_valid_chlc(chlc):
 
     return isValid
 
+
 # TODO: finish method
 def is_valid_cid(challenge_id):
     """
@@ -38,15 +42,18 @@ def is_valid_cid(challenge_id):
     """
     return True
 
+
 def has_credentials():
     """
     Validate that API and CMS credentials exists. Notify user if not
     """
-    if (not constants.JIRA_API_EMAIL
+    if (
+        not constants.JIRA_API_EMAIL
         or not constants.JIRA_API_KEY
         or not constants.CMS_EMAIL
-        or not constants.CMS_PASSWORD):
+        or not constants.CMS_PASSWORD
+    ):
 
         return False
-    
+
     return True

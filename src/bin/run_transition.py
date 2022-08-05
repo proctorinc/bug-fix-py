@@ -1,16 +1,25 @@
-from src import utils, constants
+from src import utils
+from src.constants import colors
+
 
 def main():
     # If parameter not entered, prompt user for CHRLQ
     chlrq = utils.get_chlrq()
 
+    did_cherrypick = False
+
     # Ask user if bulk transition is required
-    if input(f'Is bulk transition required? ({constants.BOLD}{constants.WHITE}Y{constants.ENDC}/n): {constants.WHITE}') != 'n':
+    if (
+        input(
+            f"Is bulk transition required? ({colors.BOLD}{colors.WHITE}Y{colors.ENDC}/n): {colors.WHITE}"
+        )
+        != "n"
+    ):
         did_cherrypick = True
 
-    fix_messages = input(f'{constants.ENDC}Enter fix message: {constants.WHITE}')
+    fix_message = input(f"{colors.ENDC}Enter fix message: {colors.WHITE}")
 
-    print(constants.ENDC)
+    print(colors.ENDC)
 
     # Automatically transition jira tickets
-    utils.transition_jira_issues(chlrq, fix_messages, did_cherrypick)
+    utils.transition_jira_issues(chlrq, [fix_message], did_cherrypick)

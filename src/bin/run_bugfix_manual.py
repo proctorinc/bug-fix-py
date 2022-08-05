@@ -1,11 +1,13 @@
 import webbrowser
-from src.git import GitRepository
+
 from src import utils
-from src.constants import instructions, headers, colors
+from src.constants import colors, headers, instructions
+from src.git import GitRepository
 from src.utils import Text
 
+
 # Main function runs bug-fix program
-def main(test_mode):
+def main(test_mode: bool):
     """
     Main bug fixing function. Checks the mode, scrapes the CMS, opens the repository,
     and walks the user through the steps to fix the bug in all branches necessary.
@@ -14,24 +16,24 @@ def main(test_mode):
         print(Text(headers.TEST_MODE, colors.HEADER))
 
     # TODO: add this to utils.input
-    repo_name = input('Enter repo name: ')
+    repo_name = input("Enter repo name: ")
 
     # Attempt to create repository
     try:
-        repository = GitRepository()
+        repository = GitRepository(repo_name)
     except ValueError as e:
         print(e)
         exit(1)
 
     # Print Details about the repository
-    print(Text('Repo:', repo_name, colors.OKCYAN))
-    print(Text('Branches:', repository.get_num_branches(), colors.OKCYAN))
+    print(Text("Repo:", repo_name, colors.OKCYAN))
+    print(Text("Branches:", repository.get_num_branches(), colors.OKCYAN))
 
     # Print whether the repository is a full app or minified app
     if repository.get_is_full_app():
-        print(Text('Type:', 'Full App', colors.OKCYAN))
+        print(Text("Type:", "Full App", colors.OKCYAN))
     else:
-        print(Text('Type:', 'Minified App', colors.OKCYAN))
+        print(Text("Type:", "Minified App", colors.OKCYAN))
 
     # Run bug fix on repository
     repository.run_bug_fix()
@@ -51,7 +53,7 @@ def main(test_mode):
     is_chunk_fixing_required = repository.did_number_of_lines_change()
 
     print(instructions.STEP_ONE_CLOSE_CHLRQ)
-    
+
     # Print out fix messages
     utils.print_fix_messages(fix_messages)
 
@@ -62,7 +64,9 @@ def main(test_mode):
         # input('Enter application CHLC number [Ex: 1234]: ')
 
         # Open web browser to bulk transition tickets linked to the application CHLC
-        webbrowser.open(f'https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC')
+        webbrowser.open(
+            f"https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC"
+        )
 
         print(instructions.CHERRY_PICKING_MANUAL_STEPS)
     else:

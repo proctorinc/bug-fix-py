@@ -1,13 +1,16 @@
-from src import constants
+from src.constants import colors
+
 # from src.constants import colors
 # from . import Text
 
-def print_fix_messages(fix_messages):
+
+def print_fix_messages(fix_messages: list[str]):
     for message in fix_messages:
-        print(f'{constants.WHITE}\t{message}{constants.ENDC}')
+        print(f"{colors.WHITE}\t{message}{colors.ENDC}")
+
 
 def print_missing_credentials():
-    print('missing credentials')
+    print("missing credentials")
     # Text('Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables', colors.FAIL).display()
 
     # # Notify that no email is present

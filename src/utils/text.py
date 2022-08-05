@@ -1,5 +1,6 @@
 from src.constants import colors
 
+
 class Text:
     """
     Text class
@@ -14,16 +15,16 @@ class Text:
             text = str(args[0])
             color_fmt = str(args[1])
             self.__validate_color(color_fmt)
-            self.__value = f'{color_fmt}{text}{colors.ENDC}'
-            
+            self.__value = f"{color_fmt}{text}{colors.ENDC}"
+
         elif len(args) == 3:
             pre_text = str(args[0])
             text = str(args[1])
             color_fmt = str(args[2])
             self.__validate_color(color_fmt)
-            self.__value = f'{pre_text} {color_fmt}{text}{colors.ENDC}'
+            self.__value = f"{pre_text} {color_fmt}{text}{colors.ENDC}"
         else:
-            raise TypeError(f'Incorrect number of arguments: {len(args)}')
+            raise TypeError(f"Incorrect number of arguments: {len(args)}")
 
     def display(self):
         """
@@ -37,12 +38,12 @@ class Text:
         """
         return input(str(self))
 
-    def __validate_color(self, color_fmt):
+    def __validate_color(self, color_fmt: str):
         """
         Validates that the input color format is a valid color constant
         """
         if color_fmt not in colors.ALL:
-            raise ValueError(f'Color {color_fmt} is not a valid color')
+            raise ValueError(f"Color {color_fmt} is not a valid color")
 
     def __str__(self):
         """

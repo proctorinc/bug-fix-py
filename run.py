@@ -6,35 +6,59 @@ from src import bin, utils
 from src.constants import colors
 from src.utils import Text, validate
 
+
 def main():
     # Instantiate the parser
-    parser = argparse.ArgumentParser(description='bug-fix-py automates the SCW bug fixing process')
+    parser = argparse.ArgumentParser(
+        description="bug-fix-py automates the SCW bug fixing process"
+    )
 
     # Setup switch
-    parser.add_argument('--setup', action='store_true',
-        help='Run in setup mode. Setup all credentials for Jira API and CMS automation')
+    parser.add_argument(
+        "--setup",
+        action="store_true",
+        help="Run in setup mode. Setup all credentials for Jira API and CMS automation",
+    )
 
     # Jira transition mode switch
-    parser.add_argument('--transition', action='store_true',
-        help='Run in transition only mode for transitioning tickets in Jira without making changes')
+    parser.add_argument(
+        "--transition",
+        action="store_true",
+        help="Run in transition only mode for transitioning tickets in Jira without making changes",
+    )
 
     # Commit revert mode switch
-    parser.add_argument('--revert', action='store_true',
-        help='Run in revert mode to revert a previous git commit on an git repository')
+    parser.add_argument(
+        "--revert",
+        action="store_true",
+        help="Run in revert mode to revert a previous git commit on an git repository",
+    )
 
     # Auto transitioning on switch
-    parser.add_argument('--auto', action='store_true',
-        help='Run in auto mode. Enables Jira API for transitioning tickets and CMS webscraping for grabbing data')
+    parser.add_argument(
+        "--auto",
+        action="store_true",
+        help="Run in auto mode. Enables Jira API for transitioning tickets and CMS webscraping for grabbing data",
+    )
 
     # No push switch
-    parser.add_argument('--test', action='store_true',
-        help='Enable testing mode. Disabled pushing to git repository')
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Enable testing mode. Disabled pushing to git repository",
+    )
 
     # Repository positional argument
-    parser.add_argument('--repo', type=str, help='Enter repo name to run in repo mode. Opens repo in VS Code')
+    parser.add_argument(
+        "--repo",
+        type=str,
+        help="Enter repo name to run in repo mode. Opens repo in VS Code",
+    )
 
     # Challenge ID positional argument
-    parser.add_argument('--cid', type=str, help='Enter challenge id of challenge to bug fix')
+    parser.add_argument(
+        "--cid", type=str, help="Enter challenge id of challenge to bug fix"
+    )
 
     # Auto transitioning on switch
     # parser.add_argument('--debug', action='store_true',
@@ -44,7 +68,7 @@ def main():
     args = parser.parse_args()
 
     if len(sys.argv) > 2 and not (args.test and args.auto):
-        parser.error('Multiple flags cannot be enabled at the same time')
+        parser.error("Multiple flags cannot be enabled at the same time")
 
     #
     #
@@ -68,11 +92,12 @@ def main():
             utils.print_missing_credentials()
         bin.run_bugfix_manual.main(args.test)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        Text('\nExited program.', colors.FAIL).display()
+        Text("\nExited program.", colors.FAIL).display()
         try:
             sys.exit(0)
         except SystemExit:
