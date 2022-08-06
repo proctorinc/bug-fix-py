@@ -1,4 +1,4 @@
-from src.constants import colors
+from bugfixpy.constants import colors
 
 
 class Text:

@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
+
+"""
+__main__ python entry point for bugfixpy
+"""
 import sys
 import argparse
 import os
-from src import bin, utils
-from src.constants import colors
-from src.utils import Text, validate
+from . import bin, utils
+from .constants import colors
+from .utils import Text, validate
 
 
 def main():
+    """
+    Main method
+    """
     # Instantiate the parser
     parser = argparse.ArgumentParser(
         description="bug-fix-py automates the SCW bug fixing process"
@@ -38,7 +45,8 @@ def main():
     parser.add_argument(
         "--auto",
         action="store_true",
-        help="Run in auto mode. Enables Jira API for transitioning tickets and CMS webscraping for grabbing data",
+        help="Run in auto mode. Enables Jira API for transitioning tickets"\
+        "and CMS webscraping for grabbing data",
     )
 
     # No push switch

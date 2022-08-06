@@ -1,17 +1,17 @@
 from getpass import getpass
 
-from src import api, constants
+from bugfixpy import api
+from bugfixpy.constants import jira, cms
 
 
 def main():
     """
     Setup credentials process. Get user input to change credentials in environment
     """
-    # Set Defaults
-    api_email = constants.JIRA_API_EMAIL
-    api_key = constants.JIRA_API_KEY
-    cms_email = constants.CMS_EMAIL
-    cms_password = constants.CMS_PASSWORD
+    api_email = jira.API_EMAIL
+    api_key = jira.API_KEY
+    cms_email = cms.EMAIL
+    cms_password = cms.PASSWORD
 
     if api_email and api_key and cms_email and cms_password:
         print("All credentials are setup")

@@ -1,8 +1,8 @@
-from src import api, exceptions, utils
-from src.constants import colors, headers, instructions
-from src.git import GitRepository
-from src.scraper import CmsScraper
-from src.utils import Text, validate
+from bugfixpy import api, exceptions, utils
+from bugfixpy.constants import colors, headers, instructions
+from bugfixpy.git import GitRepository
+from bugfixpy.scraper import CmsScraper
+from bugfixpy.utils import Text, validate
 
 
 def main(test_mode: bool) -> None:
@@ -39,14 +39,14 @@ def main(test_mode: bool) -> None:
         print("Collecting data from CMS...", end="")
         scraper = CmsScraper(challenge_id)
         Text("[Done]", colors.OKGREEN).display()
-    except ValueError as e:
-        Text(e, colors.FAIL).display()
+    except ValueError as err:
+        Text(err, colors.FAIL).display()
         exit(1)
-    except exceptions.RequestFailedError as e:
-        Text(e, colors.FAIL).display()
+    except exceptions.RequestFailedError as err:
+        Text(err, colors.FAIL).display()
         exit(1)
-    except Exception:
-        Text("Unknown Error", colors.FAIL).display()
+    except Exception as err:
+        Text("Unknown Error", err, colors.FAIL).display()
         exit(1)
 
     # Get data from scraper
@@ -71,7 +71,7 @@ def main(test_mode: bool) -> None:
     Text("Repo:", repo_name, colors.OKCYAN).display()
     Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
 
-    if repository.get_is_full_app():
+    if repository.is_full_app():
         Text("Type", "Full App", colors.OKCYAN).display()
     else:
         Text("Type:", "Minified App", colors.OKCYAN).display()

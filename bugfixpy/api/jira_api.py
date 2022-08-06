@@ -3,8 +3,7 @@ import requests
 import json
 import datetime
 from datetime import date
-from src import constants
-from src.constants import colors
+from bugfixpy.constants import colors, jira
 
 
 def has_valid_credentials(api_email=None, api_key=None):
@@ -17,11 +16,11 @@ def has_valid_credentials(api_email=None, api_key=None):
     if api_email and api_key:
         auth = HTTPBasicAuth(api_email, api_key)
     else:
-        auth = constants.JIRA_AUTH
+        auth = jira.AUTH
 
     try:
         url = "https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-1520/"
-        response = requests.get(url, headers=constants.JIRA_REQUEST_HEADERS, auth=auth)
+        response = requests.get(url, headers=jira.REQUEST_HEADERS, auth=auth)
         json_response = json.loads(response.text)
 
         if "errorMessages" in json_response:
@@ -43,6 +42,7 @@ def get_linked_issues(issuelinks):
     Parses json issuelinks and returns list of all linked CHLC's
     """
     chlcs = []
+    issue = ''
     for link in issuelinks:
         if "outwardIssue" in link:
             issue = link["outwardIssue"]["key"]
@@ -68,7 +68,7 @@ def get_current_fix_version():
 
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/project/CHLRQ/versions"
     response = requests.get(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
     json_response = json.loads(response.text)
 
@@ -87,11 +87,11 @@ def transition_issue_to_planned(chlrq, fixVersionID):
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions"
     data = {
-        "transition": {"id": constants.JIRA_TRANSITION_PLANNED},
+        "transition": {"id": jira.TRANSITION_PLANNED},
         "update": {"fixVersions": [{"add": {"id": fixVersionID}}]},
     }
     response = requests.post(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -103,9 +103,9 @@ def transition_issue_to_in_progress(chlrq):
     Transition CHLRQ to In Progress
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/transitions"
-    data = {"transition": {"id": constants.JIRA_TRANSITION_IN_PROGRESS}}
+    data = {"transition": {"id": jira.TRANSITION_IN_PROGRESS}}
     response = requests.post(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -119,7 +119,7 @@ def get_creation_chlc(chlc):
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}/"
     response = requests.get(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
     json_response = json.loads(response.text)
 
@@ -139,7 +139,7 @@ def get_linked_challenges(chlc):
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}"
     response = requests.get(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
     json_response = json.loads(response.text)
 
@@ -158,7 +158,7 @@ def link_creation_chlc(chlrq, chlc):
         "inwardIssue": {"key": f"CHLC-{chlc}"},
     }
     response = requests.post(
-        url, json=body, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, json=body, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
 
     return response
@@ -175,7 +175,7 @@ def transition_issue_to_closed(chlrq, comment):
         "update": {"comment": [{"add": {"body": comment}}]},
     }
     response = requests.post(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -189,7 +189,7 @@ def transition_issue_to_feedback_open(chlc):
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}/transitions"
     data = {"transition": {"id": "511"}}
     response = requests.post(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -203,7 +203,7 @@ def transition_issue_to_feedback_review(chlc):
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}/transitions"
     data = {"transition": {"id": "521"}}
     response = requests.post(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -216,11 +216,11 @@ def edit_issue_details(chlc, chlrq):
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/{chlc}"
     data = {
-        "fields": {"assignee": {"accountId": constants.JIRA_THOMAS_ACCT_ID}},
+        "fields": {"assignee": {"accountId": jira.THOMAS_ACCT_ID}},
         "update": {"comment": [{"add": {"body": f"CHLRQ-{chlrq}"}}]},
     }
     response = requests.put(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH, json=data
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH, json=data
     )
 
     return response
@@ -233,7 +233,7 @@ def check_chlc_exists(chlc):
     """
     url = f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLC-{chlc}/"
     response = requests.get(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
     json_response = json.loads(response.text)
 
@@ -249,7 +249,7 @@ def check_chlrq_exists(chlrq):
         f"https://securecodewarrior.atlassian.net/rest/api/latest/issue/CHLRQ-{chlrq}/"
     )
     response = requests.get(
-        url, headers=constants.JIRA_REQUEST_HEADERS, auth=constants.JIRA_AUTH
+        url, headers=jira.REQUEST_HEADERS, auth=jira.AUTH
     )
     json_response = json.loads(response.text)
 

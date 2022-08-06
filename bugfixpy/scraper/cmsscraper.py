@@ -1,6 +1,7 @@
 import requests
 from requests.cookies import RequestsCookieJar
-from src import constants, exceptions
+from bugfixpy import exceptions
+from bugfixpy.constants import cms
 
 from . import utils
 
@@ -68,7 +69,7 @@ class CmsScraper:
         Get request to retrieve the CSRF token for logging in
         """
         # Get csrf token and cookies
-        result = self.__session.get(constants.CMS_LOGIN_URL)
+        result = self.__session.get(cms.LOGIN_URL)
 
         # Check if result was successful
         if not result.ok:
@@ -86,14 +87,14 @@ class CmsScraper:
         """
         # Create the login payload
         payload = {
-            "_username": constants.CMS_EMAIL,
-            "_password": constants.CMS_PASSWORD,
+            "_username": cms.EMAIL,
+            "_password": cms.PASSWORD,
             "_csrf_token": csrf_token,
         }
 
         # Login to CMS
         result = self.__session.post(
-            constants.CMS_LOGIN_URL,
+            cms.LOGIN_URL,
             data=payload,
         )
 
@@ -114,7 +115,7 @@ class CmsScraper:
         Retrieve challenge CHLC and application screen endpoint.
         """
         result = self.__session.get(
-            f"{constants.CMS_SEARCH_URL}?q={self.__challenge_id}", cookies=cookies
+            f"{cms.SEARCH_URL}?q={self.__challenge_id}", cookies=cookies
         )
 
         # Check if searching for challenge was successful
@@ -140,7 +141,7 @@ class CmsScraper:
         """
         # Query application page
         result = self.__session.get(
-            f"{constants.CMS_URL}{application_endpoint}", cookies=cookies
+            f"{cms.URL}{application_endpoint}", cookies=cookies
         )
 
         # Check if requesting application page was successful

@@ -1,4 +1,5 @@
-from src.constants import colors
+import subprocess
+from bugfixpy.constants import colors
 from . import validate
 
 
@@ -72,3 +73,20 @@ def format_messages(messages):
             formatted_message += message
 
     return formatted_message
+
+def prompt_user_to_resolve_merge_conflict():
+    """
+    Prompt user to resolve merge conflict
+    """
+    input(
+        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}"
+    )
+
+def prompt_user_to_exit_or_continue():
+    # Prompt user to exit program
+    exit_program = input("Would you like to exit? (Y/n): ")
+
+    if exit_program.upper() == "N":
+        print("Continuing..")
+    else:
+        exit(1)

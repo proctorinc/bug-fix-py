@@ -1,5 +1,5 @@
-from operator import truediv
-from src import api, constants
+from bugfixpy import api
+from bugfixpy.constants import cms, jira
 
 
 def is_valid_ticket_number(ticket):
@@ -48,10 +48,10 @@ def has_credentials():
     Validate that API and CMS credentials exists. Notify user if not
     """
     if (
-        not constants.JIRA_API_EMAIL
-        or not constants.JIRA_API_KEY
-        or not constants.CMS_EMAIL
-        or not constants.CMS_PASSWORD
+        not jira.API_EMAIL
+        or not jira.API_KEY
+        or not cms.EMAIL
+        or not cms.PASSWORD
     ):
 
         return False

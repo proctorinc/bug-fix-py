@@ -1,15 +1,26 @@
-from src.constants import colors
+from typing import List
+from bugfixpy.constants import colors
 
 # from src.constants import colors
 # from . import Text
 
 
-def print_fix_messages(fix_messages: list[str]):
+def warn_user_of_merge_conflict(branch):
+    """Alert user that merge conflict has occurred"""
+    print(
+        f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
+    )
+
+def print_fix_messages(fix_messages: List[str]) -> None:
+    """
+    Print fix message
+    """
     for message in fix_messages:
         print(f"{colors.WHITE}\t{message}{colors.ENDC}")
 
 
-def print_missing_credentials():
+def print_missing_credentials() -> None:
+    """Print missing credentials"""
     print("missing credentials")
     # Text('Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables', colors.FAIL).display()
 

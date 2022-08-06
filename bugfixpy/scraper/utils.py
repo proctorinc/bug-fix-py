@@ -3,7 +3,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from requests import Response
-from src import constants
+from bugfixpy.constants import git, jira
 
 
 def get_soup(result: Response) -> BeautifulSoup:
@@ -18,7 +18,7 @@ def get_challenge_chlc(result: Response) -> str:
     Get the value of the challenge CHLC that is located in a link
     that contains SCW's base Jira url
     """
-    return get_value_from_link(result, constants.JIRA_SCW_BROWSE_URL)
+    return get_value_from_link(result, jira.SCW_BROWSE_URL)
 
 
 def get_git_repository(result: Response) -> str:
@@ -26,7 +26,7 @@ def get_git_repository(result: Response) -> str:
     Get the value of the Github repository that is located in a link
     that contains SCW's base Github url
     """
-    return get_value_from_link(result, constants.GIT_SCW_CONTENT_URL)
+    return get_value_from_link(result, git.SCW_CONTENT_URL)
 
 
 def get_value_from_link(result: Response, url_pattern: str) -> str:

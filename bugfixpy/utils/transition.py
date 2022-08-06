@@ -1,11 +1,11 @@
-from src import api, utils
-from src.constants import colors
+from bugfixpy import api, utils
+from bugfixpy.constants import colors
 
 from .input import get_chlc
-
+from typing import List
 
 def transition_jira_issues(
-    chlrq: str, fix_messages: list[str], is_cherrypick_required: bool
+    chlrq: str, fix_messages: List[str], is_cherrypick_required: bool
 ):
     """
     Use Jira API to transition tickets through Jira workflow
@@ -40,7 +40,7 @@ def transition_jira_issues(
         )
 
     # Transition to in progress
-    print(f"\tTo In Progress", end="")
+    print("\tTo In Progress", end="")
 
     # If api returns 204, transition was successful
     inProgressResult = api.transition_issue_to_in_progress(chlrq)
@@ -52,7 +52,7 @@ def transition_jira_issues(
         )
 
     # Transition CHLRQ to closed w/ fix message
-    print(f"\tTo Closed [with description of fix]", end="")
+    print("\tTo Closed [with description of fix]", end="")
 
     # If api returns 204, transition was successful
     closedResult = api.transition_issue_to_closed(chlrq, fix_message)

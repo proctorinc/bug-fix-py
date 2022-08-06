@@ -1,9 +1,11 @@
 import webbrowser
 
-from src import utils
-from src.constants import colors, headers, instructions
-from src.git import GitRepository
-from src.utils import Text
+from git import GitError
+
+from bugfixpy import utils
+from bugfixpy.constants import colors, headers, instructions
+from bugfixpy.git import GitRepository
+from bugfixpy.utils import Text
 
 
 # Main function runs bug-fix program
@@ -21,8 +23,8 @@ def main(test_mode: bool):
     # Attempt to create repository
     try:
         repository = GitRepository(repo_name)
-    except ValueError as e:
-        print(e)
+    except GitError as err:
+        print(err)
         exit(1)
 
     # Print Details about the repository
@@ -30,7 +32,7 @@ def main(test_mode: bool):
     print(Text("Branches:", repository.get_num_branches(), colors.OKCYAN))
 
     # Print whether the repository is a full app or minified app
-    if repository.get_is_full_app():
+    if repository.is_full_app():
         print(Text("Type:", "Full App", colors.OKCYAN))
     else:
         print(Text("Type:", "Minified App", colors.OKCYAN))

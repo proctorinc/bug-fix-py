@@ -1,5 +1,5 @@
-from src import utils
-from src.constants import colors
+from bugfixpy import utils
+from bugfixpy.constants import colors
 
 
 def main():
