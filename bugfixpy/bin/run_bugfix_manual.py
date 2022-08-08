@@ -9,7 +9,7 @@ from bugfixpy.utils import Text
 
 
 # Main function runs bug-fix program
-def main(test_mode: bool):
+def main(test_mode: bool) -> None:
     """
     Main bug fixing function. Checks the mode, scrapes the CMS, opens the repository,
     and walks the user through the steps to fix the bug in all branches necessary.
