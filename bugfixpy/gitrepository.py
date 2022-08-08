@@ -1,23 +1,19 @@
 import os
-import subprocess
 import readline
+import subprocess
 from typing import List, Tuple
 
 from git import GitCommandError
 from git.exc import GitError
 from git.repo import Repo
 
+from bugfixpy import utils
 from bugfixpy.constants import colors, git, jira
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
-
-from bugfixpy import utils
-
-
 class GitRepository:
     """
     Class wrapper around GitPython for git repository functionality
     """
-
     __repo_name: str
     __repository: Repo
     __fix_messages: List[str]
@@ -57,7 +53,8 @@ class GitRepository:
         return self.__did_cherrypick
 
     # TODO: fix method functionality
-    def did_number_of_lines_change(self) -> bool:
+    @staticmethod
+    def did_number_of_lines_change() -> bool:
         """
         Check if the commit added or removed any lines. Return true if lines were added or removed
         """

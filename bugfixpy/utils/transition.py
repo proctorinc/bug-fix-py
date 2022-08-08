@@ -1,4 +1,5 @@
-from bugfixpy import api, utils
+from bugfixpy import utils
+from bugfixpy.jiraapi import JiraApi
 from bugfixpy.constants import colors
 
 from .input import get_chlc
@@ -11,13 +12,13 @@ def transition_jira_issues(
     Use Jira API to transition tickets through Jira workflow
     """
     # API call to get current version name and id
-    fixVersionName, fixVersionID = api.get_current_fix_version()
+    fixVersionName, fix_version_id = JiraApi.get_current_fix_version()
 
     # Format fix messages
     fix_message = utils.format_messages(fix_messages)
 
     # Check that version id was successfully got
-    if not fixVersionID:
+    if not fix_version_id:
         # Print error
         print(
             "Unable to determine fix version. Cannot auto-transition tickets. Exiting."
@@ -31,7 +32,7 @@ def transition_jira_issues(
     print(f"\tTo Planned [Fix Version: {fixVersionName}]", end="")
 
     # If api returns 204, transition was successful
-    plannedResult = api.transition_issue_to_planned(chlrq, fixVersionID)
+    plannedResult = JiraApi.transition_issue_to_planned(chlrq, fix_version_id)
     if plannedResult.status_code == 204:
         print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
     else:
@@ -43,7 +44,7 @@ def transition_jira_issues(
     print("\tTo In Progress", end="")
 
     # If api returns 204, transition was successful
-    inProgressResult = api.transition_issue_to_in_progress(chlrq)
+    inProgressResult = JiraApi.transition_issue_to_in_progress(chlrq)
     if inProgressResult.status_code == 204:
         print(f"\t\t\t\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
     else:
@@ -55,7 +56,7 @@ def transition_jira_issues(
     print("\tTo Closed [with description of fix]", end="")
 
     # If api returns 204, transition was successful
-    closedResult = api.transition_issue_to_closed(chlrq, fix_message)
+    closedResult = JiraApi.transition_issue_to_closed(chlrq, fix_message)
     if closedResult.status_code == 204:
         print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
     else:
@@ -73,7 +74,7 @@ def transition_jira_issues(
         print(f"Application CHLC: {colors.WARNING}{application_chlc}{colors.ENDC}")
 
         # Get all CHLC's linked to the creation ticket
-        challenges = api.get_linked_challenges(application_chlc)
+        challenges = JiraApi.get_linked_challenges(application_chlc)
 
         # Print number of challenges to bulk transition
         print(f"Challenges to bulk transition: {len(challenges)}")
@@ -99,7 +100,7 @@ def transition_jira_issues(
         print("\tTo Feedback Open", end="")
 
         # If api returns 204, transition was successful
-        feedbackOpenResult = api.transition_issue_to_feedback_open(challenge)
+        feedbackOpenResult = JiraApi.transition_issue_to_feedback_open(challenge)
         if feedbackOpenResult.status_code == 204:
             print(f"\t\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
         else:
@@ -111,7 +112,7 @@ def transition_jira_issues(
         print("\tTo Feedback Review", end="")
 
         # If api returns 204, transition was successful
-        feedbackReviewResult = api.transition_issue_to_feedback_review(challenge)
+        feedbackReviewResult = JiraApi.transition_issue_to_feedback_review(challenge)
         if feedbackReviewResult.status_code == 204:
             print(f"\t\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
         else:
@@ -123,7 +124,7 @@ def transition_jira_issues(
         print("\tAdding assignee and comment", end="")
 
         # If api returns 204, transition was successful
-        editResult = api.edit_issue_details(challenge, chlrq)
+        editResult = JiraApi.edit_issue_details(challenge, chlrq)
         if editResult.status_code == 204:
             print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
         else:

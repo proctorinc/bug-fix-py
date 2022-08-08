@@ -4,7 +4,7 @@ from git import GitError
 
 from bugfixpy import utils
 from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.git import GitRepository
+from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import Text
 
 

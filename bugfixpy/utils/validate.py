@@ -1,4 +1,4 @@
-from bugfixpy import api
+from bugfixpy.jiraapi import JiraApi
 from bugfixpy.constants import cms, jira
 
 
@@ -13,26 +13,26 @@ def is_valid_chlrq(chlrq):
     """
     Validate CHLRQ format and through Jira API
     """
-    isValid = False
+    is_valid = False
 
     # Confirm chlrq is valid number and is a chlrq in Jira
-    if chlrq and is_valid_ticket_number(chlrq) and api.check_chlrq_exists(chlrq):
-        isValid = True
+    if chlrq and is_valid_ticket_number(chlrq) and JiraApi.check_chlrq_exists(chlrq):
+        is_valid = True
 
-    return isValid
+    return is_valid
 
 
 def is_valid_chlc(chlc):
     """
     Validate CHLC format and through Jira API
     """
-    isValid = False
+    is_valid = False
 
     # Confirm chlc is valid number and is a chlc in Jira
-    if chlc and is_valid_ticket_number(chlc) and api.check_chlc_exists(chlc):
-        isValid = True
+    if chlc and is_valid_ticket_number(chlc) and JiraApi.check_chlc_exists(chlc):
+        is_valid = True
 
-    return isValid
+    return is_valid
 
 
 # TODO: finish method

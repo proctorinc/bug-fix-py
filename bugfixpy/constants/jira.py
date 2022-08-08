@@ -12,13 +12,11 @@ API_KEY = os.getenv("JIRA_API_KEY")
 
 # Create authentication object for API calls
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)
-
 # Branches to ignore
 IGNORE_BRANCHES = {"HEAD", "master", "review", "main", "temp"}
 
 # SCW Content Github Url
 SCW_GIT_URL = "git@github.com:SCWContent"
-
 # Full app secure branch name
 FULL_APP_SECURE_BRANCH = "secure"
 
@@ -37,5 +35,23 @@ TRANSITION_PLANNED = 281
 # Jira id for transitioning to "in progress" in workflow
 TRANSITION_IN_PROGRESS = 291
 
-# SCW base URL for Jira
+# Jira id for transitioning to "feedback open" in workflow
+TRANSITION_FEEDBACK_OPEN = 511
+
+# Jira id for transitioning to "feedback review" in workflow
+TRANSITION_FEEDBACK_REVIEW = 521
+
+# SCW base URL for Jira browsing
 SCW_BROWSE_URL = "https://securecodewarrior.atlassian.net/browse/"
+
+# SCW base URL for Jira API
+SCW_API_URL = "https://securecodewarrior.atlassian.net/rest/api/latest"
+
+# API response "key" entry
+RESPONSE_KEY = "key"
+
+# CHLRQ string
+CHRLQ = "CHLRQ"
+
+# CHLC string
+CHLC = "CHLC"

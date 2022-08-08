@@ -1,6 +1,6 @@
 from getpass import getpass
 
-from bugfixpy import api
+from bugfixpy.jiraapi import JiraApi
 from bugfixpy.constants import jira, cms
 
 
@@ -52,7 +52,7 @@ def main():
         f.write(f"CMS_PASSWORD={cms_password}\n")
 
     # TODO: ADD VALIDATIONS FOR CMS CREDENTIALS
-    if api.has_valid_credentials(api_email, api_key):
+    if JiraApi.has_valid_credentials(api_email, api_key):
         print("Jira API Credentials are valid.")
         print("Run program: ./run.py")
 

@@ -1,6 +1,7 @@
-from bugfixpy import api, exceptions, utils
+from bugfixpy import exceptions, utils
+from bugfixpy.jiraapi import JiraApi
 from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.git import GitRepository
+from bugfixpy.gitrepository import GitRepository
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.utils import Text, validate
 
@@ -17,7 +18,7 @@ def main(test_mode: bool) -> None:
         print(Text(headers.TEST_MODE, colors.HEADER))
 
     # Check if API credentials are valid, otherwise exit program
-    if not test_mode and not api.has_valid_credentials():
+    if not test_mode and not JiraApi.has_valid_credentials():
         Text(
             "Invalid API credentials. Run with --setup to change credentials",
             colors.FAIL,
@@ -56,10 +57,10 @@ def main(test_mode: bool) -> None:
 
     # Attempt to create repository
     try:
-        print(f"Cloning Repository...", end="")
+        print("Cloning Repository...", end="")
         repository = GitRepository(repo_name)
         Text("[Done]", colors.OKGREEN).display()
-    except ValueError as e:
+    except ValueError:
         Text("Error getting repository", colors.FAIL).display()
         exit(1)
 
