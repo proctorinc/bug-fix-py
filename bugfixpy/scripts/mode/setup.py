@@ -1,6 +1,5 @@
 from getpass import getpass
 
-from bugfixpy import jira_api
 from bugfixpy.constants import jira, cms
 
 

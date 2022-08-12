@@ -3,36 +3,35 @@ import re
 from bs4 import BeautifulSoup
 from requests import Response
 from bugfixpy.constants import git, jira
+from bugfixpy.scraper.scraper_data import ApplicationScreenData, ChallengeScreenData
 
 
-def get_soup(result: Response) -> BeautifulSoup:
+def create_soup(result: Response) -> BeautifulSoup:
     """
     Returns result content turned into Beautiful Soup object
     """
     return BeautifulSoup(result.content, "html.parser")
 
 
-def get_challenge_chlc(result: Response) -> str:
+def parse_chlc_number(soup: BeautifulSoup) -> str:
     """
-    Get the value of the challenge CHLC that is located in a link
-    that contains SCW's base Jira url
+    Get the value of the challenge CHLC that is located in a link that contains SCW's base Jira url
     """
-    return get_value_from_link(result, jira.SCW_BROWSE_URL)
+    return parse_value_from_link(soup, jira.SCW_BROWSE_URL)
 
 
-def get_git_repository(result: Response) -> str:
+def parse_git_repository(soup: BeautifulSoup) -> str:
     """
-    Get the value of the Github repository that is located in a link
-    that contains SCW's base Github url
+    Get the value of the Github repository that is located in a link that contains SCW's base
+    Github url
     """
-    return get_value_from_link(result, git.SCW_CONTENT_URL)
+    return parse_value_from_link(soup, git.SCW_CONTENT_URL)
 
 
-def get_value_from_link(result: Response, url_pattern: str) -> str:
+def parse_value_from_link(soup: BeautifulSoup, url_pattern: str) -> str:
     """
     Searches all links on page and returns the value after the url pattern in the href
     """
-    soup = get_soup(result)
     links = soup.findAll("a", href=True)
 
     for link in links:
@@ -43,11 +42,10 @@ def get_value_from_link(result: Response, url_pattern: str) -> str:
     return ""
 
 
-def get_application_endpoint(result: Response) -> str:
+def parse_application_endpoint(soup: BeautifulSoup) -> str:
     """
     Searches all links on the page for the applications/id/show url
     """
-    soup = get_soup(result)
     links = soup.findAll("a", href=True)
     for link in links:
         href = link["href"]
@@ -61,7 +59,7 @@ def parse_csrf_token(result: Response) -> str:
     """
     Parses CSRF token from CMS login page using beautiful soup
     """
-    soup = get_soup(result)
+    soup = create_soup(result)
     csrf_token = str(soup.find("input", {"name": "_csrf_token"}.get("value")))
 
     return csrf_token
@@ -72,7 +70,7 @@ def did_login_fail(result: Response) -> bool:
     Checks if login failed based off of error message existing. Post request always returns 200,
     so scraping to check if login failed is needed.
     """
-    soup = get_soup(result)
+    soup = create_soup(result)
     login_failed = bool(
         soup.find_all(
             "div", {"class": "alert alert-danger alert-dismissible fade show"}
@@ -80,3 +78,24 @@ def did_login_fail(result: Response) -> bool:
     )
 
     return login_failed
+
+def parse_challenge_screen_data(result: Response) -> ChallengeScreenData:
+    """
+    Parses challenge screen data from CMS login page using beautiful soup
+    """
+    soup = create_soup(result)
+    challenge_chlc = parse_chlc_number(soup)
+    application_screen_endpoint = parse_application_endpoint(soup)
+
+    return ChallengeScreenData(application_screen_endpoint, challenge_chlc)
+
+def parse_application_screen_data(result: Response) -> ApplicationScreenData:
+    """
+    Parses application screen data from CMS login page using beautiful soup
+    """
+    soup = create_soup(result)
+
+    application_chlc= parse_chlc_number(soup)
+    repository_name = parse_git_repository(soup)
+
+    return ApplicationScreenData(application_chlc, repository_name)

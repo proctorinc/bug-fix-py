@@ -3,9 +3,8 @@ from typing import List
 import subprocess
 
 from git.repo import Repo
-from git.exc import GitError
 
-from bugfixpy import utils
+from bugfixpy.utils import output, user_input
 from bugfixpy.constants import colors, git, jira
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
 
@@ -53,7 +52,7 @@ class GitRepository:
         # TODO: This value needs to be modified in the cherrypick script!
         return self.__did_cherrypick
 
-    def set_cherrypick_ran(self):
+    def set_cherrypick_ran(self) -> None:
         """
         Set whether the repository was cherrypicked to True
         """
@@ -167,32 +166,6 @@ class GitRepository:
         """
         return os.path.join(git.REPO_DIR, self.__repo_name)
 
-    def __clone_repository(self) -> Repo:
-        """
-        Clone repository and return valid instance. Handle errors for invalid repository
-        """
-        git_url = f"{jira.SCW_GIT_URL}/{self.__repo_name}.git"
-        repository_dir = self.get_repository_dir()
-
-        # If repo folder already exists, remove it
-        if os.path.isdir(repository_dir):
-
-            # Delete repository
-            subprocess.check_output(f"sudo rm -r {repository_dir}", shell=True)
-        try:
-            # Clone repository
-            Repo.clone_from(git_url, repository_dir)
-
-        except GitError as err:
-            raise GitError(
-                f"{colors.FAIL}Either '{self.__repo_name}' is not a valid repository\nor you do not have the correct rights to access this repo{colors.ENDC}"
-            ) from err
-
-        # Create repository object
-        repo = Repo(repository_dir)
-
-        return repo
-
     def get_filtered_branches(self) -> List[str]:
         """
         Parse branches from remote refs and remove unwanted branches
@@ -235,7 +208,7 @@ class GitRepository:
             except CheckoutFailedError as err:
                 print("Exception occurred while checking out to branch")
                 print(err)
-                utils.prompt_user_to_exit_or_continue()
+                user_input.prompt_user_to_exit_or_continue()
 
             # Successful checkout to branch
             else:
@@ -245,11 +218,11 @@ class GitRepository:
 
                 # Check if merge conflict occurred
                 except MergeConflictError:
-                    utils.warn_user_of_merge_conflict(branch)
+                    output.warn_user_of_merge_conflict(branch)
 
                     self.open_repository_in_vscode()
 
-                    utils.prompt_user_to_resolve_merge_conflict()
+                    user_input.prompt_user_to_resolve_merge_conflict()
 
                     # Attempt to add changes and continue cherrypick
                     try:
@@ -288,3 +261,24 @@ class GitRepository:
                 secure_branches.append(branch)
 
         return secure_branches
+
+    def __clone_repository(self) -> Repo:
+        """
+        Clone repository and return valid instance. Handle errors for invalid repository
+        """
+        git_url = f"{jira.SCW_GIT_URL}/{self.__repo_name}.git"
+        repository_dir = self.get_repository_dir()
+
+        # If repo folder already exists, remove it
+        if os.path.isdir(repository_dir):
+
+            # Delete repository
+            subprocess.check_output(f"sudo rm -r {repository_dir}", shell=True)
+
+        # Clone repository
+        Repo.clone_from(git_url, repository_dir)
+
+        # Create repository object
+        repo = Repo(repository_dir)
+
+        return repo

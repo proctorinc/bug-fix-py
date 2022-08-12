@@ -1,7 +1,6 @@
-# TODO: put this in main? Or in new script file
-from ..gitrepository import GitRepository
+from bugfixpy.gitrepository import GitRepository
 from .fixbranch import fix_and_commit_branch
-from ..constants import jira, colors
+from bugfixpy.constants import jira, colors
 
 
 def fix_branches_in_repository(repository: GitRepository) -> None:

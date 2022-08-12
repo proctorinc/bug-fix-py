@@ -6,13 +6,13 @@ main python entry point for bugfixpy
 import sys
 import argparse
 
-from bugfixpy.scripts import modes
+from bugfixpy.scripts import mode
 from bugfixpy.constants import colors
 from bugfixpy.utils import validate, output
 from bugfixpy.formatting import Text
 
 
-def main():
+def main() -> None:
     """
     Main method
     """
@@ -72,17 +72,17 @@ def main():
 
     # Run program mode based off of flags input
     if args.setup:
-        modes.setup.run()
+        mode.setup.run()
     elif args.transition:
-        modes.transition.run()
+        mode.transition.run()
     elif args.revert:
-        modes.revert.run()
+        mode.revert.run()
     elif not args.auto:
-        modes.bugfix_manual.run(args.test)
+        mode.manual_fix.run(args.test)
     elif not args.test and not validate.has_credentials():
         output.print_missing_credentials()
     else:
-        modes.bugfix.run(args.test)
+        mode.auto_fix.run(args.test)
 
 
 try:

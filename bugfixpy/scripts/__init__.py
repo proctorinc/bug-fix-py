@@ -1,1 +1,2 @@
-from . import modes, fixallbranches, fixbranch, transition
+from . import fixbranch
+from . import mode, fixallbranches, transition

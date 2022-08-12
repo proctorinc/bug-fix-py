@@ -18,7 +18,7 @@ def run(test_mode: bool) -> None:
     if test_mode:
         print(Text(headers.TEST_MODE, colors.HEADER))
 
-    # TODO: add this to utils.input
+    # TODO: add this to utils/user_input
     repo_name = input("Enter repo name: ")
 
     # Attempt to create repository
