@@ -85,6 +85,9 @@ def prompt_user_to_resolve_merge_conflict():
 
 
 def prompt_user_to_exit_or_continue():
+    """
+    Prompt user to exit of continue
+    """
     # Prompt user to exit program
     exit_program = input("Would you like to exit? (Y/n): ")
 
@@ -95,6 +98,9 @@ def prompt_user_to_exit_or_continue():
 
 
 def get_challenge_id() -> str:
+    """
+    Get challenge ID from user
+    """
     not_done = True
     challenge_id = ""
     while not_done:

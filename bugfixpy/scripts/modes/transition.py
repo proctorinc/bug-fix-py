@@ -3,7 +3,10 @@ from bugfixpy.constants import colors
 from bugfixpy.scripts import transition
 
 
-def main():
+def run():
+    """
+    Run method for transition mode
+    """
     # If parameter not entered, prompt user for CHRLQ
     chlrq = user_input.get_chlrq()
 

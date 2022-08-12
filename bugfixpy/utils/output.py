@@ -11,6 +11,7 @@ def warn_user_of_merge_conflict(branch):
         f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
     )
 
+
 def print_fix_messages(fix_messages: List[str]) -> None:
     """
     Print fix message
