@@ -1,1 +1,1 @@
-from .cmsscraper import CmsScraper
+from .cms_scraper import CmsScraper

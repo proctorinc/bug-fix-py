@@ -1,12 +1,15 @@
-from bugfixpy import exceptions, utils
-from bugfixpy.jiraapi import JiraApi
+import sys
+from bugfixpy import exceptions, jira_api
+from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.gitrepository import GitRepository
-from bugfixpy.scraper import CmsScraper
-from bugfixpy.utils import Text, validate
+from bugfixpy.scripts import transition
+from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
+from bugfixpy.formatting import Text
+from bugfixpy.utils import user_input
 
 
-def main(test_mode: bool) -> None:
+def run(test_mode: bool) -> None:
     """
     Main bug fixing function. Checks the mode, scrapes the CMS, opens the
     repository, and walks the user through the steps to fix the bug in all
@@ -18,37 +21,32 @@ def main(test_mode: bool) -> None:
         print(Text(headers.TEST_MODE, colors.HEADER))
 
     # Check if API credentials are valid, otherwise exit program
-    if not test_mode and not JiraApi.has_valid_credentials():
+    if not test_mode and not jira_api.has_valid_credentials():
         Text(
             "Invalid API credentials. Run with --setup to change credentials",
             colors.FAIL,
         ).display()
         exit(1)
 
-    #######Get challenge id input and validate it first######
-    challenge_id = int(input("Enter Challenge ID: "))
+    challenge_id = user_input.get_challenge_id()
 
-    while not validate.is_valid_cid(challenge_id):
-        Text("Invalid Challenge ID. Try again", colors.FAIL).display()
-        challenge_id = int(input("Enter Challenge ID: "))
-    #########################################################
-    # Validate that all credentials work before scraping
-    # Handle errors with CmsScraper better. Try except blocks?
+    print("Collecting data from CMS...", end="")
 
     # Attempt to scrape CMS to get data
     try:
-        print("Collecting data from CMS...", end="")
         scraper = CmsScraper(challenge_id)
-        Text("[Done]", colors.OKGREEN).display()
+        scraper.scrape_cms()
     except ValueError as err:
-        Text(err, colors.FAIL).display()
-        exit(1)
+        Text(f"\n{err}", colors.FAIL).display()
+        sys.exit(1)
     except exceptions.RequestFailedError as err:
-        Text(err, colors.FAIL).display()
-        exit(1)
+        Text(f"\n{err}", colors.FAIL).display()
+        sys.exit(1)
     except Exception as err:
-        Text("Unknown Error", err, colors.FAIL).display()
-        exit(1)
+        Text("\nUnknown Error", err, colors.FAIL).display()
+        sys.exit(1)
+
+    Text("[Done]", colors.OKGREEN).display()
 
     # Get data from scraper
     application_chlc = scraper.get_application_chlc()
@@ -62,7 +60,7 @@ def main(test_mode: bool) -> None:
         Text("[Done]", colors.OKGREEN).display()
     except ValueError:
         Text("Error getting repository", colors.FAIL).display()
-        exit(1)
+        sys.exit(1)
 
     # Print CMS details from scraper
     Text("Application CHLC:", application_chlc, colors.OKCYAN).display()
@@ -78,7 +76,7 @@ def main(test_mode: bool) -> None:
         Text("Type:", "Minified App", colors.OKCYAN).display()
 
     # Run bug fix on repository
-    repository.run_bug_fix()
+    fix_branches_in_repository(repository)
 
     # If test mode, don't push to repository
     if test_mode:
@@ -87,7 +85,7 @@ def main(test_mode: bool) -> None:
         input(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
 
         # Push commit to the repository
-        repository.push()
+        repository.push_fix_to_github()
 
     # Collect results from repository after running bug fix
     fix_messages = repository.get_fix_messages()
@@ -95,10 +93,10 @@ def main(test_mode: bool) -> None:
     is_chunk_fixing_required = repository.did_number_of_lines_change()
 
     # If parameter not entered, prompt user for CHRLQ
-    chlrq = utils.get_chlrq()
+    chlrq = user_input.get_chlrq()
 
     # Automatically transition jira tickets
-    utils.transition_jira_issues(chlrq, fix_messages, repo_was_cherrypicked)
+    transition.transition_jira_issues(chlrq, fix_messages, repo_was_cherrypicked)
 
     # Notify user to check chunks if lines were added
     if is_chunk_fixing_required:

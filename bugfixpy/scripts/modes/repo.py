@@ -4,5 +4,5 @@
 # Or could we get a list of the repos in the github?
 
 
-def main(repo):
+def run(repo):
     print("Repo mode not created yet")

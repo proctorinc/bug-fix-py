@@ -1,10 +1,10 @@
 from getpass import getpass
 
-from bugfixpy.jiraapi import JiraApi
+from bugfixpy import jira_api
 from bugfixpy.constants import jira, cms
 
 
-def main():
+def run():
     """
     Setup credentials process. Get user input to change credentials in environment
     """
@@ -52,8 +52,10 @@ def main():
         f.write(f"CMS_PASSWORD={cms_password}\n")
 
     # TODO: ADD VALIDATIONS FOR CMS CREDENTIALS
-    if JiraApi.has_valid_credentials(api_email, api_key):
-        print("Jira API Credentials are valid.")
-        print("Run program: ./run.py")
+    # TODO: validate credentials after you get them!
+    # if jira_api.has_valid_credentials(api_email, api_key):
+    # print("Jira API Credentials are valid.")
+    # print("Run program: ./run.py")
+    print("Warning, function not finished!")
 
     exit(0)

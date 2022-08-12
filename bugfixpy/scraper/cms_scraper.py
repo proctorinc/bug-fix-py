@@ -3,7 +3,7 @@ from requests.cookies import RequestsCookieJar
 from bugfixpy import exceptions
 from bugfixpy.constants import cms
 
-from . import utils
+from . import soup_parser
 
 
 class CmsScraper:
@@ -12,18 +12,17 @@ class CmsScraper:
     """
 
     __session: requests.Session
-    __challenge_id: int
+    __challenge_id: str
     __challenge_chlc: str
     __application_chlc: str
     __git_repo_name: str
 
-    def __init__(self, challenge_id: int) -> None:
+    def __init__(self, challenge_id: str) -> None:
         self.__session = requests.Session()
         self.__challenge_id = challenge_id
         self.__challenge_chlc = ""
         self.__application_chlc = ""
         self.__git_repo_name = ""
-        self.__scrape_cms()
 
     def get_challenge_chlc(self) -> str:
         """
@@ -43,13 +42,15 @@ class CmsScraper:
         """
         return self.__git_repo_name
 
+    # TODO: implement method
     def validate_credentials(self) -> bool:
         """
         Returns whether credentials are valid or not
         """
+        print("validate_credentials is not implemented")
         return True
 
-    def __scrape_cms(self):
+    def scrape_cms(self):
         """
         Scrapes the cms to retrieve
         """
@@ -77,7 +78,7 @@ class CmsScraper:
                 "Scraper Error: Failed to fetch CSRF token"
             )
 
-        csrf_token = utils.parse_csrf_token(result)
+        csrf_token = soup_parser.parse_csrf_token(result)
 
         return csrf_token
 
@@ -99,7 +100,7 @@ class CmsScraper:
         )
 
         # Check if login failed
-        login_failed = utils.did_login_fail(result)
+        login_failed = soup_parser.did_login_fail(result)
 
         # Check if login was successful
         if login_failed:
@@ -125,10 +126,10 @@ class CmsScraper:
             )
 
         # Initialize Challenge CHLC
-        self.__challenge_chlc = utils.get_challenge_chlc(result)
+        self.__challenge_chlc = soup_parser.get_challenge_chlc(result)
 
         # Get application page url
-        application_endpoint = utils.get_application_endpoint(result)
+        application_endpoint = soup_parser.get_application_endpoint(result)
 
         return application_endpoint
 
@@ -140,9 +141,7 @@ class CmsScraper:
         retrieve application CHLC and github repository name.
         """
         # Query application page
-        result = self.__session.get(
-            f"{cms.URL}{application_endpoint}", cookies=cookies
-        )
+        result = self.__session.get(f"{cms.URL}{application_endpoint}", cookies=cookies)
 
         # Check if requesting application page was successful
         if not result.ok:
@@ -151,7 +150,7 @@ class CmsScraper:
             )
 
         # Initialize Application CHLC
-        self.__application_chlc = utils.get_challenge_chlc(result)
+        self.__application_chlc = soup_parser.get_challenge_chlc(result)
 
         # Initialize Github repository name
-        self.__git_repo_name = utils.get_git_repository(result)
+        self.__git_repo_name = soup_parser.get_git_repository(result)

@@ -1,4 +1,5 @@
-from bugfixpy.jiraapi import JiraApi
+import re
+from bugfixpy import jira_api
 from bugfixpy.constants import cms, jira
 
 
@@ -16,7 +17,7 @@ def is_valid_chlrq(chlrq):
     is_valid = False
 
     # Confirm chlrq is valid number and is a chlrq in Jira
-    if chlrq and is_valid_ticket_number(chlrq) and JiraApi.check_chlrq_exists(chlrq):
+    if chlrq and is_valid_ticket_number(chlrq) and jira_api.check_chlrq_exists(chlrq):
         is_valid = True
 
     return is_valid
@@ -29,30 +30,26 @@ def is_valid_chlc(chlc):
     is_valid = False
 
     # Confirm chlc is valid number and is a chlc in Jira
-    if chlc and is_valid_ticket_number(chlc) and JiraApi.check_chlc_exists(chlc):
+    if chlc and is_valid_ticket_number(chlc) and jira_api.check_chlc_exists(chlc):
         is_valid = True
 
     return is_valid
 
 
 # TODO: finish method
-def is_valid_cid(challenge_id):
+def is_valid_challenge_id(cid):
     """
     Check whether the challenge id is valid or not
     """
-    return True
+    # Regex string checks for 24 character string made up of lower case characters and digits
+    return re.match("^([a-z0-9]{24})", cid)
 
 
 def has_credentials():
     """
     Validate that API and CMS credentials exists. Notify user if not
     """
-    if (
-        not jira.API_EMAIL
-        or not jira.API_KEY
-        or not cms.EMAIL
-        or not cms.PASSWORD
-    ):
+    if not jira.API_EMAIL or not jira.API_KEY or not cms.EMAIL or not cms.PASSWORD:
 
         return False
 

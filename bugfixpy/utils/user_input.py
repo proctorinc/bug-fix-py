@@ -74,6 +74,7 @@ def format_messages(messages):
 
     return formatted_message
 
+
 def prompt_user_to_resolve_merge_conflict():
     """
     Prompt user to resolve merge conflict
@@ -81,6 +82,7 @@ def prompt_user_to_resolve_merge_conflict():
     input(
         f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}"
     )
+
 
 def prompt_user_to_exit_or_continue():
     # Prompt user to exit program
@@ -90,3 +92,17 @@ def prompt_user_to_exit_or_continue():
         print("Continuing..")
     else:
         exit(1)
+
+
+def get_challenge_id() -> str:
+    not_done = True
+    challenge_id = ""
+    while not_done:
+        challenge_id = input("Enter Challenge ID: ")
+
+        if not validate.is_valid_challenge_id(challenge_id):
+            print(f"'{challenge_id}' is not a valid Challenge ID")
+        else:
+            not_done = False
+
+    return challenge_id

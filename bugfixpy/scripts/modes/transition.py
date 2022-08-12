@@ -1,10 +1,11 @@
-from bugfixpy import utils
+from bugfixpy.utils import user_input
 from bugfixpy.constants import colors
+from bugfixpy.scripts import transition
 
 
 def main():
     # If parameter not entered, prompt user for CHRLQ
-    chlrq = utils.get_chlrq()
+    chlrq = user_input.get_chlrq()
 
     did_cherrypick = False
 
@@ -22,4 +23,4 @@ def main():
     print(colors.ENDC)
 
     # Automatically transition jira tickets
-    utils.transition_jira_issues(chlrq, [fix_message], did_cherrypick)
+    transition.transition_jira_issues(chlrq, [fix_message], did_cherrypick)

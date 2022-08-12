@@ -1,6 +1,5 @@
 import re
 
-import requests
 from bs4 import BeautifulSoup
 from requests import Response
 from bugfixpy.constants import git, jira
@@ -63,12 +62,12 @@ def parse_csrf_token(result: Response) -> str:
     Parses CSRF token from CMS login page using beautiful soup
     """
     soup = get_soup(result)
-    csrf_token = str(soup.find("input", {"name": "_csrf_token"}).get("value"))
+    csrf_token = str(soup.find("input", {"name": "_csrf_token"}.get("value")))
 
     return csrf_token
 
 
-def did_login_fail(result: requests.models.Response) -> bool:
+def did_login_fail(result: Response) -> bool:
     """
     Checks if login failed based off of error message existing. Post request always returns 200,
     so scraping to check if login failed is needed.

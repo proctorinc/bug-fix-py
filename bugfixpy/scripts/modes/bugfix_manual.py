@@ -5,11 +5,12 @@ from git import GitError
 from bugfixpy import utils
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.gitrepository import GitRepository
-from bugfixpy.utils import Text
+from bugfixpy.utils import Text, output, user_input
+from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
 
 
 # Main function runs bug-fix program
-def main(test_mode: bool) -> None:
+def run(test_mode: bool) -> None:
     """
     Main bug fixing function. Checks the mode, scrapes the CMS, opens the repository,
     and walks the user through the steps to fix the bug in all branches necessary.
@@ -38,16 +39,16 @@ def main(test_mode: bool) -> None:
         print(Text("Type:", "Minified App", colors.OKCYAN))
 
     # Run bug fix on repository
-    repository.run_bug_fix()
+    fix_branches_in_repository(repository)
 
     # If test mode, don't push to repository
     if test_mode:
-        input(instructions.PROMPT_FOR_ENTER_PUSH_DISABLED)
+        print(instructions.PROMPT_FOR_ENTER_PUSH_DISABLED)
     else:
-        input(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
+        print(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
 
         # Push commit to the repository
-        repository.push()
+        repository.push_fix_to_github()
 
     # Collect results from repository after running bug fix
     fix_messages = repository.get_fix_messages()
@@ -57,12 +58,12 @@ def main(test_mode: bool) -> None:
     print(instructions.STEP_ONE_CLOSE_CHLRQ)
 
     # Print out fix messages
-    utils.print_fix_messages(fix_messages)
+    output.print_fix_messages(fix_messages)
 
     print(instructions.STEP_TWO_LINK_CHLRQ)
 
     if repo_was_cherrypicked:
-        chlc = utils.get_chlc()
+        chlc = user_input.get_chlc()
         # input('Enter application CHLC number [Ex: 1234]: ')
 
         # Open web browser to bulk transition tickets linked to the application CHLC

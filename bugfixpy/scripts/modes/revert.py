@@ -7,5 +7,5 @@
 # Revert commit
 
 
-def main():
+def run():
     print("Revert mode not created yet")

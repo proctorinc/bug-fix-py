@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
 """
-__main__ python entry point for bugfixpy
+main python entry point for bugfixpy
 """
 import sys
 import argparse
-import os
-from . import bin, utils
-from .constants import colors
-from .utils import Text, validate
+
+from bugfixpy.scripts import modes
+from bugfixpy.constants import colors
+from bugfixpy.utils import validate, output
+from bugfixpy.formatting import Text
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
     """
     # Instantiate the parser
     parser = argparse.ArgumentParser(
-        description="bug-fix-py automates the SCW bug fixing process"
+        description="bugfixpy automates the SCW bug fixing process. Clones Git repositories automatically,"
     )
 
     # Setup switch
@@ -45,7 +46,7 @@ def main():
     parser.add_argument(
         "--auto",
         action="store_true",
-        help="Run in auto mode. Enables Jira API for transitioning tickets"\
+        help="Run in auto mode. Enables Jira API for transitioning tickets"
         "and CMS webscraping for grabbing data",
     )
 
@@ -63,50 +64,29 @@ def main():
         help="Enter repo name to run in repo mode. Opens repo in VS Code",
     )
 
-    # Challenge ID positional argument
-    parser.add_argument(
-        "--cid", type=str, help="Enter challenge id of challenge to bug fix"
-    )
-
-    # Auto transitioning on switch
-    # parser.add_argument('--debug', action='store_true',
-    #     help='Enable debug mode (In development)')
-
     # Parse arguments
     args = parser.parse_args()
 
     if len(sys.argv) > 2 and not (args.test and args.auto):
         parser.error("Multiple flags cannot be enabled at the same time")
 
-    #
-    #
-    # More validation checks for arguments
-    #
-    #
-
     # Run program mode based off of flags input
     if args.setup:
-        bin.run_setup.main()
+        modes.setup.run()
     elif args.transition:
-        bin.run_transition.main()
+        modes.transition.run()
     elif args.revert:
-        bin.run_revert.main()
-    elif args.auto:
-        if not args.test and not validate.has_credentials():
-            utils.print_missing_credentials()
-        bin.run_bugfix.main(args.test)
+        modes.revert.run()
+    elif not args.auto:
+        modes.bugfix_manual.run(args.test)
+    elif not args.test and not validate.has_credentials():
+        output.print_missing_credentials()
     else:
-        if not args.test and not validate.has_credentials():
-            utils.print_missing_credentials()
-        bin.run_bugfix_manual.main(args.test)
+        modes.bugfix.run(args.test)
 
 
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        Text("\nExited program.", colors.FAIL).display()
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+try:
+    main()
+except KeyboardInterrupt:
+    Text("\nExited program.", colors.FAIL).display()
+    sys.exit(0)
