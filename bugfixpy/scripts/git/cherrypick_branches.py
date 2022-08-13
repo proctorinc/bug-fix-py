@@ -54,5 +54,6 @@ def cherrypick_commit_across_all_branches(repository: GitRepository, commit_id) 
 
         # Inform user of successful cherry-pick, branch complete
         print(
-            f"[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC} {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}"
+            f"[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC}"
+            f" {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}"
         )

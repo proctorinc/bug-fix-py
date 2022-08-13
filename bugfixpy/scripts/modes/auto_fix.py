@@ -1,14 +1,19 @@
+"""
+Automatic bug fix mode. Takes in a challenge ID and scrapes the CMS to retrieve all Jira issue data
+to avoid more user input. Automatically transitions tickets in Jira
+"""
+
+
 import sys
 from bugfixpy import jira_api
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.gitrepository import GitRepository
-from bugfixpy.scraper.scraper_data import ScraperData
 from bugfixpy.scripts import transition
-from bugfixpy.scripts.fix_branches import fix_branches_in_repository
+from bugfixpy.scripts.git import fix_branches_in_repository
 from bugfixpy.formatter import Text
 from bugfixpy.utils import user_input
-from bugfixpy.exceptions import RequestFailedError
+from bugfixpy.scripts.cms import scrape_cms
 
 
 def run(test_mode: bool) -> None:
@@ -20,7 +25,7 @@ def run(test_mode: bool) -> None:
     Text(headers.AUTO_MODE_ENABLED, colors.HEADER).display()
 
     if test_mode:
-        print(Text(headers.TEST_MODE, colors.HEADER))
+        Text(headers.TEST_MODE, colors.HEADER).display()
 
     # Otherwise check if credentials are valid
     elif not jira_api.has_valid_credentials():
@@ -28,7 +33,7 @@ def run(test_mode: bool) -> None:
             "Invalid API credentials. Run with --setup to change credentials",
             colors.FAIL,
         ).display()
-        exit(1)
+        sys.exit(1)
 
     challenge_id = user_input.get_challenge_id()
 
@@ -94,7 +99,7 @@ def run(test_mode: bool) -> None:
 
     except Exception as err:
         print(err)
-        exit(1)
+        sys.exit(1)
 
     # Notify user to check chunks if lines were added
     if is_chunk_fixing_required:
@@ -103,36 +108,3 @@ def run(test_mode: bool) -> None:
         print(instructions.UPDATE_CMS_REMINDER)
 
     print(instructions.BUG_FIX_COMPLETE)
-
-
-def scrape_cms(scraper: CmsScraper):
-    """
-    Scrapes the cms to retrieve data
-    """
-
-    try:
-        # Get CSRF token for login
-        csrf_token = scraper.fetch_csrf_token()
-
-        # Retrieve cookies from logging into the CMS
-        cookies = scraper.login_to_cms(csrf_token)
-
-        # Scrape the challenge screen and return application endpoint
-        challenge_screen_data = scraper.scrape_challenge_screen(cookies)
-
-        # Get application endpoint from scraper data
-        application_endpoint = challenge_screen_data.application_screen_endpoint
-
-        # Scrape the application screen
-        application_screen_data = scraper.scrape_application_screen(
-            cookies, application_endpoint
-        )
-
-    except RequestFailedError as err:
-        Text(f"\n{err}", colors.FAIL).display()
-        sys.exit(1)
-    except Exception as err:
-        Text("\nUnknown Error", err, colors.FAIL).display()
-        sys.exit(1)
-
-    return ScraperData(challenge_screen_data, application_screen_data)

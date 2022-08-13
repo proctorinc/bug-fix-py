@@ -1,10 +1,18 @@
+"""
+Manual bug fixing script that prints manual instructions to the console to lead the user through
+fixing a bug in the Git repository, committing, cherrypicking, and manually transitioning Jira
+issues
+"""
+
+
+import sys
 import webbrowser
 from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import output, user_input
 from bugfixpy.formatter import Text
-from bugfixpy.scripts.fix_branches import fix_branches_in_repository
+from bugfixpy.scripts.git import fix_branches_in_repository
 
 
 # Main function runs bug-fix program
@@ -14,28 +22,27 @@ def run(test_mode: bool) -> None:
     and walks the user through the steps to fix the bug in all branches necessary.
     """
     if test_mode:
-        print(Text(headers.TEST_MODE, colors.HEADER))
+        Text(headers.TEST_MODE, colors.HEADER).display()
 
-    # TODO: add this to utils/user_input
-    repo_name = input("Enter repo name: ")
-    # TODO: validate that repo name exists
+    # Get name of the git repository
+    repo_name = user_input.get_repository_name()
 
     # Attempt to create repository
     try:
         repository = GitRepository(repo_name)
     except GitError:
         print("Git Error: configure SSH key first")
-        exit(1)
+        sys.exit(1)
 
     # Print Details about the repository
-    print(Text("Repo:", repo_name, colors.OKCYAN))
-    print(Text("Branches:", repository.get_num_branches(), colors.OKCYAN))
+    Text("Repo:", repo_name, colors.OKCYAN).display()
+    Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
 
     # Print whether the repository is a full app or minified app
     if repository.is_full_app():
-        print(Text("Type:", "Full App", colors.OKCYAN))
+        Text("Type:", "Full App", colors.OKCYAN).display()
     else:
-        print(Text("Type:", "Minified App", colors.OKCYAN))
+        Text("Type:", "Minified App", colors.OKCYAN).display()
 
     # Run bug fix on repository
     fix_branches_in_repository(repository)
@@ -62,9 +69,8 @@ def run(test_mode: bool) -> None:
     print(instructions.STEP_TWO_LINK_CHLRQ)
 
     if repo_was_cherrypicked:
-        # TODO: Add to user_input
+
         chlc = user_input.get_chlc()
-        # input('Enter application CHLC number [Ex: 1234]: ')
 
         # Open web browser to bulk transition tickets linked to the application CHLC
         webbrowser.open(jira.BULK_TRANSITION_JQL_URL.format(chlc=chlc))

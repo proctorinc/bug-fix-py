@@ -1,9 +1,15 @@
-from getpass import getpass
+"""
+Setup mode script runs setup process for credentials for running CMS scraper and Jira API
+transitioning. Credentials must exist and be valid to run the automated processe
+"""
 
+
+import sys
+from getpass import getpass
 from bugfixpy.constants import jira, cms
 
 
-def run():
+def run() -> None:
     """
     Setup credentials process. Get user input to change credentials in environment
     """
@@ -22,7 +28,7 @@ def run():
             cms_email = None
             cms_password = None
         else:
-            exit(0)
+            sys.exit(0)
 
     # If jira email does not exist, prompt for it
     while not api_email:
@@ -43,18 +49,18 @@ def run():
     while not cms_password:
         cms_password = getpass(prompt="Enter CMS Password: ")
 
-    # Write to env
-    with open(".env", "w") as f:
-        f.write(f"JIRA_API_EMAIL={api_email}\n")
-        f.write(f"JIRA_API_KEY={api_key}\n")
-        f.write(f"CMS_EMAIL={cms_email}\n")
-        f.write(f"CMS_PASSWORD={cms_password}\n")
+    # Write credentials to environment
+    with open(".env", "w", encoding="utf8") as env:
+        env.write(f"JIRA_API_EMAIL={api_email}\n")
+        env.write(f"JIRA_API_KEY={api_key}\n")
+        env.write(f"CMS_EMAIL={cms_email}\n")
+        env.write(f"CMS_PASSWORD={cms_password}\n")
 
     # TODO: ADD VALIDATIONS FOR CMS CREDENTIALS
     # TODO: validate credentials after you get them!
     # if jira_api.has_valid_credentials(api_email, api_key):
     # print("Jira API Credentials are valid.")
-    # print("Run program: ./run.py")
+    # print("Run program: python3 bugfixpy")
     print("Warning, function not finished!")
 
-    exit(0)
+    sys.exit(0)

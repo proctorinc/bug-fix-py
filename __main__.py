@@ -1,5 +1,5 @@
 """
-Main entry point for bugfixpy
+Main entry point for bugfixpy script. Allows user to run in different modes
 """
 
 

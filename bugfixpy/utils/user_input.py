@@ -1,3 +1,9 @@
+"""
+User input module contains all methods to get user input for bug fixing process
+"""
+
+
+import sys
 import readline
 from typing import List
 from bugfixpy.constants import colors, jira
@@ -6,7 +12,7 @@ from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
 
 
-def get_chlrq():
+def get_chlrq() -> str:
     """
     Prompt user to input CHLRQ number. Validate format
     """
@@ -36,7 +42,7 @@ def get_chlrq():
     return chlrq
 
 
-def get_chlc():
+def get_chlc() -> str:
     """
     Prompt user to input CHLC number. Validate format
     """
@@ -64,7 +70,7 @@ def get_chlc():
     return chlc
 
 
-def format_messages(messages):
+def format_messages(messages: List[str]) -> str:
     """
     Formats all messages from list into multiple lines
     """
@@ -78,16 +84,17 @@ def format_messages(messages):
     return formatted_message
 
 
-def prompt_user_to_resolve_merge_conflict():
+def prompt_user_to_resolve_merge_conflict() -> None:
     """
     Prompt user to resolve merge conflict
     """
     input(
-        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}"
+        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
+        f" changes have been made{colors.ENDC}"
     )
 
 
-def prompt_user_to_exit_or_continue():
+def prompt_user_to_exit_or_continue() -> None:
     """
     Prompt user to exit of continue
     """
@@ -97,7 +104,7 @@ def prompt_user_to_exit_or_continue():
     if exit_program.upper() == "N":
         print("Continuing..")
     else:
-        exit(1)
+        sys.exit(1)
 
 
 def get_challenge_id() -> str:
@@ -142,7 +149,8 @@ def get_next_branch(branches: List[str], repository: GitRepository) -> str:
         if (not repository.is_full_app) and branch == jira.FULL_APP_SECURE_BRANCH:
             minified_secure_branches = repository.get_minified_secure_branch()
             print(
-                f"\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure branch: {colors.HEADER}"
+                f"\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure"
+                f" branch: {colors.HEADER}"
             )
             for branch in minified_secure_branches:
                 print(branch, end=" ")
@@ -182,7 +190,8 @@ def prompt_want_to_continue() -> bool:
     Return true if the user wants to continue, otherwise return false
     """
     will_continue = input(
-        f"\nFix another branch? (y/{colors.BOLD}{colors.WHITE}N{colors.ENDC}){colors.ENDC}: {colors.WHITE}"
+        f"\nFix another branch? (y/{colors.BOLD}{colors.WHITE}N{colors.ENDC}){colors.ENDC}:"
+        f" {colors.WHITE}"
     )
     return will_continue.upper() != "Y"
 
@@ -194,3 +203,10 @@ def prompt_user_to_press_enter() -> None:
     input(
         f"{colors.UNDERLINE}{colors.OKGREEN}{colors.BOLD}\nPress [Enter] after fix{colors.ENDC}"
     )
+
+
+def get_repository_name() -> str:
+    """
+    Gets the name of the git repository
+    """
+    return input("Enter repo name: ")

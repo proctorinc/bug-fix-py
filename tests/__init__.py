@@ -1,1 +1,3 @@
-from . import test_manual_fix
+"""
+Test module that contains all tests for bug fixing program
+"""
