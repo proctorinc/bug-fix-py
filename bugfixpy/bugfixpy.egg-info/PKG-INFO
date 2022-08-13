@@ -1,9 +1,0 @@
-Metadata-Version: 2.1
-Name: bugfixpy
-Version: 2.0.0
-Summary: SCW automated bug fixing program
-Home-page: https://github.com/proctorinc/bugfixpy
-Author: Matt Proctor
-Author-email: matthewalanproctor@gmail.com
-License: MIT
-License-File: LICENSE

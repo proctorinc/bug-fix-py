@@ -1,7 +1,0 @@
-constants
-exceptions
-formatter
-scraper
-scripts
-tests
-utils
