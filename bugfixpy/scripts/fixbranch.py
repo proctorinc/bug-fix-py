@@ -4,7 +4,7 @@ from git import GitCommandError
 
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.constants import colors, jira
-from bugfixpy.formatting import Completer
+from bugfixpy.formatter import completer
 
 
 def fix_and_commit_branch(repository: GitRepository) -> Tuple[str, str]:
@@ -28,7 +28,7 @@ def fix_and_commit_branch(repository: GitRepository) -> Tuple[str, str]:
     readline.parse_and_bind("tab: complete")
 
     # Set completion to list of branches
-    readline.set_completer(Completer().get_list_completer(branches))
+    readline.set_completer(completer.get_list_completer(branches))
 
     # Prompt user for branch where the fix will be made
     initial_branch = input(f"\nEnter name of branch to fix: {colors.WHITE}")

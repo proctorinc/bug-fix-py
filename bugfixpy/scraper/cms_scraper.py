@@ -27,9 +27,7 @@ class CmsScraper:
 
         # Check if result was successful
         if not result.ok:
-            raise RequestFailedError(
-                "Scraper Error: Failed to fetch CSRF token"
-            )
+            raise RequestFailedError("Scraper Error: Failed to fetch CSRF token")
 
         csrf_token = soup_parser.parse_csrf_token(result)
 
@@ -63,7 +61,9 @@ class CmsScraper:
 
         return result.cookies
 
-    def scrape_challenge_screen(self, cookies: RequestsCookieJar) -> ChallengeScreenData:
+    def scrape_challenge_screen(
+        self, cookies: RequestsCookieJar
+    ) -> ChallengeScreenData:
         """
         Get request to search for challenge id. Scrape challenge screen.
         Retrieve challenge CHLC and application screen endpoint.
@@ -74,9 +74,7 @@ class CmsScraper:
 
         # Check if searching for challenge was successful
         if not result.content:
-            raise RequestFailedError(
-                "Scraper Error: scraping application page failed"
-            )
+            raise RequestFailedError("Scraper Error: scraping application page failed")
 
         return soup_parser.parse_challenge_screen_data(result)
 
@@ -92,8 +90,6 @@ class CmsScraper:
 
         # Check if requesting application page was successful
         if not result.ok:
-            raise RequestFailedError(
-                "Scraper Error: scraping application page failed"
-            )
+            raise RequestFailedError("Scraper Error: scraping application page failed")
 
         return soup_parser.parse_application_screen_data(result)

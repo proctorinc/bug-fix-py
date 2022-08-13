@@ -9,8 +9,8 @@ from bugfixpy.constants import colors
 def transition_jira_issues(
     fix_messages: List[str],
     is_cherrypick_required: bool,
-    challenge_chlc = None,
-    application_chlc = None
+    challenge_chlc=None,
+    application_chlc=None,
 ) -> None:
     """
     Use Jira API to transition tickets through Jira workflow
@@ -60,6 +60,7 @@ def transition_jira_issues(
 
     transition_chlcs(challenges)
 
+
 def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) -> None:
     """
     Transition CHLRQ issue through Jira API and print results
@@ -87,6 +88,7 @@ def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) 
     # If api returns 204, transition was successful
     closed_result = jira_api.transition_issue_to_closed(chlrq, fix_message)
     check_transition_result(closed_result)
+
 
 def transition_chlcs(challenges) -> None:
     """
@@ -122,6 +124,7 @@ def transition_chlcs(challenges) -> None:
         # If api returns 204, transition was successful
         edit_result = jira_api.edit_issue_details(challenge, chlrq)
         check_transition_result(edit_result)
+
 
 def check_transition_result(result: Response) -> None:
     """

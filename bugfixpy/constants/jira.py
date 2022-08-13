@@ -1,3 +1,8 @@
+"""
+Jira constants
+"""
+
+
 import os
 from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv

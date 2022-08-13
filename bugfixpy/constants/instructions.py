@@ -1,3 +1,8 @@
+"""
+Instruction constants to direct users through bug fix process
+"""
+
+
 from . import colors
 
 PROMPT_FOR_ENTER_PUSH_ENABLED = f"""{colors.HEADER}

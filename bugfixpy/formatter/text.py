@@ -1,3 +1,8 @@
+"""
+Text class formats colors for text output to console
+"""
+
+
 from bugfixpy.constants import colors
 
 

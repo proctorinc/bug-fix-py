@@ -1,3 +1,8 @@
+"""
+Git Repository class for running git actions on SCW content repositories
+"""
+
+
 import os
 from typing import List
 import subprocess
@@ -11,7 +16,7 @@ from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
 
 class GitRepository:
     """
-    Class wrapper around GitPython for git repository functionality
+    Wrapper class around GitPython library for git repository functionality
     """
 
     __repo_name: str

@@ -1,3 +1,8 @@
+"""
+Jira API module holds all methods for querying the Jira API to transition issues
+"""
+
+
 import json
 import datetime
 from datetime import date

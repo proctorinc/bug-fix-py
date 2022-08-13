@@ -6,7 +6,7 @@ from bugfixpy.gitrepository import GitRepository
 from bugfixpy.scraper.scraper_data import ScraperData
 from bugfixpy.scripts import transition
 from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
-from bugfixpy.formatting import Text
+from bugfixpy.formatter import Text
 from bugfixpy.utils import user_input
 from bugfixpy.exceptions import RequestFailedError
 
@@ -89,7 +89,7 @@ def run(test_mode: bool) -> None:
             fix_messages,
             repo_was_cherrypicked,
             scraper_data.challenge.chlc,
-            scraper_data.application.chlc
+            scraper_data.application.chlc,
         )
 
     except Exception as err:
@@ -103,6 +103,7 @@ def run(test_mode: bool) -> None:
         print(instructions.UPDATE_CMS_REMINDER)
 
     print(instructions.BUG_FIX_COMPLETE)
+
 
 def scrape_cms(scraper: CmsScraper):
     """
@@ -123,7 +124,9 @@ def scrape_cms(scraper: CmsScraper):
         application_endpoint = challenge_screen_data.application_screen_endpoint
 
         # Scrape the application screen
-        application_screen_data = scraper.scrape_application_screen(cookies, application_endpoint)
+        application_screen_data = scraper.scrape_application_screen(
+            cookies, application_endpoint
+        )
 
     except RequestFailedError as err:
         Text(f"\n{err}", colors.FAIL).display()

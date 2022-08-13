@@ -5,7 +5,7 @@ from git import GitError
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import output, user_input
-from bugfixpy.formatting import Text
+from bugfixpy.formatter import Text
 from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
 
 

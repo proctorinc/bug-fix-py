@@ -3,3 +3,5 @@ __pycache__
 data/repos/*
 .vscode/
 venv/
+dist/*
+build/*
