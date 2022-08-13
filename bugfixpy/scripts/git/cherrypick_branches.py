@@ -3,9 +3,9 @@ Cherrypick script takes a commit id and runs git cherry-pick on all branches in 
 """
 
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
-from bugfixpy.utils import user_input, output
+from bugfixpy.utils import user_input
 from bugfixpy.gitrepository import GitRepository
-from bugfixpy.constants import colors
+from bugfixpy.constants import colors, instructions
 
 
 def cherrypick_commit_across_all_branches(repository: GitRepository, commit_id) -> None:
@@ -35,7 +35,7 @@ def cherrypick_commit_across_all_branches(repository: GitRepository, commit_id) 
 
             # Check if merge conflict occurred
             except MergeConflictError:
-                output.warn_user_of_merge_conflict(branch)
+                print(instructions.WARN_USER_OF_MERGE_CONFLICT.format(branch=branch))
                 repository.open_code_in_editor()
                 user_input.prompt_user_to_resolve_merge_conflict()
 

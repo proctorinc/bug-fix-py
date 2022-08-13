@@ -6,11 +6,13 @@ Jira API module holds all methods for querying the Jira API to transition issues
 import json
 import datetime
 from datetime import date
+from typing import List, Optional, Tuple
 import requests
+from requests import Response
 from bugfixpy.constants import colors, jira
 
 
-def __get_query(endpoint: str):
+def __get_query(endpoint: str) -> Response:
     """
     Query Jira API with request headers and Authentication
     """
@@ -23,7 +25,7 @@ def __get_query(endpoint: str):
     return response
 
 
-def __post_query(endpoint: str, body: dict):
+def __post_query(endpoint: str, body: dict) -> Response:
     """
     Query Jira API with request headers and Authentication
     """
@@ -38,7 +40,7 @@ def __post_query(endpoint: str, body: dict):
 
 
 # TODO: Separate API call and functionality (move to validate.py)
-def has_valid_credentials():
+def has_valid_credentials() -> bool:
     """
     GET
     Checks if credentials are able to retrieve data from API
@@ -65,7 +67,7 @@ def has_valid_credentials():
 
 
 # TODO: Move to utils
-def get_linked_issues(issue_links):
+def __parse_linked_issues(issue_links) -> List[str]:
     """
     Parses json issue links and returns list of all linked CHLC's
     """
@@ -73,9 +75,9 @@ def get_linked_issues(issue_links):
     issue = ""
     for link in issue_links:
         if "outwardIssue" in link:
-            issue = link["outwardIssue"][jira.RESPONSE_KEY]
+            issue = str(link["outwardIssue"][jira.RESPONSE_KEY])
         elif "inwardIssue" in link:
-            issue = link["inwardIssue"][jira.RESPONSE_KEY]
+            issue = str(link["inwardIssue"][jira.RESPONSE_KEY])
 
         if issue and "CHLC-" in issue:
             chlcs.append(issue)
@@ -83,7 +85,7 @@ def get_linked_issues(issue_links):
     return chlcs
 
 
-def get_current_fix_version():
+def get_current_fix_version() -> Tuple[Optional[str], Optional[str]]:
     """
     GET
     Gets current fix version based off of the current date
@@ -106,7 +108,7 @@ def get_current_fix_version():
     return version_name, version_id
 
 
-def transition_issue_to_planned(chlrq, fix_version_id):
+def transition_issue_to_planned(chlrq, fix_version_id) -> Response:
     """
     POST
     Transition CHLRQ to Planned w/ fix version
@@ -121,7 +123,7 @@ def transition_issue_to_planned(chlrq, fix_version_id):
     return response
 
 
-def transition_issue_to_in_progress(chlrq):
+def transition_issue_to_in_progress(chlrq) -> Response:
     """
     POST
     Transition CHLRQ to In Progress
@@ -134,7 +136,7 @@ def transition_issue_to_in_progress(chlrq):
 
 
 # TODO: THIS DOESN'T WORK FOR ALL CHALLENGES!
-def get_creation_chlc(chlc):
+def get_creation_chlc(chlc) -> str:
     """
     GET
     Get parent CHLC's creation CHLC
@@ -149,7 +151,7 @@ def get_creation_chlc(chlc):
         if "errorMessages" in json_response:
             print(f"{colors.FAIL}Error getting creation CHLC{colors.ENDC}")
 
-    return json_response["fields"]["parent"][jira.RESPONSE_KEY]
+    return str(json_response["fields"]["parent"][jira.RESPONSE_KEY])
 
 
 def get_linked_challenges(chlc):
@@ -161,10 +163,10 @@ def get_linked_challenges(chlc):
     response = __get_query(endpoint)
     json_response = json.loads(response.text)
 
-    return get_linked_issues(json_response["fields"]["issue_links"])
+    return __parse_linked_issues(json_response["fields"]["issue_links"])
 
 
-def link_creation_chlc(chlrq, chlc):
+def link_creation_chlc(chlrq, chlc) -> Response:
     """
     POST
     Links creation CHLC to CHLRQ
@@ -179,7 +181,7 @@ def link_creation_chlc(chlrq, chlc):
     return __post_query(endpoint, body)
 
 
-def transition_issue_to_closed(chlrq, comment):
+def transition_issue_to_closed(chlrq, comment) -> Response:
     """
     POST
     Links transitions CHLRQ to closed
@@ -192,7 +194,7 @@ def transition_issue_to_closed(chlrq, comment):
     return __post_query(endpoint, body)
 
 
-def transition_issue_to_feedback_open(chlc):
+def transition_issue_to_feedback_open(chlc) -> Response:
     """
     POST
     Transition CHLC to feedback open
@@ -202,7 +204,7 @@ def transition_issue_to_feedback_open(chlc):
     return __post_query(endpoint, body)
 
 
-def transition_issue_to_feedback_review(chlc):
+def transition_issue_to_feedback_review(chlc) -> Response:
     """
     POST
     Transition CHLC to feedback review and add comment and change assignee to Thomas
@@ -212,7 +214,7 @@ def transition_issue_to_feedback_review(chlc):
     return __post_query(endpoint, body)
 
 
-def edit_issue_details(chlc, chlrq):
+def edit_issue_details(chlc, chlrq) -> Response:
     """
     PUT
     Jira edit query. Changes CHLC's assignee to Thomas and adds comment
@@ -225,7 +227,7 @@ def edit_issue_details(chlc, chlrq):
     return __post_query(endpoint, body)
 
 
-def check_chlc_exists(chlc):
+def check_chlc_exists(chlc) -> bool:
     """
     GET
     Confirm that chlc number is valid
@@ -240,7 +242,7 @@ def check_chlc_exists(chlc):
     )
 
 
-def check_chlrq_exists(chlrq):
+def check_chlrq_exists(chlrq) -> bool:
     """
     GET
     Confirm that chlrq number is valid

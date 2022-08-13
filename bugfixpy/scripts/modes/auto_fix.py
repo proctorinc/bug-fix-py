@@ -66,6 +66,7 @@ def run(test_mode: bool) -> None:
     Text("Repo:", scraper_data.application.repository_name, colors.OKCYAN).display()
     Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
 
+    # TODO: get is full app from Scraper instead of repo
     if repository.is_full_app():
         Text("Type", "Full App", colors.OKCYAN).display()
     else:

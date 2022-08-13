@@ -9,7 +9,7 @@ import argparse
 from bugfixpy.scripts import modes
 from bugfixpy.constants import colors
 from bugfixpy.utils import validate, output
-from bugfixpy.formatter import Text
+from bugfixpy.formatter import Text, text
 
 
 def main() -> None:
@@ -80,7 +80,7 @@ def main() -> None:
     elif not args.auto:
         modes.manual_fix.run(args.test)
     elif not args.test and not validate.has_credentials():
-        output.print_missing_credentials()
+        print(text.format_missing_credentials())
     else:
         modes.auto_fix.run(args.test)
 

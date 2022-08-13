@@ -11,7 +11,7 @@ from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import output, user_input
-from bugfixpy.formatter import Text
+from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import fix_branches_in_repository
 
 
@@ -64,7 +64,7 @@ def run(test_mode: bool) -> None:
     print(instructions.STEP_ONE_CLOSE_CHLRQ)
 
     # Print out fix messages
-    output.print_fix_messages(fix_messages)
+    print(text.format_fix_messages(fix_messages))
 
     print(instructions.STEP_TWO_LINK_CHLRQ)
 
