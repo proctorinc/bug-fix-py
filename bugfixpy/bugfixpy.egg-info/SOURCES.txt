@@ -51,8 +51,7 @@ bugfixpy/scraper/__pycache__/cms_scraper.cpython-310.pyc
 bugfixpy/scraper/__pycache__/scraper_data.cpython-310.pyc
 bugfixpy/scraper/__pycache__/soup_parser.cpython-310.pyc
 bugfixpy/scripts/__init__.py
-bugfixpy/scripts/fixallbranches.py
-bugfixpy/scripts/fixbranch.py
+bugfixpy/scripts/fix_branches.py
 bugfixpy/scripts/transition.py
 bugfixpy/scripts/__pycache__/__init__.cpython-310.pyc
 bugfixpy/scripts/__pycache__/fixallbranches.cpython-310.pyc
@@ -72,8 +71,6 @@ bugfixpy/scripts/mode/__pycache__/repo.cpython-310.pyc
 bugfixpy/scripts/mode/__pycache__/revert.cpython-310.pyc
 bugfixpy/scripts/mode/__pycache__/setup.cpython-310.pyc
 bugfixpy/scripts/mode/__pycache__/transition.cpython-310.pyc
-bugfixpy/tests/__init__.py
-bugfixpy/tests/test_manual_fix.py
 bugfixpy/utils/__init__.py
 bugfixpy/utils/output.py
 bugfixpy/utils/user_input.py
@@ -87,3 +84,5 @@ docs/make.bat
 docs/source/conf.py
 docs/source/index.rst
 examples/example.py
+tests/__init__.py
+tests/test_manual_fix.py

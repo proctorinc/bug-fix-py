@@ -5,3 +5,4 @@ data/repos/*
 venv/
 dist/*
 build/*
+bugfixpy.egg-info/*

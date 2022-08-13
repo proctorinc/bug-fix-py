@@ -1,12 +1,10 @@
 import webbrowser
-
 from git import GitError
-
-from bugfixpy.constants import colors, headers, instructions
+from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import output, user_input
 from bugfixpy.formatter import Text
-from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
+from bugfixpy.scripts.fix_branches import fix_branches_in_repository
 
 
 # Main function runs bug-fix program
@@ -20,12 +18,13 @@ def run(test_mode: bool) -> None:
 
     # TODO: add this to utils/user_input
     repo_name = input("Enter repo name: ")
+    # TODO: validate that repo name exists
 
     # Attempt to create repository
     try:
         repository = GitRepository(repo_name)
-    except GitError as err:
-        print(err)
+    except GitError:
+        print("Git Error: configure SSH key first")
         exit(1)
 
     # Print Details about the repository
@@ -63,13 +62,12 @@ def run(test_mode: bool) -> None:
     print(instructions.STEP_TWO_LINK_CHLRQ)
 
     if repo_was_cherrypicked:
+        # TODO: Add to user_input
         chlc = user_input.get_chlc()
         # input('Enter application CHLC number [Ex: 1234]: ')
 
         # Open web browser to bulk transition tickets linked to the application CHLC
-        webbrowser.open(
-            f"https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC"
-        )
+        webbrowser.open(jira.BULK_TRANSITION_JQL_URL.format(chlc=chlc))
 
         print(instructions.CHERRY_PICKING_MANUAL_STEPS)
     else:

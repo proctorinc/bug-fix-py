@@ -2,6 +2,7 @@
 Git Repository class for running git actions on SCW content repositories
 """
 
+# TODO: Change implementation to use Github CLI https://pypi.org/project/github-cli/
 
 import os
 from typing import List
@@ -225,7 +226,7 @@ class GitRepository:
                 except MergeConflictError:
                     output.warn_user_of_merge_conflict(branch)
 
-                    self.open_repository_in_vscode()
+                    self.open_code_in_editor()
 
                     user_input.prompt_user_to_resolve_merge_conflict()
 
@@ -249,7 +250,7 @@ class GitRepository:
                 f"[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC} {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}"
             )
 
-    def open_repository_in_vscode(self):
+    def open_code_in_editor(self):
         """Opens repository code in VS Code"""
         subprocess.check_output(f"code {self.get_repository_dir()}", shell=True)
 

@@ -55,3 +55,11 @@ COMPLETE THE FOLLOWING TASKS:
 
 BUG_FIX_COMPLETE = f"""{colors.OKGREEN}{colors.BOLD}{colors.UNDERLINE}
 Bug Fix Complete.{colors.ENDC}"""
+
+
+PROMPT_USER_TO_MAKE_FIX = f"""{colors.UNDERLINE}{colors.OKGREEN}{colors.BOLD}
+Make the fix in VS Code{colors.ENDC}"""
+
+PROMPT_USER_THAT_NO_FIX_WAS_MADE = f"""{colors.ENDC}{colors.FAIL}
+No Changes have been made, please make a fix before continuing
+Press {colors.UNDERLINE}ctrl+s{colors.ENDC}{colors.FAIL} to confirm changes"""

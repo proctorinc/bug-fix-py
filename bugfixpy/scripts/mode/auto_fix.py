@@ -5,7 +5,7 @@ from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.scraper.scraper_data import ScraperData
 from bugfixpy.scripts import transition
-from bugfixpy.scripts.fixallbranches import fix_branches_in_repository
+from bugfixpy.scripts.fix_branches import fix_branches_in_repository
 from bugfixpy.formatter import Text
 from bugfixpy.utils import user_input
 from bugfixpy.exceptions import RequestFailedError

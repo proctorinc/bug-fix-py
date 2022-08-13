@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
+"""
+Main entry point for bugfixpy
+"""
 
-"""
-main python entry point for bugfixpy
-"""
+
 import sys
 import argparse
 
@@ -14,11 +14,11 @@ from bugfixpy.formatter import Text
 
 def main() -> None:
     """
-    Main method
+    Main method takes in arguments to decide which mode to run
     """
     # Instantiate the parser
     parser = argparse.ArgumentParser(
-        description="bugfixpy automates the SCW bug fixing process. Clones Git repositories automatically,"
+        description="bugfixpy automates the SCW bug fixing process"
     )
 
     # Setup switch
