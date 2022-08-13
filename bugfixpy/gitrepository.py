@@ -7,12 +7,9 @@ Git Repository class for running git actions on SCW content repositories
 import os
 from typing import List
 import subprocess
-
 from git.repo import Repo
-
-from bugfixpy.utils import output, user_input
-from bugfixpy.constants import colors, git, jira
-from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
+from bugfixpy.constants import git, jira
+from bugfixpy.exceptions import MergeConflictError
 
 
 class GitRepository:
@@ -128,7 +125,7 @@ class GitRepository:
             stderr=subprocess.DEVNULL,
         )
 
-    def __continue_cherrypicking_branch(self) -> None:
+    def continue_cherrypicking_branch(self) -> None:
         """
         Run git command to continue cherrypicking
         """
@@ -142,7 +139,7 @@ class GitRepository:
         """
         self.__repository.git.commit("-m", message)
 
-    def __commit_changes_allow_empty(self) -> None:
+    def commit_changes_allow_empty(self) -> None:
         """
         Commit changes with empty commit message
         """
@@ -153,7 +150,7 @@ class GitRepository:
             stderr=subprocess.DEVNULL,
         )
 
-    def __cherrypick_branch(self, commit_id) -> None:
+    def cherrypick_branch(self, commit_id) -> None:
         """
         Cherrypick commit id in current branch
         """
@@ -196,59 +193,6 @@ class GitRepository:
         Returns commit id of last commit
         """
         return str(self.__repository.rev_parse("HEAD"))
-
-    def cherrypick_commit_across_all_branches(self, commit_id) -> None:
-        """
-        Cherrypick git repository
-        """
-        branches = self.get_filtered_branches()
-
-        # Cherrypick each branch
-        for i, branch in enumerate(branches):
-
-            # Attempt to checkout to branch
-            try:
-                self.checkout_to_branch(branch)
-
-            # If checkout failed
-            except CheckoutFailedError as err:
-                print("Exception occurred while checking out to branch")
-                print(err)
-                user_input.prompt_user_to_exit_or_continue()
-
-            # Successful checkout to branch
-            else:
-                # Attempt to cherrypick branch
-                try:
-                    self.__cherrypick_branch(commit_id)
-
-                # Check if merge conflict occurred
-                except MergeConflictError:
-                    output.warn_user_of_merge_conflict(branch)
-
-                    self.open_code_in_editor()
-
-                    user_input.prompt_user_to_resolve_merge_conflict()
-
-                    # Attempt to add changes and continue cherrypick
-                    try:
-                        self.add_changes_to_branch()
-                        self.__continue_cherrypicking_branch()
-
-                    # Create empty commit if error occurs
-                    # TODO: figure out what exception is being thrown here
-                    except Exception as err:
-                        print(
-                            "Exception occurred while adding and continuing cherrypick"
-                        )
-                        print(err)
-                        print(type(err))
-                        self.__commit_changes_allow_empty()
-
-            # Inform user of successful cherry-pick, branch complete
-            print(
-                f"[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC} {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}"
-            )
 
     def open_code_in_editor(self):
         """Opens repository code in VS Code"""

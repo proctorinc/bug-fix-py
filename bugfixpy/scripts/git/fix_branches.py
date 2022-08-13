@@ -6,6 +6,7 @@ from git import GitCommandError
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.utils import user_input
+from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
 
 def fix_branches_in_repository(repository: GitRepository) -> None:
@@ -46,7 +47,7 @@ def fix_branches_in_repository(repository: GitRepository) -> None:
 
                 print("\nCherry-picking Branches...")
                 # Run cherry-pick method
-                repository.cherrypick_commit_across_all_branches(commit_id)
+                cherrypick_commit_across_all_branches(repository, commit_id)
 
                 # Confirm that cherrypick occurred
                 repository.set_cherrypick_ran()
