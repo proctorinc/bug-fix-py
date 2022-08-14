@@ -37,7 +37,7 @@
 </details>
 
 ## About The Project
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
 Ported Automated-Bug-Fix from bash to Python for improved reliability, portability, and performance. See git history of Automated-Bug-Fix here: (https://github.com/proctorinc/Automated-Bug-Fix)
 
@@ -81,49 +81,99 @@ _Below is an example of how you can instruct your audience on installing and set
    python3 setup.py install
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ### Usage
 
 python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### Program Modes
+
+# Manual bug fix
+* Run
+    ```sh
+    python3 bugfixpy
+    ```
+* Description:
+    
+
+# Automatic bugfix
+* Run
+    ```sh
+    python3 bugfixpy --auto
+    ```
+* Description:
+
+# Setup mode
+* Run
+    ```sh
+    python3 bugfixpy --setup
+    ```
+* Description:
+    Run setup mode to enter credentials. You are required to enter credentials before running in auto mode. Credentials are needed to access the Jira API for transitioning issues as well as the CMS for scraping data to automate the process.
+
+    The following credentials are required:
+        - Jira email
+        - Jira API key
+        - CMS email
+        - CMS password
+
+# Transition mode
+* Run
+    ```sh
+    python3 bugfixpy --transition
+    ```
+* Description:
+    Run transition mode to run through the Jira automatic issue transitioning process. Valid Jira credentials are required to run this mode. This mode will run in automatice mode, but run this mode separately to transition a ticket without requiring a bug fix first.
+
+# Repository mode
+* Run
+    ```sh
+    python3 bugfixpy --repo
+    ```
+* Description:
+    Run repository mode to open the git repository in a code editor. This mode is for quickly checking the code repository without needing to run a fix on the repository.
+
+# Revert mode
+* Run
+    ```sh
+    python3 bugfixpy --revert
+    ```
+* Description:
+    Run revert mode to undo a commit done on a git repository. In case a bug fix goes wrong, this is an easy method to revert the changes. (This mode is still in development)
 
 ### Filestructure
-
-    ├── README.md
-    ├── .gitignore
-    ├── LICENSE
-    ├── MANIFEST.in
-    ├── requirements.txt
-    ├── setup.cfg
-    ├── setup.py
+    
+    bugfixpy
+    │
     ├── bugfixpy
-    │   ├── 
-    │   ├── 
-    │   ├── 
-    │   ├── 
+    │   ├── constants
+    │   ├── exceptions
+    │   ├── formatter
+    │   ├── scraper
+    │   ├── scripts
+    │   └── utils
     │
     ├── data
     │   └── repos
     │
     ├── docs
     ├── examples
-    ├── tests
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+    └── tests
 
 ### License
 [![MIT License][license-shield]][license-url]
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ### Contact
-Questions? Bugs? Contact the author: matthewalanproctor@gmail.com
+Questions? Bugs? Feel free to contact the author
+
+Matt Proctor - matthewalanproctor@gmail.com
+
+Github: https://github.com/proctorinc/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[python-url]: https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg
+[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
+[Python-url]: https://www.python.org/
+[Python.com]: https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg
