@@ -41,10 +41,9 @@
 
 Ported Automated-Bug-Fix from bash to Python for improved reliability, portability, and performance. See git history of Automated-Bug-Fix here: (https://github.com/proctorinc/Automated-Bug-Fix)
 
-### Built With
+### Built 100% With Python
 
 [![Python][Python.com]][Python-url]
-Python
 
 ## Getting Started
 
@@ -65,8 +64,6 @@ This program requires multiple python libraries installed. The full list can be 
   ```
 
 ### Installation
-
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
 1. Clone the repo
    ```sh
@@ -163,7 +160,6 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
     └── tests
 
 ### License
-[![MIT License][license-shield]][license-url]
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
