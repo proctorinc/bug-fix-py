@@ -43,7 +43,8 @@ Ported Automated-Bug-Fix from bash to Python for improved reliability, portabili
 
 ### Built With
 
-* [![Python][Python.com]][Python-url]
+[![Python][Python.com]][Python-url]
+Python
 
 ## Getting Started
 
@@ -67,42 +68,44 @@ This program requires multiple python libraries installed. The full list can be 
 
 _Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone git@github.com:proctorinc/bugfixpy.git
    ```
-3. Navigate into the main directory
+2. Navigate into the main directory
    ```sh
    cd bugfixpy
    ```
-4. Install the 
+3. Install the 
    ```sh
    python3 setup.py install
    ```
 
 ### Usage
 
+```sh
 python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
+```
 
 ### Program Modes
 
-# Manual bug fix
+#### Manual bug fix
 * Run
     ```sh
     python3 bugfixpy
     ```
 * Description:
-    
+    Manual bug fixing mode walks through the bug fixing process with instructions for all external steps in CMS and Jira. Automates cloning the Git repository, cherry picking for fixes on the secure branch, committing, and pushing to Github. This mode does not require external API's or credentials.
 
-# Automatic bugfix
+#### Automatic bugfix
 * Run
     ```sh
     python3 bugfixpy --auto
     ```
 * Description:
+    Automates the Manual bug fixing process by Automating most steps outside of the program. Scrapes the CMS to retrieve challenge and application Jira ticket numbers related to the challenge being fixed. Then automates the transitioning of those tickets after the fix is complete. This mode requires Jira and CMS credentials (see --setup mode for more details).
 
-# Setup mode
+#### Setup mode
 * Run
     ```sh
     python3 bugfixpy --setup
@@ -116,7 +119,7 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
         - CMS email
         - CMS password
 
-# Transition mode
+#### Transition mode
 * Run
     ```sh
     python3 bugfixpy --transition
@@ -124,7 +127,7 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
 * Description:
     Run transition mode to run through the Jira automatic issue transitioning process. Valid Jira credentials are required to run this mode. This mode will run in automatice mode, but run this mode separately to transition a ticket without requiring a bug fix first.
 
-# Repository mode
+#### Repository mode
 * Run
     ```sh
     python3 bugfixpy --repo
@@ -132,7 +135,7 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
 * Description:
     Run repository mode to open the git repository in a code editor. This mode is for quickly checking the code repository without needing to run a fix on the repository.
 
-# Revert mode
+#### Revert mode
 * Run
     ```sh
     python3 bugfixpy --revert

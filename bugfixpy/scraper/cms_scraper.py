@@ -6,6 +6,7 @@ from .scraper_data import ApplicationScreenData, ChallengeScreenData
 from . import soup_parser
 
 
+# TODO: add automation for updating branches in CMS
 class CmsScraper:
     """
     Simple webscraper that scrapes data from the CMS
