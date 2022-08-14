@@ -37,12 +37,12 @@ def is_valid_chlc(chlc):
 
 
 # TODO: finish method
-def is_valid_challenge_id(cid):
+def is_valid_challenge_id(cid) -> bool:
     """
     Check whether the challenge id is valid or not
     """
     # Regex string checks for 24 character string made up of lower case characters and digits
-    return re.match("^([a-z0-9]{24})", cid)
+    return bool(re.match("^([a-z0-9]{24})", cid))
 
 
 def has_credentials():
@@ -54,3 +54,17 @@ def has_credentials():
         return False
 
     return True
+
+
+def is_valid_fix_message(message) -> bool:
+    """
+    Validates fix message. If no message return false, otherwise return true
+    """
+    return bool(message)
+
+
+def is_valid_repository_name(repository) -> bool:
+    """
+    Validates if input is a valid repository
+    """
+    return bool(repository)

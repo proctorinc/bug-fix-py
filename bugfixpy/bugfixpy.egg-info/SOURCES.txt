@@ -59,9 +59,14 @@ bugfixpy/scripts/__pycache__/fixbranch.cpython-310.pyc
 bugfixpy/scripts/__pycache__/transition.cpython-310.pyc
 bugfixpy/scripts/cms/__init__.py
 bugfixpy/scripts/cms/scrape_cms.py
+bugfixpy/scripts/cms/__pycache__/__init__.cpython-310.pyc
+bugfixpy/scripts/cms/__pycache__/scrape_cms.cpython-310.pyc
 bugfixpy/scripts/git/__init__.py
 bugfixpy/scripts/git/cherrypick_branches.py
 bugfixpy/scripts/git/fix_branches.py
+bugfixpy/scripts/git/__pycache__/__init__.cpython-310.pyc
+bugfixpy/scripts/git/__pycache__/cherrypick_branches.cpython-310.pyc
+bugfixpy/scripts/git/__pycache__/fix_branches.cpython-310.pyc
 bugfixpy/scripts/modes/__init__.py
 bugfixpy/scripts/modes/auto_fix.py
 bugfixpy/scripts/modes/manual_fix.py
@@ -78,7 +83,6 @@ bugfixpy/scripts/modes/__pycache__/setup.cpython-310.pyc
 bugfixpy/scripts/modes/__pycache__/transition.cpython-310.pyc
 bugfixpy/tests/__init__.py
 bugfixpy/utils/__init__.py
-bugfixpy/utils/output.py
 bugfixpy/utils/user_input.py
 bugfixpy/utils/validate.py
 bugfixpy/utils/__pycache__/__init__.cpython-310.pyc

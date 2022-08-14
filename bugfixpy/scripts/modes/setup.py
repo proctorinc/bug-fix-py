@@ -6,6 +6,7 @@ transitioning. Credentials must exist and be valid to run the automated processe
 
 import sys
 from getpass import getpass
+import keyring
 from bugfixpy.constants import jira, cms
 
 
@@ -49,18 +50,11 @@ def run() -> None:
     while not cms_password:
         cms_password = getpass(prompt="Enter CMS Password: ")
 
-    # Write credentials to environment
-    with open(".env", "w", encoding="utf8") as env:
-        env.write(f"JIRA_API_EMAIL={api_email}\n")
-        env.write(f"JIRA_API_KEY={api_key}\n")
-        env.write(f"CMS_EMAIL={cms_email}\n")
-        env.write(f"CMS_PASSWORD={cms_password}\n")
+    keyring.set_password("system", "JIRA_API_EMAIL", api_email)
+    keyring.set_password("system", "JIRA_API_KEY", api_key)
+    keyring.set_password("system", "CMS_EMAIL", cms_email)
+    keyring.set_password("system", "CMS_PASSWORD", cms_password)
 
-    # TODO: ADD VALIDATIONS FOR CMS CREDENTIALS
-    # TODO: validate credentials after you get them!
-    # if jira_api.has_valid_credentials(api_email, api_key):
-    # print("Jira API Credentials are valid.")
-    # print("Run program: python3 bugfixpy")
-    print("Warning, function not finished!")
+    print("--setup script is not finished!")
 
     sys.exit(0)

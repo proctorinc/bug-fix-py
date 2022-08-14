@@ -5,39 +5,52 @@ User input module contains all methods to get user input for bug fixing process
 
 import sys
 import readline
-from typing import List
+from typing import Callable, List
 from bugfixpy.constants import colors, jira
 from bugfixpy.gitrepository import GitRepository
 from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
 
 
+def __get_valid_input(
+    prompt: str, invalid_message: str, is_valid: Callable[[str], bool]
+) -> str:
+    """
+    Utility method to get input from the user and validated it based off of an input method. Custom
+    messages to describe what input is needed. Will return once input is validated
+    """
+
+    # Get value as input
+    value = input(prompt)
+
+    # Reset colors
+    print(colors.ENDC, end="")
+
+    # Check value's validity with validator
+    while not is_valid(value):
+
+        # Print message for input not being valid
+        print(f"{colors.FAIL}{invalid_message}{colors.ENDC}".format(value=value))
+
+        # Prompt for input again
+        value = input(prompt)
+
+        # Reset colors
+        print(colors.ENDC, end="")
+
+    return value
+
+
 def get_chlrq() -> str:
     """
     Prompt user to input CHLRQ number. Validate format
     """
-    # Prompt user for CHLRQ number
-    chlrq = input(
-        f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+    prompt = f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+    invalid_message = (
+        "{colors.OKCYAN}CHLRQ-{value}{colors.ENDC} is not valid. Enter 2-4 digits."
     )
 
-    print(colors.ENDC, end="")
-
-    # Check that user input chlrq is valid
-    while not validate.is_valid_chlrq(chlrq):
-
-        # Alert user chlrq is invalid
-        print(
-            f"{colors.OKCYAN}CHLRQ-{chlrq}{colors.ENDC} is not valid. Enter 2-4 digits."
-        )
-
-        # Prompt user for CHLRQ number
-        chlrq = input(
-            f"{colors.ENDC}Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
-        )
-
-        # Reset colors
-        print(colors.ENDC, end="")
+    chlrq = __get_valid_input(prompt, invalid_message, validate.is_valid_chlrq)
 
     return chlrq
 
@@ -46,26 +59,12 @@ def get_chlc() -> str:
     """
     Prompt user to input CHLC number. Validate format
     """
-    # Prompt user for CHLC number
-    chlc = input(
-        f"Enter {colors.HEADER}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
+    prompt = f"Enter {colors.HEADER}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
+    invalid_message = (
+        "{colors.HEADER}CHLC-{value}{colors.ENDC} is not valid. Enter 2-4 digits"
     )
 
-    print(colors.ENDC, end="")
-
-    # Check that user input chlc is valid
-    while not validate.is_valid_chlc(chlc):
-
-        # Alert user chlc is invalid
-        print(f"{colors.HEADER}CHLC-{chlc}{colors.ENDC} is not valid. Enter 2-4 digits")
-
-        # Prompt user for CHLRQ number
-        chlc = input(
-            f"Enter {colors.HEADER}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
-        )
-
-        # Reset colors
-        print(colors.ENDC, end="")
+    chlc = __get_valid_input(prompt, invalid_message, validate.is_valid_chlrq)
 
     return chlc
 
@@ -111,15 +110,12 @@ def get_challenge_id() -> str:
     """
     Get challenge ID from user
     """
-    not_done = True
-    challenge_id = ""
-    while not_done:
-        challenge_id = input("Enter Challenge ID: ")
+    prompt = "Enter Challenge ID: "
+    invalid_message = "'{value}' is not a valid Challenge ID"
 
-        if not validate.is_valid_challenge_id(challenge_id):
-            print(f"'{challenge_id}' is not a valid Challenge ID")
-        else:
-            not_done = False
+    challenge_id = __get_valid_input(
+        prompt, invalid_message, validate.is_valid_challenge_id
+    )
 
     return challenge_id
 
@@ -171,16 +167,9 @@ def get_fix_message() -> str:
     """
     Prompts user for description of fix that was made. Fix message cannot be blank
     """
-    # Default fix message to blank
-    fix_message = ""
+    prompt = f"Enter description of fix: {colors.WHITE}"
 
-    # Continue until fix message is entered
-    while not fix_message:
-
-        # Prompt user to input fix message
-        fix_message = input(f"Enter description of fix: {colors.WHITE}")
-
-        print(colors.ENDC, end="")
+    fix_message = __get_valid_input(prompt, "", validate.is_valid_fix_message)
 
     return fix_message
 
@@ -209,4 +198,11 @@ def get_repository_name() -> str:
     """
     Gets the name of the git repository
     """
-    return input("Enter repo name: ")
+    prompt = "Enter repo name: "
+    invalid_message = "'{value}' is not a valid Git repository"
+
+    repo_name = __get_valid_input(
+        prompt, invalid_message, validate.is_valid_repository_name
+    )
+
+    return repo_name

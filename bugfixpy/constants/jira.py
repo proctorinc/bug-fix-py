@@ -3,17 +3,17 @@ Jira constants
 """
 
 
-import os
+import keyring
 from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Email to access Jira API
-API_EMAIL = os.getenv("JIRA_API_EMAIL")
+API_EMAIL = keyring.get_password("system", "JIRA_API_EMAIL")
 
 # Jira API key
-API_KEY = os.getenv("JIRA_API_KEY")
+API_KEY = keyring.get_password("system", "JIRA_API_KEY")
 
 # Create authentication object for API calls
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)

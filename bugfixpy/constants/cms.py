@@ -3,16 +3,16 @@ CMS Constants
 """
 
 
-import os
+import keyring
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # CMS email
-EMAIL = os.getenv("CMS_EMAIL")
+EMAIL = keyring.get_password("system", "CMS_EMAIL")
 
 # CMS password
-PASSWORD = os.getenv("CMS_PASSWORD")
+PASSWORD = keyring.get_password("system", "CMS_PASSWORD")
 
 # URL for CMS
 URL = "https://cms.securecodewarrior.com"

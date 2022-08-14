@@ -10,7 +10,7 @@ import webbrowser
 from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.gitrepository import GitRepository
-from bugfixpy.utils import output, user_input
+from bugfixpy.utils import user_input
 from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import fix_branches_in_repository
 
@@ -31,7 +31,7 @@ def run(test_mode: bool) -> None:
     try:
         repository = GitRepository(repo_name)
     except GitError:
-        print("Git Error: configure SSH key first")
+        print(f"{colors.FAIL}Git Error: configure SSH key first{colors.ENDC}")
         sys.exit(1)
 
     # Print Details about the repository

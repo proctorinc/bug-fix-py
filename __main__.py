@@ -8,7 +8,7 @@ import argparse
 
 from bugfixpy.scripts import modes
 from bugfixpy.constants import colors
-from bugfixpy.utils import validate, output
+from bugfixpy.utils import validate
 from bugfixpy.formatter import Text, text
 
 
@@ -80,7 +80,9 @@ def main() -> None:
     elif not args.auto:
         modes.manual_fix.run(args.test)
     elif not args.test and not validate.has_credentials():
-        print(text.format_missing_credentials())
+        print(
+            f"{colors.FAIL}Credentials are not setup\nRun: python3 bugfixpy --setup{colors.ENDC}"
+        )
     else:
         modes.auto_fix.run(args.test)
 
