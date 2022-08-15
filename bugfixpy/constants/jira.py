@@ -5,9 +5,6 @@ Jira constants
 
 import keyring
 from requests.auth import HTTPBasicAuth
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Email to access Jira API
 API_EMAIL = keyring.get_password("system", "JIRA_API_EMAIL")
@@ -17,11 +14,13 @@ API_KEY = keyring.get_password("system", "JIRA_API_KEY")
 
 # Create authentication object for API calls
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)
+
 # Branches to ignore
 IGNORE_BRANCHES = {"HEAD", "master", "review", "main", "temp"}
 
 # SCW Content Github Url
 SCW_GIT_URL = "git@github.com:SCWContent"
+
 # Full app secure branch name
 FULL_APP_SECURE_BRANCH = "secure"
 

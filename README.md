@@ -57,7 +57,6 @@ This program requires multiple python libraries installed. The full list can be 
 * Requirements.txt
   ```
   gitpython==3.1.27
-  python-dotenv==0.20.0
   requests==2.27.1
   bs4==0.0.1
   keyring==23.8.2
