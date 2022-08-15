@@ -4,9 +4,6 @@ CMS Constants
 
 
 import keyring
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # CMS email
 EMAIL = keyring.get_password("system", "CMS_EMAIL")
