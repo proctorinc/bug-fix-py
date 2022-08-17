@@ -1,22 +1,20 @@
-import requests
-from requests.cookies import RequestsCookieJar
+from requests import Session
 from bugfixpy.exceptions import RequestFailedError
 from bugfixpy.constants import cms
 from .scraper_data import ApplicationScreenData, ChallengeScreenData
 from . import soup_parser
 
 
-# TODO: add automation for updating branches in CMS
 class CmsScraper:
     """
     Simple webscraper that scrapes data from the CMS
     """
 
-    __session: requests.Session
+    __session: Session
     __challenge_id: str
 
     def __init__(self, challenge_id: str) -> None:
-        self.__session = requests.Session()
+        self.__session = Session()
         self.__challenge_id = challenge_id
 
     def fetch_csrf_token(self) -> str:
@@ -34,7 +32,7 @@ class CmsScraper:
 
         return csrf_token
 
-    def login_to_cms(self, csrf_token: str) -> RequestsCookieJar:
+    def login_to_cms(self, csrf_token: str) -> None:
         """
         Login to the CMS using the CSRF token and return cookies for scraping
         """
@@ -60,18 +58,12 @@ class CmsScraper:
                 "Scraper Error: Failed to login to CMS. Incorrect credentials"
             )
 
-        return result.cookies
-
-    def scrape_challenge_screen(
-        self, cookies: RequestsCookieJar
-    ) -> ChallengeScreenData:
+    def scrape_challenge_screen(self) -> ChallengeScreenData:
         """
         Get request to search for challenge id. Scrape challenge screen.
         Retrieve challenge CHLC and application screen endpoint.
         """
-        result = self.__session.get(
-            f"{cms.SEARCH_URL}?q={self.__challenge_id}", cookies=cookies
-        )
+        result = self.__session.get(f"{cms.SEARCH_URL}?q={self.__challenge_id}")
 
         # Check if searching for challenge was successful
         if not result.content:
@@ -80,17 +72,28 @@ class CmsScraper:
         return soup_parser.parse_challenge_screen_data(result)
 
     def scrape_application_screen(
-        self, cookies: RequestsCookieJar, application_endpoint: str
+        self, application_endpoint: str
     ) -> ApplicationScreenData:
         """
         Get request to retrieve application screen. Scrape the screen to
         retrieve application CHLC and github repository name.
         """
         # Query application page
-        result = self.__session.get(f"{cms.URL}{application_endpoint}", cookies=cookies)
+        result = self.__session.get(f"{cms.URL}{application_endpoint}")
 
         # Check if requesting application page was successful
         if not result.ok:
             raise RequestFailedError("Scraper Error: scraping application page failed")
 
         return soup_parser.parse_application_screen_data(result)
+
+    def update_application_branches(self, application_endpoint: str) -> None:
+        """
+        Updated the branches for the entire application in the CMS
+        """
+        result = self.__session.post(f"{cms.URL}{application_endpoint}")
+
+        if result.status_code != 200:
+            raise RequestFailedError(
+                "Scraper Error: updating application branches failed"
+            )

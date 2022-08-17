@@ -14,6 +14,7 @@ from bugfixpy.scripts.git import fix_branches_in_repository
 from bugfixpy.formatter import Text
 from bugfixpy.utils import user_input
 from bugfixpy.scripts.cms import scrape_cms
+from bugfixpy.exceptions import RequestFailedError
 
 
 def run(test_mode: bool) -> None:
@@ -101,6 +102,15 @@ def run(test_mode: bool) -> None:
     except Exception as err:
         print(err)
         sys.exit(1)
+
+    print("Updating CMS branches...")
+
+    try:
+        scraper.update_application_branches(scraper_data.challenge.application_endpoint)
+        print("Done")
+
+    except RequestFailedError:
+        print("Updating CMS branches failed. Please update manually")
 
     # Notify user to check chunks if lines were added
     if is_chunk_fixing_required:

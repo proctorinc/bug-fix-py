@@ -7,7 +7,7 @@ class ChallengeScreenData:
     Models data scraped from CMS challenge screen
     """
 
-    application_screen_endpoint: str
+    application_endpoint: str
     chlc: str
 
 

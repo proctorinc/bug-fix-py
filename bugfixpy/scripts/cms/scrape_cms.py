@@ -22,17 +22,17 @@ def scrape_cms(scraper: CmsScraper) -> ScraperData:
         csrf_token = scraper.fetch_csrf_token()
 
         # Retrieve cookies from logging into the CMS
-        cookies = scraper.login_to_cms(csrf_token)
+        scraper.login_to_cms(csrf_token)
 
         # Scrape the challenge screen and return application endpoint
-        challenge_screen_data = scraper.scrape_challenge_screen(cookies)
+        challenge_screen_data = scraper.scrape_challenge_screen()
 
         # Get application endpoint from scraper data
-        application_endpoint = challenge_screen_data.application_screen_endpoint
+        application_endpoint = challenge_screen_data.application_endpoint
 
         # Scrape the application screen
         application_screen_data = scraper.scrape_application_screen(
-            cookies, application_endpoint
+            application_endpoint
         )
 
     except RequestFailedError as err:
