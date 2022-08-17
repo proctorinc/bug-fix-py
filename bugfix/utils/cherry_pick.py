@@ -1,5 +1,5 @@
 import subprocess
-from formatting import (
+from bugfix.formatting import (
     Colors
 )
 

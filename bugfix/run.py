@@ -1,17 +1,10 @@
-#!/usr/bin/env python3
-
-# Author Matt Proctor
-# Date: 05.09.2022
-# Email: mproctor@securecodewarrior.com
-
 import subprocess
 import webbrowser
-from utils import (
+from bugfix.utils import (
     cherry_pick,
     is_valid_chlrq,
     is_valid_chlc,
     getCHLRQ,
-    get_chlc,
     setupCredentials,
     clone_repository,
     get_branches,
@@ -23,13 +16,13 @@ from utils import (
     did_commit_add_or_remove_lines,
     transition_jira_issues,
 )
-from formatting import (
+from bugfix.formatting import (
     Colors,
 )
-from api import (
+from bugfix.api import (
     has_valid_credentials,
 )
-from constants import (
+from bugfix.constants import (
     API_EMAIL,
     API_KEY,
     FA_SECURE_BRANCH
@@ -263,6 +256,3 @@ def main():
     print(f'####################################{Colors.ENDC}')
 
     print(f'{Colors.OKGREEN}{Colors.BOLD}{Colors.UNDERLINE}\nBug Fix Complete.{Colors.ENDC}')
-
-if __name__ == '__main__':
-   main()

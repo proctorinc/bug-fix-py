@@ -1,9 +1,9 @@
 import argparse
 
-from api import (
+from bugfix.api import (
     has_valid_credentials,
 )
-from constants import (
+from bugfix.constants import (
     API_EMAIL,
     API_KEY,
 )
@@ -12,7 +12,7 @@ from .validation import (
     is_valid_chlc,
 )
 
-from formatting import (
+from bugfix.formatting import (
     Colors
 )
 

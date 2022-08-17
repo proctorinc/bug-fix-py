@@ -1,10 +1,11 @@
 import git
 import os
 import subprocess
+from git.exc import GitError
+from git.repo import Repo
+from bugfix.formatting import Colors
 
-from formatting import Colors
-
-from constants import (
+from bugfix.constants import (
     IGNORE_BRANCHES,
     SCW_GIT_URL,
     REPO_DIR,
@@ -46,7 +47,7 @@ def clone_repository(repo_name):
 
     # If repo folder already exists, remove it
     if os.path.isdir(repository_dir):
-        
+
         # Alert user of repo existing
         print(f'\nRepository cached. Resetting...', end='')
 
@@ -54,17 +55,20 @@ def clone_repository(repo_name):
         subprocess.check_output(f'sudo rm -r {repository_dir}', shell=True)
     try:
         # Clone repository
-        git.Repo.clone_from(git_url, repository_dir)
-    
-    except git.exc.GitError:
-        print(f'{Colors.FAIL}\'{repo_name}\' is not a valid repository{Colors.ENDC}')
+        Repo.clone_from(git_url, repository_dir)
+
+    except GitError as err:
+        if 'Permission denied' in str(err):
+            print(f'{Colors.FAIL}Permissions Error: Error saving repository in directory: {repository_dir}{Colors.ENDC}')
+        else:
+            print(f'{Colors.FAIL}\'{repo_name}\' is not a valid repository{Colors.ENDC}')
         exit(1)
 
     else:
         print(f'{Colors.OKGREEN} [Done]{Colors.ENDC}')
 
     # Get repository
-    repo = git.Repo(repository_dir)
+    repo = Repo(repository_dir)
 
     return repo
 

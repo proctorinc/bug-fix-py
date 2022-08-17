@@ -14,7 +14,7 @@ API_KEY = os.getenv('API_KEY')
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)
 
 # Directory to where the repositories exist
-REPO_DIR = '../repos/'
+REPO_DIR = './repos/'
 
 # Branches to ignore
 IGNORE_BRANCHES = {'HEAD', 'master', 'review', 'main', 'temp' }

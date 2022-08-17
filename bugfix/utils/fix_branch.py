@@ -1,13 +1,13 @@
 import subprocess
-import git
+from git.exc import GitCommandError
 import readline
 
-from formatting import (
+from bugfix.formatting import (
     Completer,
     Colors
 )
 
-from constants import (
+from bugfix.constants import (
     FA_SECURE_BRANCH
 )
 
@@ -84,7 +84,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
             repository.git.commit('-m', fix_message)
             # subprocess.check_output(f'git -C {repository_dir} commit -m \'{fix_message}\'', shell=True)
 
-        except git.exc.GitCommandError as e:
+        except GitCommandError as e:
             if debug:
                 print(f'{Colors.FAIL}DEBUG: error=[{e}]')
             # Alert user that no change has been made

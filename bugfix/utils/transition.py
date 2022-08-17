@@ -1,4 +1,4 @@
-from api import (
+from bugfix.api import (
     get_current_fix_version,
     transition_issue_to_planned,
     transition_issue_to_in_progress,
@@ -13,7 +13,7 @@ from .input import (
     get_chlc
 )
 
-from formatting import (
+from bugfix.formatting import (
     Colors
 )
 

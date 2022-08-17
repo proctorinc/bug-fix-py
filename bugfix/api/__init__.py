@@ -4,7 +4,7 @@ import json
 import datetime
 from datetime import date
 
-from constants import (
+from bugfix.constants import (
     THOMAS_ACCT_ID,
     AUTH,
     HEADERS,
@@ -12,7 +12,7 @@ from constants import (
     TRANSITION_IN_PROGRESS,
 )
 
-from formatting import (
+from bugfix.formatting import (
     Colors
 )
 
@@ -52,6 +52,7 @@ def get_linked_issues(issuelinks):
     Parses json issuelinks and returns list of all linked CHLC's
     """
     chlcs = []
+    issue = None
     for link in issuelinks:
         if 'outwardIssue' in link:
             issue = link['outwardIssue']['key']
@@ -60,7 +61,7 @@ def get_linked_issues(issuelinks):
 
         if issue and 'CHLC-' in issue:
             chlcs.append(issue)
-    
+
     return chlcs
 
 def get_current_fix_version():
