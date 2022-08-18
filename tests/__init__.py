@@ -1,3 +1,1 @@
-"""
-Test module that contains all tests for bug fixing program
-"""
+from .test_scrape_cms import TestScrapeCMS

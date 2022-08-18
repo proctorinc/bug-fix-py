@@ -9,7 +9,7 @@ import argparse
 from bugfixpy.scripts import modes
 from bugfixpy.constants import colors
 from bugfixpy.utils import validate
-from bugfixpy.formatter import Text, text
+from bugfixpy.formatter import Text
 
 
 def main() -> None:

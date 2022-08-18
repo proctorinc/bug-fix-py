@@ -1,26 +1,43 @@
+"""
+CMS Scraper class scrapes the CMS challenge and application screens which requires collecting a
+CSRF token, logging into the CMS, and scraping data. Uses scraper data classes to define what is
+returned from the challenge and application screens.
+"""
+
+
+from typing import Tuple, Optional
 from requests import Session
 from bugfixpy.exceptions import RequestFailedError
 from bugfixpy.constants import cms
+from bugfixpy.utils import validate
 from .scraper_data import ApplicationScreenData, ChallengeScreenData
 from . import soup_parser
 
 
 class CmsScraper:
-    """
-    Simple webscraper that scrapes data from the CMS
-    """
+    """Simple webscraper that scrapes data from the CMS"""
 
     __session: Session
     __challenge_id: str
 
-    def __init__(self, challenge_id: str) -> None:
+    def __init__(
+        self, challenge_id: str, credentials: Optional[Tuple[str, str]] = None
+    ) -> None:
         self.__session = Session()
         self.__challenge_id = challenge_id
+        self.__credentials = credentials if credentials else (cms.EMAIL, cms.PASSWORD)
+
+        if not validate.is_valid_challenge_id(challenge_id):
+            raise ValueError(f"Invalid challenge_id: {challenge_id}")
+
+    def __del__(self) -> None:
+        """On destruction of object, close the scraper session"""
+
+        self.__session.close()
 
     def fetch_csrf_token(self) -> str:
-        """
-        Get request to retrieve the CSRF token for logging in
-        """
+        """Get request to retrieve the CSRF token for logging in"""
+
         # Get csrf token and cookies
         result = self.__session.get(cms.LOGIN_URL)
 
@@ -33,13 +50,14 @@ class CmsScraper:
         return csrf_token
 
     def login_to_cms(self, csrf_token: str) -> None:
-        """
-        Login to the CMS using the CSRF token and return cookies for scraping
-        """
+        """Login to the CMS using the CSRF token and return cookies for scraping"""
+
+        email, password = self.__credentials
+
         # Create the login payload
         payload = {
-            "_username": cms.EMAIL,
-            "_password": cms.PASSWORD,
+            "_username": email,
+            "_password": password,
             "_csrf_token": csrf_token,
         }
 
@@ -88,11 +106,12 @@ class CmsScraper:
         return soup_parser.parse_application_screen_data(result)
 
     def update_application_branches(self, application_endpoint: str) -> None:
-        """
-        Updated the branches for the entire application in the CMS
-        """
+        """Updated the branches for the entire application in the CMS"""
+
+        # Run post request to update the branches for the entire application
         result = self.__session.post(f"{cms.URL}{application_endpoint}")
 
+        # Check if updating branch was successful
         if result.status_code != 200:
             raise RequestFailedError(
                 "Scraper Error: updating application branches failed"

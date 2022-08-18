@@ -63,7 +63,12 @@ def parse_csrf_token(result: Response) -> str:
     Parses CSRF token from CMS login page using beautiful soup
     """
     soup = __create_soup(result)
-    csrf_token = str(soup.find("input", {"name": "_csrf_token"}.get("value")))
+
+    # Find input for csrf token
+    csrf_input = soup.find("input", {"name": "_csrf_token"})
+
+    # Get csrf token value from input
+    csrf_token = str(csrf_input.get("value"))
 
     return csrf_token
 
@@ -74,6 +79,7 @@ def did_login_fail(result: Response) -> bool:
     so scraping to check if login failed is needed.
     """
     soup = __create_soup(result)
+
     login_failed = bool(
         soup.find_all(
             "div", {"class": "alert alert-danger alert-dismissible fade show"}
