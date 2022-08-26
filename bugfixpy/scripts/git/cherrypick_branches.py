@@ -35,7 +35,8 @@ def cherrypick_commit_across_all_branches(repository: GitRepository, commit_id) 
 
             # Check if merge conflict occurred
             except MergeConflictError:
-                print(instructions.WARN_USER_OF_MERGE_CONFLICT.format(branch=branch))
+                # print(instructions.WARN_USER_OF_MERGE_CONFLICT.format(branch=branch))
+                print(f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT")
                 repository.open_code_in_editor()
                 user_input.prompt_user_to_resolve_merge_conflict()
 
