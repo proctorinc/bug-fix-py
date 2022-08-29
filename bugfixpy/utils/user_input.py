@@ -75,10 +75,11 @@ def format_messages(messages: List[str]) -> str:
     """
     formatted_message = ""
     for i, message in enumerate(messages):
-        if i < len(messages) - 1:
-            formatted_message += message + "\n"
-        else:
-            formatted_message += message
+        if message != "-":
+            if i < len(messages) - 1:
+                formatted_message += message + "\n"
+            else:
+                formatted_message += message
 
     return formatted_message
 
@@ -170,6 +171,9 @@ def get_fix_message() -> str:
     prompt = f"Enter description of fix: {colors.WHITE}"
 
     fix_message = __get_valid_input(prompt, "", validate.is_valid_fix_message)
+
+    if fix_message == " ":
+        fix_message = "-"
 
     return fix_message
 

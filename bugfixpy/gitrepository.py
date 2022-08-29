@@ -5,6 +5,7 @@ Git Repository class for running git actions on SCW content repositories
 # TODO: Change implementation to use Github CLI https://pypi.org/project/github-cli/
 
 import os
+import sys
 from typing import List
 import subprocess
 from git.repo import Repo
@@ -109,6 +110,18 @@ class GitRepository:
 
         errors = ["error", "fatal"]
 
+        if "fatal: cherry-pick failed" in result:
+            print("ERROR! Cherry Pick failed. Exiting...")
+            sys.exit(1)
+
+        if "Your local changes to the following files would be overwritten by checkout" in result:
+            print("Attempting to force checkout")
+            result = subprocess.check_output(
+            f"git -C {self.get_repository_dir()} checkout -f {branch} &>/dev/null",
+                shell=True,
+            ).decode("utf-8")
+
+
         # Check if error exists in result
         if any(error in errors for error in result):
             print("Checkout Failed - Determine if you want to continue")
@@ -137,7 +150,7 @@ class GitRepository:
         """
         Commit changes with a message
         """
-        self.__repository.git.commit("-m", message)
+        self.__repository.git.commit("-m", f"\"{message}\"")
 
     def commit_changes_allow_empty(self) -> None:
         """

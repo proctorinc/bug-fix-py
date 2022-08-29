@@ -8,7 +8,6 @@ from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.utils import user_input
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
-
 def fix_branches_in_repository(repository: GitRepository) -> None:
     """
     Run bug fix. Loop over branches to fix. After fixing, prompt
@@ -61,6 +60,61 @@ def fix_branches_in_repository(repository: GitRepository) -> None:
 
         print(colors.ENDC, end="")
 
+# TODO: implement fixing all branches option
+# # VERSION TO FIX ALL BRANCHES AT ONCE
+# def fix_branches_in_repository(repository: GitRepository) -> None:
+#     """
+#     Run bug fix. Loop over branches to fix. After fixing, prompt
+#     user if they want to fix another
+#     """
+#     branches = repository.get_filtered_branches()
+
+#     # Hold fix messages for all branches in list
+#     fix_messages = []
+
+#     print("Fixing all branches in the repository...")
+
+#     # Continue to fix branches until user is done
+#     while branches:
+
+#         # Get next branch to fix
+#         current_branch = branches.pop()
+
+#         # Allow the user to use a keyboard interrupt to stop fixing a branch at anytime
+#         try:
+#             # Fix the branch and retrieve the name and fix explanation
+#             fix_message = __make_fix_and_commit(current_branch, repository)
+
+#             # Add message to list of messages
+#             fix_messages.append(fix_message)
+
+#             # If full app and fix was on the secure branch, cherry-pick branches
+#             if (
+#                 repository.is_full_app()
+#                 and current_branch == jira.FULL_APP_SECURE_BRANCH
+#             ):
+
+#                 confirm_cherrypick = input("Would you like to cherrypick this branch? (Y/n): ")
+
+#                 if confirm_cherrypick in ["n", "N"]:
+#                     break
+
+#                 # Get the commit ID
+#                 commit_id = repository.get_last_commit_id()
+
+#                 print("\nCherry-picking Branches...")
+#                 # Run cherry-pick method
+#                 cherrypick_commit_across_all_branches(repository, commit_id)
+
+#                 # Confirm that cherrypick occurred
+#                 repository.set_cherrypick_ran()
+
+#         # Catch keyboard interrupt to cancel fixing the current branch
+#         except KeyboardInterrupt:
+#             print(f'\n{colors.FAIL}Fixing branch "{current_branch}" aborted.')
+
+#         print(colors.ENDC, end="")
+
 
 def __make_fix_and_commit(branch: str, repository: GitRepository) -> str:
     """
@@ -94,7 +148,8 @@ def __make_fix_and_commit(branch: str, repository: GitRepository) -> str:
             # Commit changes in branch with message
             repository.commit_changes_with_message(fix_message)
 
-        except GitCommandError:
+        except GitCommandError as err:
+            print(err)
             print(instructions.PROMPT_USER_THAT_NO_FIX_WAS_MADE)
 
             # Prompt user to press enter when fix is made
