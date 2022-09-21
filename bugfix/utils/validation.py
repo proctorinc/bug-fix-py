@@ -7,7 +7,7 @@ def isValidTicketNumber(ticket):
     """
     Validate ticket number input format
     """
-    return len(ticket) < 5 and len(ticket) > 1 and ticket.isdigit()
+    return len(ticket) > 1 and ticket.isdigit()
 
 def is_valid_chlrq(chlrq):
     """

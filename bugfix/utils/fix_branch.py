@@ -11,7 +11,7 @@ from bugfix.constants import (
     FA_SECURE_BRANCH
 )
 
-def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug):
+def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug, chlrq):
     """
     Checks the user out to a branch of their choice, making sure it is a valid branch.
     Opens VS Code for user to make the fix and prompts user to press ENTER when done.
@@ -81,7 +81,7 @@ def fix_and_commit_branch(repository, repository_dir, branches, is_full_app, deb
             # subprocess.check_output(f'git -C {repository_dir} add --all', shell=True)
 
             # Commit
-            repository.git.commit('-m', fix_message)
+            repository.git.commit('-m', f'CHLRQ-{chlrq}: {fix_message}')
             # subprocess.check_output(f'git -C {repository_dir} commit -m \'{fix_message}\'', shell=True)
 
         except GitCommandError as e:

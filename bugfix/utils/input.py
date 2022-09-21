@@ -81,7 +81,7 @@ def getCHLRQ():
     while not is_valid_chlrq(chlrq):
 
         # Alert user chlrq is invalid
-        print(f'{Colors.OKCYAN}CHLRQ-{chlrq}{Colors.ENDC} is not valid. Enter 2-4 digits.')
+        print(f'{Colors.OKCYAN}CHLRQ-{chlrq}{Colors.ENDC} is not valid. Enter 2+ digits.')
 
         # Prompt user for CHLRQ number
         chlrq = input(f'{Colors.ENDC}Enter {Colors.OKCYAN}CHLRQ{Colors.ENDC} ticket number: {Colors.WHITE}')

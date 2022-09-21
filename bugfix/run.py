@@ -145,6 +145,10 @@ def main():
     else:
         print(f'Type: {Colors.OKCYAN}Minified App{Colors.ENDC}')
 
+    # If parameter not entered, prompt user for CHRLQ
+    if not chlrq:
+        chlrq = getCHLRQ()
+
     if not is_api_enabled:
         print(f'{Colors.WARNING}\n1. Transition CHLRQ to Planned (choose this month)')
         print('2. Transition CHLRQ to In Progress')
@@ -154,7 +158,7 @@ def main():
     while not done_fixing:
 
         # Fix the branch and retrieve the name and fix explanation
-        fix_message, fixed_branch = fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug)
+        fix_message, fixed_branch = fix_and_commit_branch(repository, repository_dir, branches, is_full_app, debug, chlrq)
 
         # Remove initial_branch from branches to avoid cherry-picking it
         branches.remove(fixed_branch)
@@ -201,10 +205,6 @@ def main():
 
     # If api is enabled, transition tickets through the jira api
     if is_api_enabled:
-        # If parameter not entered, prompt user for CHRLQ
-        if not chlrq:
-            chlrq = getCHLRQ()
-
         ###############################################
         # CHLC no longer required. Linking not needed #
         ###############################################

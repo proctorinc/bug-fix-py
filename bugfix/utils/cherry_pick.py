@@ -13,11 +13,9 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
         # Checkout to branch
         checkout_result = subprocess.check_output(f'git -C {repository_dir} checkout {branch} &>/dev/null',
                                         shell=True)
-                                        # stdout=subprocess.DEVNULL,
-                                        # stderr=subprocess.DEVNULL
 
-        # print('result:', checkout_result.decode('utf-8'))
-
+        if debug:
+                print(f'{Colors.FAIL}DEBUG: checkout_result=[' + checkout_result.decode('utf-8') + f']{Colors.ENDC}')
         if 'error' in checkout_result.decode('utf-8') or 'fatal' in checkout_result.decode('utf-8'):
             print('ERROR: Checkout failed')
             print(checkout_result.decode('utf-8'))
@@ -36,8 +34,8 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
             cherrypick_result = subprocess.check_output(f'git -C {repository_dir} cherry-pick {commit_id} &>/dev/null', shell=True)
 
             if debug:
-                print(f'{Colors.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), ']')
-            if not cherrypick_result.decode('utf-8') or 'Auto-merging' in cherrypick_result.decode('utf-8'):
+                print(f'{Colors.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), f']{Colors.ENDC}')
+            if not cherrypick_result.decode('utf-8') or 'CONFLICT' in cherrypick_result.decode('utf-8'): #or 'Auto-merging' in cherrypick_result.decode('utf-8')
 
                 # Alert user of merge conflict
                 print(f'{Colors.WARNING}[ !!! ]{Colors.ENDC} {branch}: {Colors.WARNING}MERGE CONFLICT')
@@ -48,18 +46,20 @@ def cherry_pick(repository_dir, branches, commit_id, debug):
                 input(f'\n{Colors.ENDC}{Colors.BOLD}Press {Colors.OKGREEN}[ENTER] {Colors.ENDC}{Colors.BOLD}when changes have been made{Colors.ENDC}')
 
                 try:
+                    if debug:
+                        print(f'{Colors.FAIL}DEBUG: running add .{Colors.ENDC}')
                     subprocess.call(f'git -C {repository_dir} add .',
                         shell=True,
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
+                    if debug:
+                        print(f'{Colors.FAIL}DEBUG: running cherry-pick --continue{Colors.ENDC}')
                     subprocess.call(f'git -C {repository_dir} cherry-pick --continue',
                         shell=True)
-                        # ,
-                        # stdout=subprocess.DEVNULL,
-                        # stderr=subprocess.DEVNULL)
 
                 except:
-                    # print('Caught exception!')
+                    if debug:
+                        print(f'{Colors.FAIL}DEBUG: Caught exception!')
                     subprocess.call(f'git -C {repository_dir} commit --allow-empty',
                         shell=True,
                         stdout=subprocess.DEVNULL,
