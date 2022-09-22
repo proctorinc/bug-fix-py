@@ -50,6 +50,13 @@ def main() -> None:
         "and CMS webscraping for grabbing data",
     )
 
+    # Repository positional argument
+    parser.add_argument(
+        "--manual",
+        type=str,
+        help="Enter repo name to run in repo mode. Opens repo in VS Code",
+    )
+
     # No push switch
     parser.add_argument(
         "--test",
@@ -58,16 +65,16 @@ def main() -> None:
     )
 
     # Repository positional argument
-    parser.add_argument(
-        "--repo",
-        type=str,
-        help="Enter repo name to run in repo mode. Opens repo in VS Code",
-    )
+    # parser.add_argument(
+    #     "--repo",
+    #     type=str,
+    #     help="Enter repo name to run in repo mode. Opens repo in VS Code",
+    # )
 
     # Parse arguments
     args = parser.parse_args()
 
-    if len(sys.argv) > 2 and not (args.test and args.auto):
+    if len(sys.argv) > 2 and not (args.test and (args.auto or args.revert)):
         parser.error("Multiple flags cannot be enabled at the same time")
 
     # Run program mode based off of flags input
@@ -76,15 +83,17 @@ def main() -> None:
     elif args.transition:
         modes.transition.run()
     elif args.revert:
-        modes.revert.run()
-    elif not args.auto:
+        modes.revert.run(args.test)
+    elif args.manual:
         modes.manual_fix.run(args.test)
     elif not args.test and not validate.has_credentials():
         print(
             f"{colors.FAIL}Credentials are not setup\nRun: python3 bugfixpy --setup{colors.ENDC}"
         )
-    else:
+    elif args.auto:
         modes.auto_fix.run(args.test)
+    else:
+        modes.repo.run()
 
 
 try:

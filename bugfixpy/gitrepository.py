@@ -8,6 +8,7 @@ import os
 import sys
 from typing import List
 import subprocess
+from git import GitCommandError, GitError
 from git.repo import Repo
 from bugfixpy.constants import git, jira
 from bugfixpy.exceptions import MergeConflictError
@@ -173,7 +174,7 @@ class GitRepository:
             shell=True,
         ).decode("utf-8")
 
-        if not result or "Auto-merging":
+        if not result or "CONFLICT" in result:
             raise MergeConflictError("Merge conflict occurred")
 
     def get_repository_dir(self) -> str:
@@ -206,6 +207,36 @@ class GitRepository:
         Returns commit id of last commit
         """
         return str(self.__repository.rev_parse("HEAD"))
+
+    def branch_contains_commit_id(self, commit_id):
+        """
+        Check if branch contains commit id
+        """
+        try:
+            self.__repository.git.branch('--contains', commit_id)
+
+        except GitCommandError as err:
+            print("NOPE!", err)
+            return False
+
+        return True
+
+    def revert_commit(self, commit_id) -> None:
+        """
+        Revert a commit in the repository
+        """
+        # Revert commit
+        result = subprocess.check_output(
+            f"git -C {self.get_repository_dir()} revert {commit_id} &>/dev/null",
+            shell=True,
+        ).decode("utf-8")
+
+        if not result:
+            print("Bad commit id!")
+            raise GitError("Error reverting commit")
+
+        if "CONFLICT" in result:
+            raise MergeConflictError("Merge conflict occurred")
 
     def open_code_in_editor(self):
         """Opens repository code in VS Code"""
