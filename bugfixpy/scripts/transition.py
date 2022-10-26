@@ -9,6 +9,7 @@ from bugfixpy.constants import colors
 def transition_jira_issues(
     fix_messages: List[str],
     is_cherrypick_required: bool,
+    chlrq=None,
     challenge_chlc=None,
     application_chlc=None,
 ) -> None:
@@ -28,7 +29,8 @@ def transition_jira_issues(
         )
 
     # If parameter not entered, prompt user for CHRLQ
-    chlrq = user_input.get_chlrq()
+    if not chlrq:
+        chlrq = user_input.get_chlrq()
 
     transition_chlrq(chlrq, fix_version_name, fix_version_id, fix_message)
 
@@ -58,7 +60,7 @@ def transition_jira_issues(
         # Set challenges to the initial chlc
         challenges = ["CHLC-" + challenge_chlc[-4:]]
 
-    transition_chlcs(challenges)
+    transition_chlcs(challenges, chlrq)
 
 
 def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) -> None:
@@ -76,7 +78,7 @@ def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) 
     check_transition_result(planned_result)
 
     # Transition to in progress
-    print("\tTo In Progress", end="")
+    print("\tTo In Progress\t\t\t", end="")
 
     # If api returns 204, transition was successful
     in_progress_result = jira_api.transition_issue_to_in_progress(chlrq)
@@ -90,7 +92,7 @@ def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) 
     check_transition_result(closed_result)
 
 
-def transition_chlcs(challenges) -> None:
+def transition_chlcs(challenges, chlrq) -> None:
     """
     Transition all chlc's related to the given challenge using the Jira API
     """

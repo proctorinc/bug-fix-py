@@ -2,7 +2,7 @@
 
 from git import GitError
 from bugfixpy.constants import colors
-from bugfixpy.exceptions.mergeconflicterror import MergeConflictError
+from bugfixpy.exceptions import MergeConflictError
 from bugfixpy.utils import user_input
 
 def revert_commit_in_repository(repository, commit_id: str) -> None:

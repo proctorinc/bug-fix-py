@@ -95,6 +95,7 @@ def run(test_mode: bool) -> None:
         transition.transition_jira_issues(
             fix_messages,
             repo_was_cherrypicked,
+            None,
             scraper_data.challenge.chlc,
             scraper_data.application.chlc,
         )

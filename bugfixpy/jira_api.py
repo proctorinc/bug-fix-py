@@ -38,6 +38,19 @@ def __post_query(endpoint: str, body: dict) -> Response:
 
     return response
 
+def __put_query(endpoint: str, body: dict) -> Response:
+    """
+    Query Jira API with request headers and Authentication
+    """
+    response = requests.put(
+        url=f"{jira.SCW_API_URL}/{endpoint}",
+        headers=jira.REQUEST_HEADERS,
+        auth=jira.AUTH,
+        json=body,
+    )
+
+    return response
+
 
 # TODO: Separate API call and functionality (move to validate.py)
 def has_valid_credentials() -> bool:
@@ -163,7 +176,7 @@ def get_linked_challenges(chlc):
     response = __get_query(endpoint)
     json_response = json.loads(response.text)
 
-    return __parse_linked_issues(json_response["fields"]["issue_links"])
+    return __parse_linked_issues(json_response["fields"]["issuelinks"])
 
 
 def link_creation_chlc(chlrq, chlc) -> Response:
@@ -224,7 +237,7 @@ def edit_issue_details(chlc, chlrq) -> Response:
         "fields": {"assignee": {"accountId": jira.THOMAS_ACCT_ID}},
         "update": {"comment": [{"add": {"body": f"CHLRQ-{chlrq}"}}]},
     }
-    return __post_query(endpoint, body)
+    return __put_query(endpoint, body)
 
 
 def check_chlc_exists(chlc) -> bool:

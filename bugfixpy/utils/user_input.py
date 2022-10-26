@@ -19,7 +19,6 @@ def __get_valid_input(
     Utility method to get input from the user and validated it based off of an input method. Custom
     messages to describe what input is needed. Will return once input is validated
     """
-
     # Get value as input
     value = input(prompt)
 
@@ -30,7 +29,8 @@ def __get_valid_input(
     while not is_valid(value):
 
         # Print message for input not being valid
-        print(f"{colors.FAIL}{invalid_message}{colors.ENDC}".format(value=value))
+        # print(f"{colors.FAIL}{invalid_message.format(value=value)}{colors.ENDC}")
+        print(f"{colors.FAIL}{invalid_message}{value}{colors.ENDC}")
 
         # Prompt for input again
         value = input(prompt)
@@ -64,7 +64,7 @@ def get_chlc() -> str:
         "{colors.HEADER}CHLC-{value}{colors.ENDC} is not valid. Enter 2-4 digits"
     )
 
-    chlc = __get_valid_input(prompt, invalid_message, validate.is_valid_chlrq)
+    chlc = __get_valid_input(prompt, invalid_message, validate.is_valid_chlc)
 
     return chlc
 

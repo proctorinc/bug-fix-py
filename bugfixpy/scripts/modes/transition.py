@@ -26,4 +26,4 @@ def run():
     print(colors.ENDC)
 
     # Automatically transition jira tickets
-    transition.transition_jira_issues(chlrq, [fix_message], did_cherrypick)
+    transition.transition_jira_issues([fix_message], did_cherrypick, chlrq)

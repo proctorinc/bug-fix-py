@@ -3,6 +3,7 @@ Exceptions for all project module to specify errors from CmsScraper and GitRepos
 """
 
 
-from .requestfailederror import RequestFailedError
-from .checkoutfailederror import CheckoutFailedError
-from .mergeconflicterror import MergeConflictError
+from .request_failed_error import RequestFailedError
+from .checkout_failed_error import CheckoutFailedError
+from .merge_conflict_error import MergeConflictError
+from .invalid_issue_id_exception import InvalidIssueIdException
