@@ -38,6 +38,7 @@ def __post_query(endpoint: str, body: dict) -> Response:
 
     return response
 
+
 def __put_query(endpoint: str, body: dict) -> Response:
     """
     Query Jira API with request headers and Authentication

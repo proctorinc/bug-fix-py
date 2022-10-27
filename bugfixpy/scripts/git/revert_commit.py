@@ -5,6 +5,7 @@ from bugfixpy.constants import colors
 from bugfixpy.exceptions import MergeConflictError
 from bugfixpy.utils import user_input
 
+
 def revert_commit_in_repository(repository, commit_id: str) -> None:
     """Reverts commit based off of commit id"""
     branches = repository.get_filtered_branches()
@@ -33,7 +34,9 @@ def revert_commit_in_repository(repository, commit_id: str) -> None:
                 repository.checkout_to_branch(branches[0])
             except MergeConflictError:
                 # Alert user of merge conflict
-                print(f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT")
+                print(
+                    f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
+                )
                 repository.open_code_in_editor()
                 user_input.prompt_user_to_resolve_merge_conflict()
 

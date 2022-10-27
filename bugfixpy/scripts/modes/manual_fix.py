@@ -9,7 +9,7 @@ import sys
 import webbrowser
 from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.utils import user_input
 from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import fix_branches_in_repository

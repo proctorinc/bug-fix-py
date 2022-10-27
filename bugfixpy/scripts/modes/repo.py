@@ -7,8 +7,9 @@ import sys
 from git import GitError
 from bugfixpy.utils import user_input
 from bugfixpy.formatter import Text
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.constants import colors
+
 
 def run() -> None:
     """

@@ -3,10 +3,11 @@
 import sys
 from git import GitError
 from bugfixpy.utils import user_input
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.formatter import Text
 from bugfixpy.scripts.git import revert_commit_in_repository
+
 
 def run(test_mode):
     """

@@ -3,10 +3,11 @@ Fix Branches script fixes and commits changes to branches until the user is done
 """
 
 from git import GitCommandError
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.utils import user_input
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
+
 
 def fix_branches_in_repository(repository: GitRepository) -> None:
     """
@@ -59,6 +60,7 @@ def fix_branches_in_repository(repository: GitRepository) -> None:
         done_fixing = user_input.prompt_want_to_continue()
 
         print(colors.ENDC, end="")
+
 
 # TODO: implement fixing all branches option
 # # VERSION TO FIX ALL BRANCHES AT ONCE

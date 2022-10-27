@@ -1,10 +1,16 @@
 """Challenge class"""
-from bugfixpy.jira import ChallengeRequestIssue, ChallengeCreationIssue, ApplicationCreationIssue
+from bugfixpy.jira import (
+    ChallengeRequestIssue,
+    ChallengeCreationIssue,
+    ApplicationCreationIssue,
+)
+
 
 class Challenge:
     """
     Challenge class
     """
+
     __challenge_request_issue: ChallengeRequestIssue
     __challenge_creation_issue: ChallengeCreationIssue
     __application_creation_issue: ApplicationCreationIssue

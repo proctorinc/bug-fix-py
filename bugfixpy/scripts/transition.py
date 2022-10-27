@@ -2,7 +2,7 @@ from typing import List
 
 from requests import Response
 from bugfixpy.utils import user_input
-from bugfixpy import jira_api
+from bugfixpy.jira import api
 from bugfixpy.constants import colors
 
 
@@ -17,7 +17,7 @@ def transition_jira_issues(
     Use Jira API to transition tickets through Jira workflow
     """
     # API call to get current version name and id
-    fix_version_name, fix_version_id = jira_api.get_current_fix_version()
+    fix_version_name, fix_version_id = api.get_current_fix_version()
 
     # Format fix messages
     fix_message = user_input.format_messages(fix_messages)
@@ -46,7 +46,7 @@ def transition_jira_issues(
         print(f"Application CHLC: {colors.WARNING}{application_chlc}{colors.ENDC}")
 
         # Get all CHLC's linked to the creation ticket
-        challenges = jira_api.get_linked_challenges(application_chlc)
+        challenges = api.get_linked_challenges(application_chlc)
 
         # Print number of challenges to bulk transition
         print(f"Challenges to bulk transition: {len(challenges)}")
@@ -74,21 +74,21 @@ def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) 
     print(f"\tTo Planned [Fix Version: {fix_version_name}]", end="")
 
     # If api returns 204, transition was successful
-    planned_result = jira_api.transition_issue_to_planned(chlrq, fix_version_id)
+    planned_result = api.transition_issue_to_planned(chlrq, fix_version_id)
     check_transition_result(planned_result)
 
     # Transition to in progress
     print("\tTo In Progress\t\t\t", end="")
 
     # If api returns 204, transition was successful
-    in_progress_result = jira_api.transition_issue_to_in_progress(chlrq)
+    in_progress_result = api.transition_issue_to_in_progress(chlrq)
     check_transition_result(in_progress_result)
 
     # Transition CHLRQ to closed w/ fix message
     print("\tTo Closed [with description of fix]", end="")
 
     # If api returns 204, transition was successful
-    closed_result = jira_api.transition_issue_to_closed(chlrq, fix_message)
+    closed_result = api.transition_issue_to_closed(chlrq, fix_message)
     check_transition_result(closed_result)
 
 
@@ -107,24 +107,24 @@ def transition_chlcs(challenges, chlrq) -> None:
         print(f"Transitioning {colors.HEADER}{challenge}{colors.ENDC}:")
 
         # Transition challenge to Feedback Open
-        print("\tTo Feedback Open", end="")
+        print("\tTo Feedback Open\t", end="")
 
         # If api returns 204, transition was successful
-        feedback_open_result = jira_api.transition_issue_to_feedback_open(challenge)
+        feedback_open_result = api.transition_issue_to_feedback_open(challenge)
         check_transition_result(feedback_open_result)
 
         # Transition challenge to Feedback Review w/ fix message and set assignee to Thomas
-        print("\tTo Feedback Review", end="")
+        print("\tTo Feedback Review\t", end="")
 
         # If api returns 204, transition was successful
-        feedback_review_result = jira_api.transition_issue_to_feedback_review(challenge)
+        feedback_review_result = api.transition_issue_to_feedback_review(challenge)
         check_transition_result(feedback_review_result)
 
         # Sets assignee and adds CHLRQ as comment
         print("\tAdding assignee and comment", end="")
 
         # If api returns 204, transition was successful
-        edit_result = jira_api.edit_issue_details(challenge, chlrq)
+        edit_result = api.edit_issue_details(challenge, chlrq)
         check_transition_result(edit_result)
 
 
@@ -133,8 +133,8 @@ def check_transition_result(result: Response) -> None:
     Prints whether transitioning the issue was successful or not
     """
     if result.status_code == 204:
-        print(f"\t\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
+        print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
     else:
         print(
-            f"\t\t{colors.FAIL}[FAILED - {result.status_code}: {result.reason}]{colors.ENDC}"
+            f"\t{colors.FAIL}[FAILED - {result.status_code}: {result.reason}]{colors.ENDC}"
         )

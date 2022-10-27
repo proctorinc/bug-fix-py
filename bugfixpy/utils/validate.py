@@ -1,5 +1,5 @@
 import re
-from bugfixpy import jira_api
+from bugfixpy.jira import api
 from bugfixpy.constants import cms, jira
 
 
@@ -17,7 +17,7 @@ def is_valid_chlrq(chlrq):
     is_valid = False
 
     # Confirm chlrq is valid number and is a chlrq in Jira
-    if chlrq and is_valid_ticket_number(chlrq) and jira_api.check_chlrq_exists(chlrq):
+    if chlrq and is_valid_ticket_number(chlrq) and api.check_chlrq_exists(chlrq):
         is_valid = True
 
     return is_valid
@@ -30,7 +30,7 @@ def is_valid_chlc(chlc):
     is_valid = False
 
     # Confirm chlc is valid number and is a chlc in Jira
-    if chlc and is_valid_ticket_number(chlc) and jira_api.check_chlc_exists(chlc):
+    if chlc and is_valid_ticket_number(chlc) and api.check_chlc_exists(chlc):
         is_valid = True
 
     return is_valid

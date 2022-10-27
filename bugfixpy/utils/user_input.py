@@ -7,7 +7,7 @@ import sys
 import readline
 from typing import Callable, List
 from bugfixpy.constants import colors, jira
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
 

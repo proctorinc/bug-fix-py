@@ -5,7 +5,7 @@ Cherrypick script takes a commit id and runs git cherry-pick on all branches in 
 import subprocess
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
 from bugfixpy.utils import user_input
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.constants import colors
 
 
@@ -68,66 +68,98 @@ def cherrypick_commit_across_all_branches(repository: GitRepository, commit_id) 
     repository_dir = repository.get_repository_dir()
     branches = repository.get_filtered_branches()
 
-
-    print(f'\nCherry-picking Branches...')
+    print(f"\nCherry-picking Branches...")
 
     # Execute command in each branch
     for i, branch in enumerate(branches):
 
         # Checkout to branch
-        checkout_result = subprocess.check_output(f'git -C {repository_dir} checkout {branch} &>/dev/null',
-                                        shell=True)
+        checkout_result = subprocess.check_output(
+            f"git -C {repository_dir} checkout {branch} &>/dev/null", shell=True
+        )
 
         if debug:
-                print(f'{colors.FAIL}DEBUG: checkout_result=[' + checkout_result.decode('utf-8') + f']{colors.ENDC}')
-        if 'error' in checkout_result.decode('utf-8') or 'fatal' in checkout_result.decode('utf-8'):
-            print('ERROR: Checkout failed')
-            print(checkout_result.decode('utf-8'))
+            print(
+                f"{colors.FAIL}DEBUG: checkout_result=["
+                + checkout_result.decode("utf-8")
+                + f"]{colors.ENDC}"
+            )
+        if "error" in checkout_result.decode(
+            "utf-8"
+        ) or "fatal" in checkout_result.decode("utf-8"):
+            print("ERROR: Checkout failed")
+            print(checkout_result.decode("utf-8"))
 
-            print('\nAn error may have occured. Review the above message and determine if you should exit or continue.')
-            exit_program = input('Would you like to exit? (Y/n): ')
+            print(
+                "\nAn error may have occured. Review the above message and determine if you should exit or continue."
+            )
+            exit_program = input("Would you like to exit? (Y/n): ")
 
-            if exit_program.upper() == 'N':
-                print('Continuing..')
+            if exit_program.upper() == "N":
+                print("Continuing..")
             else:
                 exit(1)
 
         # Successful checkout to branch
         else:
             # # Cherry-pick branch
-            cherrypick_result = subprocess.check_output(f'git -C {repository_dir} cherry-pick {commit_id} &>/dev/null', shell=True)
+            cherrypick_result = subprocess.check_output(
+                f"git -C {repository_dir} cherry-pick {commit_id} &>/dev/null",
+                shell=True,
+            )
 
             if debug:
-                print(f'{colors.FAIL}DEBUG: result=[', cherrypick_result.decode('utf-8'), f']{colors.ENDC}')
-            if not cherrypick_result.decode('utf-8') or 'CONFLICT' in cherrypick_result.decode('utf-8'): #or 'Auto-merging' in cherrypick_result.decode('utf-8')
+                print(
+                    f"{colors.FAIL}DEBUG: result=[",
+                    cherrypick_result.decode("utf-8"),
+                    f"]{colors.ENDC}",
+                )
+            if not cherrypick_result.decode(
+                "utf-8"
+            ) or "CONFLICT" in cherrypick_result.decode(
+                "utf-8"
+            ):  # or 'Auto-merging' in cherrypick_result.decode('utf-8')
 
                 # Alert user of merge conflict
-                print(f'{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT')
+                print(
+                    f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
+                )
 
                 # Open VS Code to solve merge conflict
-                subprocess.check_output(f'code {repository_dir}', shell=True)
+                subprocess.check_output(f"code {repository_dir}", shell=True)
 
-                input(f'\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}')
+                input(
+                    f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}"
+                )
 
                 try:
                     if debug:
-                        print(f'{colors.FAIL}DEBUG: running add .{colors.ENDC}')
-                    subprocess.call(f'git -C {repository_dir} add .',
+                        print(f"{colors.FAIL}DEBUG: running add .{colors.ENDC}")
+                    subprocess.call(
+                        f"git -C {repository_dir} add .",
                         shell=True,
                         stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL)
+                        stderr=subprocess.DEVNULL,
+                    )
                     if debug:
-                        print(f'{colors.FAIL}DEBUG: running cherry-pick --continue{colors.ENDC}')
-                    subprocess.call(f'git -C {repository_dir} cherry-pick --continue',
-                        shell=True)
+                        print(
+                            f"{colors.FAIL}DEBUG: running cherry-pick --continue{colors.ENDC}"
+                        )
+                    subprocess.call(
+                        f"git -C {repository_dir} cherry-pick --continue", shell=True
+                    )
 
                 except:
                     if debug:
-                        print(f'{colors.FAIL}DEBUG: Caught exception!')
-                    subprocess.call(f'git -C {repository_dir} commit --allow-empty',
+                        print(f"{colors.FAIL}DEBUG: Caught exception!")
+                    subprocess.call(
+                        f"git -C {repository_dir} commit --allow-empty",
                         shell=True,
                         stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL)
+                        stderr=subprocess.DEVNULL,
+                    )
 
         # Inform user of successful cherry-pick, branch complete
-        print(f'[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC} {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}')
+        print(
+            f"[{colors.OKCYAN}{(i + 1) * 100 / len(branches):.1f}%{colors.ENDC}]{colors.ENDC} {branch}: {colors.OKGREEN}[COMPLETE]{colors.ENDC}"
+        )

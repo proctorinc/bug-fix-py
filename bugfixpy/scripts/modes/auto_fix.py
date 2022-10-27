@@ -5,10 +5,10 @@ to avoid more user input. Automatically transitions tickets in Jira
 
 
 import sys
-from bugfixpy import jira_api
+from bugfixpy.jira import api
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.gitrepository import GitRepository
+from bugfixpy.git.gitrepository import GitRepository
 from bugfixpy.scripts import transition
 from bugfixpy.scripts.git import fix_branches_in_repository
 from bugfixpy.formatter import Text
@@ -29,7 +29,7 @@ def run(test_mode: bool) -> None:
         Text(headers.TEST_MODE, colors.HEADER).display()
 
     # Otherwise check if credentials are valid
-    elif not jira_api.has_valid_credentials():
+    elif not api.has_valid_credentials():
         Text(
             "Invalid API credentials. Run with --setup to change credentials",
             colors.FAIL,
