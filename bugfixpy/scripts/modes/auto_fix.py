@@ -8,7 +8,7 @@ import sys
 from bugfixpy.jira import api
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.git.gitrepository import GitRepository
+from bugfixpy.git.repository import Repository
 from bugfixpy.scripts import transition
 from bugfixpy.scripts.git import fix_branches_in_repository
 from bugfixpy.formatter import Text
@@ -52,7 +52,7 @@ def run(test_mode: bool) -> None:
 
     # Attempt to create repository
     try:
-        repository = GitRepository(scraper_data.application.repository_name)
+        repository = Repository(scraper_data.application.repository_name)
     except ValueError:
         Text("Error getting repository", colors.FAIL).display()
         sys.exit(1)
@@ -63,7 +63,7 @@ def run(test_mode: bool) -> None:
     Text("Application CHLC:", scraper_data.application.chlc, colors.OKCYAN).display()
     Text("Challenge CHLC:", scraper_data.challenge.chlc, colors.OKCYAN).display()
 
-    # Print repository details from GitRepository
+    # Print repository details from Repository
     Text("Repo:", scraper_data.application.repository_name, colors.OKCYAN).display()
     Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
 

@@ -3,7 +3,7 @@
 import sys
 from git import GitError
 from bugfixpy.utils import user_input
-from bugfixpy.git.gitrepository import GitRepository
+from bugfixpy.git.repository import Repository
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.formatter import Text
 from bugfixpy.scripts.git import revert_commit_in_repository
@@ -24,7 +24,7 @@ def run(test_mode):
 
     # Attempt to create repository
     try:
-        repository = GitRepository(repo_name)
+        repository = Repository(repo_name)
     except GitError:
         # Check for invalid repo name
         print(f"{colors.FAIL}Git Error: configure SSH key first{colors.ENDC}")

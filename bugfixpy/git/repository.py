@@ -14,7 +14,7 @@ from bugfixpy.constants import git, jira
 from bugfixpy.exceptions import MergeConflictError
 
 
-class GitRepository:
+class Repository:
     """
     Wrapper class around GitPython library for git repository functionality
     """

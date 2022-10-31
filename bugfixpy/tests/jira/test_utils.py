@@ -3,7 +3,7 @@
 from unittest import TestCase
 
 from bugfixpy.jira.utils import append_project_type_if_not_present
-from bugfixpy.jira.jira_issue import JiraIssue
+from bugfixpy.jira.issue import Issue
 
 
 class TestUtils(TestCase):
@@ -36,13 +36,13 @@ class TestUtils(TestCase):
 
         for i, incomplete_issue in enumerate(self.VALID_INCOMPLETE_ISSUE_NUMBERS):
             self.assertEqual(
-                append_project_type_if_not_present(incomplete_issue, JiraIssue.CHLC),
+                append_project_type_if_not_present(incomplete_issue, Issue.CHLC),
                 self.VALID_COMPLETE_CHLC_ISSUE_NUMBERS[i],
             )
 
         for i, incomplete_issue in enumerate(self.VALID_INCOMPLETE_ISSUE_NUMBERS):
             self.assertEqual(
-                append_project_type_if_not_present(incomplete_issue, JiraIssue.CHLRQ),
+                append_project_type_if_not_present(incomplete_issue, Issue.CHLRQ),
                 self.VALID_COMPLETE_CHLRQ_ISSUE_NUMBERS[i],
             )
 
@@ -51,12 +51,12 @@ class TestUtils(TestCase):
 
         for complete_issue in self.VALID_COMPLETE_CHLRQ_ISSUE_NUMBERS:
             self.assertEqual(
-                append_project_type_if_not_present(complete_issue, JiraIssue.CHLRQ),
+                append_project_type_if_not_present(complete_issue, Issue.CHLRQ),
                 complete_issue,
             )
 
         for complete_issue in self.VALID_COMPLETE_CHLC_ISSUE_NUMBERS:
             self.assertEqual(
-                append_project_type_if_not_present(complete_issue, JiraIssue.CHLC),
+                append_project_type_if_not_present(complete_issue, Issue.CHLC),
                 complete_issue,
             )

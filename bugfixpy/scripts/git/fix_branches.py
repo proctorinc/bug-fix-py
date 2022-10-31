@@ -3,13 +3,13 @@ Fix Branches script fixes and commits changes to branches until the user is done
 """
 
 from git import GitCommandError
-from bugfixpy.git.gitrepository import GitRepository
+from bugfixpy.git.repository import Repository
 from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.utils import user_input
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
 
-def fix_branches_in_repository(repository: GitRepository) -> None:
+def fix_branches_in_repository(repository: Repository) -> None:
     """
     Run bug fix. Loop over branches to fix. After fixing, prompt
     user if they want to fix another
@@ -64,7 +64,7 @@ def fix_branches_in_repository(repository: GitRepository) -> None:
 
 # TODO: implement fixing all branches option
 # # VERSION TO FIX ALL BRANCHES AT ONCE
-# def fix_branches_in_repository(repository: GitRepository) -> None:
+# def fix_branches_in_repository(repository: Repository) -> None:
 #     """
 #     Run bug fix. Loop over branches to fix. After fixing, prompt
 #     user if they want to fix another
@@ -118,7 +118,7 @@ def fix_branches_in_repository(repository: GitRepository) -> None:
 #         print(colors.ENDC, end="")
 
 
-def __make_fix_and_commit(branch: str, repository: GitRepository) -> str:
+def __make_fix_and_commit(branch: str, repository: Repository) -> str:
     """
     Checks the user out to a branch of their choice, making sure it is a valid branch.
     Opens VS Code for user to make the fix and prompts user to press ENTER when done.

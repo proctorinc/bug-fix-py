@@ -7,7 +7,7 @@ import sys
 import readline
 from typing import Callable, List
 from bugfixpy.constants import colors, jira
-from bugfixpy.git.gitrepository import GitRepository
+from bugfixpy.git.repository import Repository
 from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
 
@@ -121,7 +121,7 @@ def get_challenge_id() -> str:
     return challenge_id
 
 
-def get_next_branch(branches: List[str], repository: GitRepository) -> str:
+def get_next_branch(branches: List[str], repository: Repository) -> str:
     """
     Prompts user for next branch to checkout to
     """

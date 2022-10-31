@@ -9,7 +9,7 @@ import sys
 import webbrowser
 from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
-from bugfixpy.git.gitrepository import GitRepository
+from bugfixpy.git.repository import Repository
 from bugfixpy.utils import user_input
 from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import fix_branches_in_repository
@@ -29,7 +29,7 @@ def run(test_mode: bool) -> None:
 
     # Attempt to create repository
     try:
-        repository = GitRepository(repo_name)
+        repository = Repository(repo_name)
     except GitError:
         print(f"{colors.FAIL}Git Error: configure SSH key first{colors.ENDC}")
         sys.exit(1)
