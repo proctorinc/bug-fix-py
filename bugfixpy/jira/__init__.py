@@ -5,4 +5,4 @@ from .issue import (
     ApplicationCreationIssue,
 )
 from .utils import append_project_type_if_not_present
-from .api import *
+from . import api

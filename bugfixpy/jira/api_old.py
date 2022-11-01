@@ -54,7 +54,6 @@ def __put_query(endpoint: str, body: dict) -> Response:
     return response
 
 
-# TODO: Separate API call and functionality (move to validate.py)
 def has_valid_credentials() -> bool:
     """
     GET
@@ -249,5 +248,5 @@ def check_chlrq_exists(chlrq) -> bool:
 
     return (
         jira.RESPONSE_KEY in json_response
-        and jira.CHRLQ in json_response[jira.RESPONSE_KEY]
+        and jira.CHLRQ in json_response[jira.RESPONSE_KEY]
     )

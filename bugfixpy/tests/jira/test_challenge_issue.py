@@ -83,6 +83,20 @@ class TestChallengeRequestIssue(TestCase):
         request_issue = ChallengeRequestIssue(VALID_FULL_CHLRQ)
         self.assertEqual(request_issue.get_project_type(), Issue.CHLRQ)
 
+    def test_get_challege_request_endpoint(self) -> None:
+        request_id = "CHLRQ-1234"
+        request_issue = ChallengeRequestIssue(request_id)
+        issue_endpoint = request_issue.get_issue_endpoint()
+        expected_issue_endpoint = f"/issue/{request_id}"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)
+
+    def test_get_challege_request_transition_endpoint(self) -> None:
+        request_id = "CHLRQ-1234"
+        request_issue = ChallengeRequestIssue(request_id)
+        issue_endpoint = request_issue.get_transition_endpoint()
+        expected_issue_endpoint = f"/issue/{request_id}/transitions"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)
+
 
 class TestChallengeCreationIssue(TestCase):
     def test_challenge_creation(self) -> None:
@@ -99,8 +113,22 @@ class TestChallengeCreationIssue(TestCase):
             self.assertRaises(InvalidIssueIdError, ChallengeCreationIssue, invalid_id)
 
     def test_challenge_creation_project_type(self) -> None:
-        request_issue = ChallengeCreationIssue(VALID_FULL_CHLC)
-        self.assertEqual(request_issue.get_project_type(), Issue.CHLC)
+        creation_issue = ChallengeCreationIssue(VALID_FULL_CHLC)
+        self.assertEqual(creation_issue.get_project_type(), Issue.CHLC)
+
+    def test_get_challege_creation_endpoint(self) -> None:
+        issue_id = "CHLC-1234"
+        creation_issue = ChallengeCreationIssue(issue_id)
+        issue_endpoint = creation_issue.get_issue_endpoint()
+        expected_issue_endpoint = f"/issue/{issue_id}"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)
+
+    def test_get_challege_creation_transition_endpoint(self) -> None:
+        issue_id = "CHLC-1234"
+        creation_issue = ChallengeCreationIssue(issue_id)
+        issue_endpoint = creation_issue.get_transition_endpoint()
+        expected_issue_endpoint = f"/issue/{issue_id}/transitions"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)
 
 
 class TestApplicationCreationIssue(TestCase):
@@ -120,3 +148,17 @@ class TestApplicationCreationIssue(TestCase):
     def test_application_creation_project_type(self) -> None:
         request_issue = ApplicationCreationIssue(VALID_FULL_CHLC)
         self.assertEqual(request_issue.get_project_type(), Issue.CHLC)
+
+    def test_get_application_creation_endpoint(self) -> None:
+        request_id = "CHLC-1234"
+        request_issue = ApplicationCreationIssue(request_id)
+        issue_endpoint = request_issue.get_issue_endpoint()
+        expected_issue_endpoint = f"/issue/{request_id}"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)
+
+    def test_get_application_creation_transition_endpoint(self) -> None:
+        issue_id = "CHLC-1234"
+        creation_issue = ChallengeCreationIssue(issue_id)
+        issue_endpoint = creation_issue.get_transition_endpoint()
+        expected_issue_endpoint = f"/issue/{issue_id}/transitions"
+        self.assertEqual(issue_endpoint, expected_issue_endpoint)

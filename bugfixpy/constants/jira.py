@@ -1,8 +1,3 @@
-"""
-Jira constants
-"""
-
-
 import keyring
 from requests.auth import HTTPBasicAuth
 
@@ -55,10 +50,16 @@ SCW_API_URL = "https://securecodewarrior.atlassian.net/rest/api/latest"
 RESPONSE_KEY = "key"
 
 # CHLRQ string
-CHRLQ = "CHLRQ"
+CHLRQ = "CHLRQ"
 
 # CHLC string
 CHLC = "CHLC"
 
 # Bulk transition JQL url
 BULK_TRANSITION_JQL_URL = "https://securecodewarrior.atlassian.net/browse/CHLC-{chlc}?jql=project%20%3D%20%27CHLC%27%20and%20issuetype%3D%20challenge%20and%20issue%20in%20linkedIssues(%27CHLC-{chlc}%27)%20ORDER%20BY%20created%20DESC"
+
+LINKED_ISSUES_ENDPOINT = "issueLink"
+
+LINKED_ISSUES_ENDPOINT = "project/CHLRQ/versions"
+
+TRANSITION_TO_CLOSED_ID = "191"

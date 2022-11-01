@@ -1,253 +1,195 @@
-"""
-Jira API module holds all methods for querying the Jira API to transition issues
-"""
-
-
-import json
-import datetime
-from datetime import date
-from typing import Optional, Tuple
+from typing import List
 import requests
 from requests import Response
-from bugfixpy.constants import colors, jira
+from bugfixpy.constants import jira
+from bugfixpy.jira import (
+    Issue,
+    ChallengeRequestIssue,
+    ChallengeCreationIssue,
+    ApplicationCreationIssue,
+)
+from .fix_version import FixVersion
 from . import utils
 
 
-def __get_query(endpoint: str) -> Response:
-    """
-    Query Jira API with request headers and Authentication
-    """
+def __execute_get_query(endpoint: str) -> Response:
     response = requests.get(
         url=f"{jira.SCW_API_URL}/{endpoint}",
         headers=jira.REQUEST_HEADERS,
         auth=jira.AUTH,
     )
-
     return response
 
 
-def __post_query(endpoint: str, body: dict) -> Response:
-    """
-    Query Jira API with request headers and Authentication
-    """
+def __execute_post_query(endpoint: str, body: dict) -> Response:
     response = requests.post(
         url=f"{jira.SCW_API_URL}/{endpoint}",
         headers=jira.REQUEST_HEADERS,
         auth=jira.AUTH,
         json=body,
     )
-
     return response
 
 
-def __put_query(endpoint: str, body: dict) -> Response:
-    """
-    Query Jira API with request headers and Authentication
-    """
+def __execute_put_query(endpoint: str, body: dict) -> Response:
     response = requests.put(
         url=f"{jira.SCW_API_URL}/{endpoint}",
         headers=jira.REQUEST_HEADERS,
         auth=jira.AUTH,
         json=body,
     )
+    return response
+
+
+def get_response_code_from_query_to_verify_credentials() -> int:
+    challenge_creation: ChallengeCreationIssue = ChallengeCreationIssue("CHLC-1520")
+    endpoint = challenge_creation.get_issue_endpoint()
+    response = __execute_get_query(endpoint)
+
+    return response.status_code
+
+
+def get_current_fix_version() -> FixVersion:
+    endpoint = jira.LINKED_ISSUES_ENDPOINT
+    response = __execute_get_query(endpoint)
+
+    return utils.parse_fix_version_from_response(response)
+
+
+def issue_exists(issue: Issue) -> bool:
+    endpoint = issue.get_issue_endpoint()
+    response = __execute_get_query(endpoint)
+
+    return utils.project_type_exists_in_response(issue.get_project_type(), response)
+
+
+def transition_challenge_request_to_planned(
+    challenge_request: ChallengeRequestIssue, fix_version_id: str
+) -> Response:
+    endpoint = challenge_request.get_transition_endpoint()
+    body = get_transition_to_planned_body(fix_version_id)
+    response = __execute_post_query(endpoint, body)
 
     return response
 
 
-# TODO: Separate API call and functionality (move to validate.py)
-def has_valid_credentials() -> bool:
-    """
-    GET
-    Checks if credentials are able to retrieve data from API
-    """
-    is_valid = True
-
-    try:
-        endpoint = "issue/CHLC-1520/"
-        response = __get_query(endpoint)
-        json_response = json.loads(response.text)
-
-        if "errorMessages" in json_response:
-            print("Invalid API credentials: Invalid email or permissions on account")
-            print("confirm your credentials are correct")
-            print("run bug-fix.py --setup to change credentials")
-            is_valid = False
-
-    except json.decoder.JSONDecodeError:
-        print("Invalid API credentials: Invalid API key")
-        print("run bug-fix.py --setup to change credentials")
-        is_valid = False
-
-    return is_valid
-
-
-def get_current_fix_version() -> Tuple[Optional[str], Optional[str]]:
-    """
-    GET
-    Gets current fix version based off of the current date
-    """
-    today = date.today()
-    datetime_object = datetime.datetime.strptime(str(today.month), "%m")
-    month = datetime_object.strftime("%b")
-    version_name = None
-    version_id = None
-
-    endpoint = "project/CHLRQ/versions"
-    response = __get_query(endpoint)
-    json_response = json.loads(response.text)
-
-    for version in json_response:
-        if str(today.year) in version["name"] and month in version["name"]:
-            version_name = version["name"]
-            version_id = version["id"]
-
-    return version_name, version_id
-
-
-def transition_issue_to_planned(chlrq, fix_version_id) -> Response:
-    """
-    POST
-    Transition CHLRQ to Planned w/ fix version
-    """
-    endpoint = f"issue/CHLRQ-{chlrq}/transitions"
-    body = {
+def get_transition_to_planned_body(fix_version_id) -> dict:
+    return {
         "transition": {"id": jira.TRANSITION_PLANNED},
         "update": {"fixVersions": [{"add": {"id": fix_version_id}}]},
     }
-    response = __post_query(endpoint, body)
+
+
+def transition_challenge_request_to_in_progress(
+    challenge_request: ChallengeRequestIssue,
+) -> Response:
+    endpoint = challenge_request.get_transition_endpoint()
+    body = get_transition_to_in_progress_body()
+    response = __execute_post_query(endpoint, body)
 
     return response
 
 
-def transition_issue_to_in_progress(chlrq) -> Response:
-    """
-    POST
-    Transition CHLRQ to In Progress
-    """
-    endpoint = f"issue/CHLRQ-{chlrq}/transitions"
-    body = {"transition": {"id": jira.TRANSITION_IN_PROGRESS}}
-    response = __post_query(endpoint, body)
-
-    return response
+def get_transition_to_in_progress_body() -> dict:
+    return {"transition": {"id": jira.TRANSITION_IN_PROGRESS}}
 
 
-# TODO: THIS DOESN'T WORK FOR ALL CHALLENGES!
-def get_creation_chlc(chlc) -> str:
-    """
-    GET
-    Get parent CHLC's creation CHLC
-    """
-    endpoint = f"issue/CHLC-{chlc}/"
-    response = __get_query(endpoint)
-    json_response = json.loads(response.text)
+def get_application_creation_related_to_challenge(
+    challenge_creation: ChallengeCreationIssue,
+) -> ApplicationCreationIssue:
+    endpoint = challenge_creation.get_issue_endpoint()
+    response = __execute_get_query(endpoint)
+    application_creation_id = utils.parse_application_creation_from_response(response)
 
-    if response.text:
-        json_response = json.loads(response.text)
-
-        if "errorMessages" in json_response:
-            print(f"{colors.FAIL}Error getting creation CHLC{colors.ENDC}")
-
-    return str(json_response["fields"]["parent"][jira.RESPONSE_KEY])
+    return ApplicationCreationIssue(application_creation_id)
 
 
-def get_linked_challenges(chlc):
-    """
-    GET
-    Gets creation CHLC's children CHLCs
-    """
-    endpoint = f"issue/CHLC-{chlc}"
-    response = __get_query(endpoint)
-    json_response = json.loads(response.text)
+def get_challenge_creation_issues_linked_to_application(
+    application_creation: ApplicationCreationIssue,
+) -> List[ChallengeCreationIssue]:
+    endpoint = application_creation.get_issue_endpoint()
+    response = __execute_get_query(endpoint)
+    challenge_creation_ids = utils.parse_linked_challenges_from_response(response)
 
-    return utils.parse_linked_issues(json_response["fields"]["issuelinks"])
+    return [ChallengeCreationIssue(id) for id in challenge_creation_ids]
 
 
-def link_creation_chlc(chlrq, chlc) -> Response:
-    """
-    POST
-    Links creation CHLC to CHLRQ
-    """
-    endpoint = "issueLink"
-    body = {
+def link_challenge_request_to_challenge_creation_(
+    challenge_request: ChallengeRequestIssue, challenge_creation: ChallengeCreationIssue
+) -> Response:
+    endpoint = jira.LINKED_ISSUES_ENDPOINT
+    body = get_issue_link_body(challenge_request, challenge_creation)
+
+    return __execute_post_query(endpoint, body)
+
+
+def get_issue_link_body(
+    challenge_request: ChallengeRequestIssue, challenge_creation: ChallengeCreationIssue
+) -> dict:
+    return {
         "type": {"name": "Relates"},
-        "outwardIssue": {jira.RESPONSE_KEY: f"CHLRQ-{chlrq}"},
-        "inwardIssue": {jira.RESPONSE_KEY: f"CHLC-{chlc}"},
+        "outwardIssue": {jira.RESPONSE_KEY: challenge_request.get_issue_id()},
+        "inwardIssue": {jira.RESPONSE_KEY: challenge_creation.get_issue_id()},
     }
 
-    return __post_query(endpoint, body)
+
+def transition_challenge_request_to_closed_with_comment(
+    challenge_request: ChallengeRequestIssue, comment
+) -> Response:
+    endpoint = challenge_request.get_transition_endpoint()
+    body = get_transition_closed_with_comment_body(comment)
+
+    return __execute_post_query(endpoint, body)
 
 
-def transition_issue_to_closed(chlrq, comment) -> Response:
-    """
-    POST
-    Links transitions CHLRQ to closed
-    """
-    endpoint = f"issue/CHLRQ-{chlrq}/transitions"
-    body = {
-        "transition": {"id": "191"},
+def get_transition_closed_with_comment_body(comment: str) -> dict:
+    return {
+        "transition": {"id": jira.TRANSITION_TO_CLOSED_ID},
         "update": {"comment": [{"add": {"body": comment}}]},
     }
-    return __post_query(endpoint, body)
 
 
-def transition_issue_to_feedback_open(chlc) -> Response:
-    """
-    POST
-    Transition CHLC to feedback open
-    """
-    endpoint = f"issue/{chlc}/transitions"
-    body = {"transition": {"id": jira.TRANSITION_FEEDBACK_OPEN}}
-    return __post_query(endpoint, body)
+def transition_challenge_creation_to_feedback_open(
+    challenge_creation: ChallengeCreationIssue,
+) -> Response:
+    endpoint = challenge_creation.get_transition_endpoint()
+    body = get_feedback_open_body()
+
+    return __execute_post_query(endpoint, body)
 
 
-def transition_issue_to_feedback_review(chlc) -> Response:
-    """
-    POST
-    Transition CHLC to feedback review and add comment and change assignee to Thomas
-    """
-    endpoint = f"issue/{chlc}/transitions"
-    body = {"transition": {"id": jira.TRANSITION_FEEDBACK_REVIEW}}
-    return __post_query(endpoint, body)
+def get_feedback_open_body() -> dict:
+    return {"transition": {"id": jira.TRANSITION_FEEDBACK_OPEN}}
 
 
-def edit_issue_details(chlc, chlrq) -> Response:
-    """
-    PUT
-    Jira edit query. Changes CHLC's assignee to Thomas and adds comment
-    """
-    endpoint = f"issue/{chlc}"
-    body = {
+def transition_challenge_creation_to_feedback_review(
+    challenge_creation: ChallengeCreationIssue,
+) -> Response:
+    endpoint = challenge_creation.get_transition_endpoint()
+    body = get_feedback_review_body()
+
+    return __execute_post_query(endpoint, body)
+
+
+def get_feedback_review_body() -> dict:
+    return {"transition": {"id": jira.TRANSITION_FEEDBACK_REVIEW}}
+
+
+def update_challenge_creation_assignee_and_link_challenge_request(
+    application_creation: ApplicationCreationIssue,
+    challenge_request: ChallengeRequestIssue,
+) -> Response:
+    endpoint = application_creation.get_issue_endpoint()
+    body = get_update_challenge_request_body(challenge_request)
+
+    return __execute_put_query(endpoint, body)
+
+
+def get_update_challenge_request_body(
+    challenge_request: ChallengeRequestIssue,
+) -> dict:
+    challenge_request_id = challenge_request.get_issue_id()
+    return {
         "fields": {"assignee": {"accountId": jira.THOMAS_ACCT_ID}},
-        "update": {"comment": [{"add": {"body": f"CHLRQ-{chlrq}"}}]},
+        "update": {"comment": [{"add": {"body": challenge_request_id}}]},
     }
-    return __put_query(endpoint, body)
-
-
-def check_chlc_exists(chlc) -> bool:
-    """
-    GET
-    Confirm that chlc number is valid
-    """
-    endpoint = f"issue/CHLC-{chlc}/"
-    response = __get_query(endpoint)
-    json_response = json.loads(response.text)
-
-    return (
-        jira.RESPONSE_KEY in json_response
-        and jira.CHLC in json_response[jira.RESPONSE_KEY]
-    )
-
-
-def check_chlrq_exists(chlrq) -> bool:
-    """
-    GET
-    Confirm that chlrq number is valid
-    """
-    endpoint = f"/issue/CHLRQ-{chlrq}/"
-    response = __get_query(endpoint)
-    json_response = json.loads(response.text)
-
-    return (
-        jira.RESPONSE_KEY in json_response
-        and jira.CHRLQ in json_response[jira.RESPONSE_KEY]
-    )

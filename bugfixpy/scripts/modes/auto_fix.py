@@ -1,18 +1,11 @@
-"""
-Automatic bug fix mode. Takes in a challenge ID and scrapes the CMS to retrieve all Jira issue data
-to avoid more user input. Automatically transitions tickets in Jira
-"""
-
-
 import sys
-from bugfixpy.jira import api
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.git.repository import Repository
 from bugfixpy.scripts import transition
 from bugfixpy.scripts.git import fix_branches_in_repository
 from bugfixpy.formatter import Text
-from bugfixpy.utils import user_input
+from bugfixpy.utils import user_input, validate
 from bugfixpy.scripts.cms import scrape_cms
 from bugfixpy.exceptions import RequestFailedError
 
@@ -29,7 +22,7 @@ def run(test_mode: bool) -> None:
         Text(headers.TEST_MODE, colors.HEADER).display()
 
     # Otherwise check if credentials are valid
-    elif not api.has_valid_credentials():
+    elif not validate.has_valid_credentials():
         Text(
             "Invalid API credentials. Run with --setup to change credentials",
             colors.FAIL,

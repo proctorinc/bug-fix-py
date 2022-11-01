@@ -3,14 +3,14 @@ from bugfixpy.jira import api
 from bugfixpy.constants import cms, jira
 
 
-def is_valid_ticket_number(ticket):
+def is_valid_ticket_number(ticket) -> bool:
     """
     Validate ticket number input format
     """
-    return len(ticket) < 5 and len(ticket) > 1 and ticket.isdigit()
+    return bool(len(ticket) < 5 and len(ticket) > 1 and ticket.isdigit())
 
 
-def is_valid_chlrq(chlrq):
+def is_valid_challenge_request_issue(chlrq) -> bool:
     """
     Validate CHLRQ format and through Jira API
     """
@@ -45,17 +45,6 @@ def is_valid_challenge_id(cid) -> bool:
     return bool(re.match("^([a-z0-9]{24})", cid))
 
 
-def has_credentials():
-    """
-    Validate that API and CMS credentials exists. Notify user if not
-    """
-    if not jira.API_EMAIL or not jira.API_KEY or not cms.EMAIL or not cms.PASSWORD:
-
-        return False
-
-    return True
-
-
 def is_valid_fix_message(message) -> bool:
     """
     Validates fix message. If no message return false, otherwise return true
@@ -68,3 +57,18 @@ def is_valid_repository_name(repository) -> bool:
     Validates if input is a valid repository
     """
     return bool(repository)
+
+
+def has_valid_credentials() -> bool:
+    if not jira.API_EMAIL or not jira.API_KEY or not cms.EMAIL or not cms.PASSWORD:
+        return False
+
+    response_code = api.get_response_code_from_query_to_verify_credentials()
+
+    if response_code != 200:
+        print("Invalid API credentials: Invalid email or permissions on account")
+        print("confirm your credentials are correct")
+        print("run bug-fix.py --setup to change credentials")
+        return False
+
+    return True

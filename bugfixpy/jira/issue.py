@@ -33,6 +33,14 @@ class Issue(ABC):
         )
         return bool(re.fullmatch(issue_id_with_or_without_project_type, issue_id))
 
+    def get_issue_endpoint(self) -> str:
+        issue_id = self.get_issue_id()
+        return f"/issue/{issue_id}"
+
+    def get_transition_endpoint(self) -> str:
+        issue_endpoint = self.get_issue_endpoint()
+        return issue_endpoint + "/transitions"
+
 
 class ChallengeRequestIssue(Issue):
     def get_project_type(self) -> str:
