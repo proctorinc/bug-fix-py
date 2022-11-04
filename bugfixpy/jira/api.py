@@ -1,6 +1,7 @@
 from typing import List
 import requests
 from requests import Response
+
 from bugfixpy.constants import jira
 from bugfixpy.jira import (
     Issue,
