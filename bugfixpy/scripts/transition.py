@@ -1,6 +1,13 @@
-from typing import List
+from typing import List, Optional
 
 from requests import Response
+
+from bugfixpy.jira.issue import (
+    ApplicationCreationIssue,
+    ChallengeCreationIssue,
+    ChallengeRequestIssue,
+)
+from bugfixpy.jira.fix_version import FixVersion
 from bugfixpy.utils import user_input
 from bugfixpy.jira import api
 from bugfixpy.constants import colors
@@ -9,129 +16,115 @@ from bugfixpy.constants import colors
 def transition_jira_issues(
     fix_messages: List[str],
     is_cherrypick_required: bool,
-    chlrq=None,
-    challenge_chlc=None,
-    application_chlc=None,
+    challenge_request_issue: Optional[ChallengeRequestIssue] = None,
+    challenge_creation_issue: Optional[ChallengeCreationIssue] = None,
+    application_creation_issue: Optional[ApplicationCreationIssue] = None,
 ) -> None:
-    """
-    Use Jira API to transition tickets through Jira workflow
-    """
-    # API call to get current version name and id
-    fix_version_name, fix_version_id = api.get_current_fix_version()
-
-    # Format fix messages
+    fix_version = api.get_current_fix_version()
     fix_message = user_input.format_messages(fix_messages)
 
-    # Check that version id was successfully got
-    if not fix_version_id:
+    if not fix_version.id_:
         raise Exception(
             "Unable to determine fix version. Cannot auto-transition tickets. Exiting."
         )
 
-    # If parameter not entered, prompt user for CHRLQ
-    if not chlrq:
-        chlrq = user_input.get_chlrq()
+    if not challenge_request_issue:
+        challenge_request_issue = user_input.get_challenge_request_issue()
 
-    transition_chlrq(chlrq, fix_version_name, fix_version_id, fix_message)
+    transition_challenge_request_issue(
+        challenge_request_issue, fix_version, fix_message
+    )
 
-    # If full app and fix was on the secure branch, transition all CHLC's
     if is_cherrypick_required:
 
-        if not application_chlc:
-            # Get application CHLC
+        if not application_creation_issue:
             print("\n[Enter Application CHLC]")
-            application_chlc = user_input.get_chlc()
+            application_creation_issue = user_input.get_application_creation_issue()
 
-        # Notify user of parent CHLC number
-        print(f"Application CHLC: {colors.WARNING}{application_chlc}{colors.ENDC}")
+        print(
+            f"Application CHLC: {colors.WARNING}{application_creation_issue.get_issue_id()}{colors.ENDC}"
+        )
 
-        # Get all CHLC's linked to the creation ticket
-        challenges = api.get_linked_challenges(application_chlc)
+        linked_issues = api.get_challenge_creation_issues_linked_to_application(
+            application_creation_issue
+        )
 
-        # Print number of challenges to bulk transition
-        print(f"Challenges to bulk transition: {len(challenges)}")
+        print(f"Challenges to bulk transition: {len(linked_issues)}")
 
     else:
-        if not challenge_chlc:
-            # Get challenge chlc
+        if not challenge_creation_issue:
             print("\n[Enter Challenge CHLC]")
-            challenge_chlc = user_input.get_chlc()
+            challenge_creation_issue = user_input.get_challenge_creation_issue()
 
-        # Set challenges to the initial chlc
-        challenges = ["CHLC-" + challenge_chlc[-4:]]
+        linked_issues = [challenge_creation_issue]
 
-    transition_chlcs(challenges, chlrq)
+    transition_chlcs(linked_issues, challenge_request_issue)
 
 
-def transition_chlrq(chlrq: str, fix_version_name, fix_version_id, fix_message) -> None:
-    """
-    Transition CHLRQ issue through Jira API and print results
-    """
-    # Transitioning CHLRQ
-    print(f"\nTransitioning {colors.OKCYAN}CHLRQ-{chlrq}{colors.ENDC}")
+def transition_challenge_request_issue(
+    challenge_request_issue: ChallengeRequestIssue, fix_version: FixVersion, fix_message
+) -> None:
+    print(
+        f"\nTransitioning {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
+    )
 
     # Transition to in planned, include fix version
-    print(f"\tTo Planned [Fix Version: {fix_version_name}]", end="")
+    print(f"\tTo Planned [Fix Version: {fix_version.name}]", end="")
 
     # If api returns 204, transition was successful
-    planned_result = api.transition_issue_to_planned(chlrq, fix_version_id)
+    planned_result = api.transition_challenge_request_to_planned(
+        challenge_request_issue, fix_version
+    )
     check_transition_result(planned_result)
 
     # Transition to in progress
     print("\tTo In Progress\t\t\t", end="")
 
     # If api returns 204, transition was successful
-    in_progress_result = api.transition_issue_to_in_progress(chlrq)
+    in_progress_result = api.transition_challenge_request_to_in_progress(
+        challenge_request_issue
+    )
     check_transition_result(in_progress_result)
 
     # Transition CHLRQ to closed w/ fix message
     print("\tTo Closed [with description of fix]", end="")
 
     # If api returns 204, transition was successful
-    closed_result = api.transition_issue_to_closed(chlrq, fix_message)
+    closed_result = api.transition_challenge_request_to_closed_with_comment(
+        challenge_request_issue, fix_message
+    )
     check_transition_result(closed_result)
 
 
-def transition_chlcs(challenges, chlrq) -> None:
-    """
-    Transition all chlc's related to the given challenge using the Jira API
-    """
-
+def transition_chlcs(
+    challenge_creation_issues: list[ChallengeCreationIssue],
+    challenge_request_issue: ChallengeRequestIssue,
+) -> None:
     print(
-        f"\nTransitioning [{colors.OKCYAN}{len(challenges)}{colors.ENDC}] {colors.HEADER}CHLC's{colors.ENDC}"
+        f"\nTransitioning [{colors.OKCYAN}{len(challenge_creation_issues)}{colors.ENDC}] {colors.HEADER}CHLC's{colors.ENDC}"
     )
 
-    # Transition all challenges
-    for challenge in challenges:
+    for issue in challenge_creation_issues:
 
-        print(f"Transitioning {colors.HEADER}{challenge}{colors.ENDC}:")
-
-        # Transition challenge to Feedback Open
+        print(f"Transitioning {colors.HEADER}{issue}{colors.ENDC}:")
         print("\tTo Feedback Open\t", end="")
-
-        # If api returns 204, transition was successful
-        feedback_open_result = api.transition_issue_to_feedback_open(challenge)
+        feedback_open_result = api.transition_challenge_creation_to_feedback_open(issue)
         check_transition_result(feedback_open_result)
 
-        # Transition challenge to Feedback Review w/ fix message and set assignee to Thomas
         print("\tTo Feedback Review\t", end="")
-
-        # If api returns 204, transition was successful
-        feedback_review_result = api.transition_issue_to_feedback_review(challenge)
+        feedback_review_result = api.transition_challenge_creation_to_feedback_review(
+            issue
+        )
         check_transition_result(feedback_review_result)
 
-        # Sets assignee and adds CHLRQ as comment
         print("\tAdding assignee and comment", end="")
-
-        # If api returns 204, transition was successful
-        edit_result = api.edit_issue_details(challenge, chlrq)
+        edit_result = api.update_challenge_creation_assignee_and_link_challenge_request(
+            issue, challenge_request_issue
+        )
         check_transition_result(edit_result)
 
 
 def check_transition_result(result: Response) -> None:
-    """
-    Prints whether transitioning the issue was successful or not
-    """
     if result.status_code == 204:
         print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
     else:

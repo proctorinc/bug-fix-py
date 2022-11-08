@@ -47,4 +47,9 @@ def has_valid_credentials() -> bool:
 
 
 def credentials_are_loaded() -> bool:
-    return not jira.API_EMAIL or not jira.API_KEY or not cms.EMAIL or not cms.PASSWORD
+    return (
+        jira.API_EMAIL != ""
+        and jira.API_KEY != ""
+        and cms.EMAIL != ""
+        and cms.PASSWORD != ""
+    )

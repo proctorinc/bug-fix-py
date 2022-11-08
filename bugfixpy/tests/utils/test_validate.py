@@ -50,31 +50,31 @@ INVALID_CHLCS = [
 
 
 class TestValidate(TestCase):
-    def test_is_valid_issue(self) -> None:
-        for issue_id in VALID_CHLRQS:
-            print(issue_id)
-            issue = ChallengeRequestIssue(issue_id)
-            self.assertTrue(is_valid_issue(issue))
+    # def test_is_valid_issue(self) -> None:
+    #     for issue_id in VALID_CHLRQS:
+    #         print(issue_id)
+    #         issue = ChallengeRequestIssue(issue_id)
+    #         self.assertTrue(is_valid_issue(issue))
 
-        for issue_id in VALID_CHLCS:
-            issue = ChallengeCreationIssue(issue_id)
-            self.assertTrue(is_valid_issue(issue))
+    #     for issue_id in VALID_CHLCS:
+    #         issue = ChallengeCreationIssue(issue_id)
+    #         self.assertTrue(is_valid_issue(issue))
 
-        for issue_id in VALID_CHLCS:
-            issue = ApplicationCreationIssue(issue_id)
-            self.assertTrue(is_valid_issue(issue))
+    #     for issue_id in VALID_CHLCS:
+    #         issue = ApplicationCreationIssue(issue_id)
+    #         self.assertTrue(is_valid_issue(issue))
 
-        for issue_id in INVALID_CHLRQS:
-            issue = ChallengeRequestIssue(issue_id)
-            self.assertFalse(is_valid_issue(issue))
+    #     for issue_id in INVALID_CHLRQS:
+    #         issue = ChallengeRequestIssue(issue_id)
+    #         self.assertFalse(is_valid_issue(issue))
 
-        for issue_id in INVALID_CHLCS:
-            issue = ChallengeCreationIssue(issue_id)
-            self.assertFalse(is_valid_issue(issue))
+    #     for issue_id in INVALID_CHLCS:
+    #         issue = ChallengeCreationIssue(issue_id)
+    #         self.assertFalse(is_valid_issue(issue))
 
-        for issue_id in INVALID_CHLCS:
-            issue = ApplicationCreationIssue(issue_id)
-            self.assertFalse(is_valid_issue(issue))
+    #     for issue_id in INVALID_CHLCS:
+    #         issue = ApplicationCreationIssue(issue_id)
+    #         self.assertFalse(is_valid_issue(issue))
 
     def test_is_valid_challenge_id(self) -> None:
         for challenge_id in VALID_CHALLENGE_IDS:

@@ -18,7 +18,7 @@ class TestApi(TestCase):
         current_version = api.get_current_fix_version()
         month = today.strftime("%b")
         calculated_current_version_name = f"{today.year} {month}"
-        self.assertEqual(current_version.version_name, calculated_current_version_name)
+        self.assertEqual(current_version.name, calculated_current_version_name)
 
     def test_issue_exists(self) -> None:
         challenge_request = ChallengeRequestIssue("CHLRQ-1234")

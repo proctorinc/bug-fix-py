@@ -1,13 +1,15 @@
-"""
-User input module contains all methods to get user input for bug fixing process
-"""
-
-
 import sys
 import readline
 from typing import Callable, List
+
+from bugfixpy.exceptions import InvalidIssueIdError
 from bugfixpy.constants import colors, jira
 from bugfixpy.git.repository import Repository
+from bugfixpy.jira.issue import (
+    ApplicationCreationIssue,
+    ChallengeCreationIssue,
+    ChallengeRequestIssue,
+)
 from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
 
@@ -15,58 +17,69 @@ from bugfixpy.formatter import completer
 def __get_valid_input(
     prompt: str, invalid_message: str, is_valid: Callable[[str], bool]
 ) -> str:
-    """
-    Utility method to get input from the user and validated it based off of an input method. Custom
-    messages to describe what input is needed. Will return once input is validated
-    """
-    # Get value as input
     value = input(prompt)
-
-    # Reset colors
     print(colors.ENDC, end="")
 
-    # Check value's validity with validator
     while not is_valid(value):
-
-        # Print message for input not being valid
-        # print(f"{colors.FAIL}{invalid_message.format(value=value)}{colors.ENDC}")
         print(f"{colors.FAIL}{invalid_message}{value}{colors.ENDC}")
-
-        # Prompt for input again
         value = input(prompt)
-
-        # Reset colors
         print(colors.ENDC, end="")
 
     return value
 
 
-def get_chlrq() -> str:
-    """
-    Prompt user to input CHLRQ number. Validate format
-    """
-    prompt = f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
-    invalid_message = (
-        "{colors.OKCYAN}CHLRQ-{value}{colors.ENDC} is not valid. Enter 2-4 digits."
-    )
+def get_challenge_request_issue() -> ChallengeRequestIssue:
+    challenge_request = None
 
-    chlrq = __get_valid_input(prompt, invalid_message, validate.is_valid_chlrq)
+    while not challenge_request:
+        challenge_id = input(
+            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+        )
 
-    return chlrq
+        try:
+            challenge_request = ChallengeRequestIssue(challenge_id)
+
+        except InvalidIssueIdError:
+            print(
+                f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
+            )
+    return challenge_request
 
 
-def get_chlc() -> str:
-    """
-    Prompt user to input CHLC number. Validate format
-    """
-    prompt = f"Enter {colors.HEADER}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
-    invalid_message = (
-        "{colors.HEADER}CHLC-{value}{colors.ENDC} is not valid. Enter 2-4 digits"
-    )
+def get_challenge_creation_issue() -> ChallengeCreationIssue:
+    challenge_creation = None
 
-    chlc = __get_valid_input(prompt, invalid_message, validate.is_valid_chlc)
+    while not challenge_creation:
+        challenge_id = input(
+            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+        )
 
-    return chlc
+        try:
+            challenge_creation = ChallengeCreationIssue(challenge_id)
+
+        except InvalidIssueIdError:
+            print(
+                f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
+            )
+    return challenge_creation
+
+
+def get_application_creation_issue() -> ApplicationCreationIssue:
+    application_creation = None
+
+    while not application_creation:
+        challenge_id = input(
+            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+        )
+
+        try:
+            application_creation = ApplicationCreationIssue(challenge_id)
+
+        except InvalidIssueIdError:
+            print(
+                f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
+            )
+    return application_creation
 
 
 def format_messages(messages: List[str]) -> str:

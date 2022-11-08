@@ -65,10 +65,10 @@ def issue_exists(issue: Issue) -> bool:
 
 
 def transition_challenge_request_to_planned(
-    challenge_request: ChallengeRequestIssue, fix_version_id: str
+    challenge_request_issue: ChallengeRequestIssue, fix_version: FixVersion
 ) -> Response:
-    endpoint = challenge_request.get_transition_endpoint()
-    body = get_transition_to_planned_body(fix_version_id)
+    endpoint = challenge_request_issue.get_transition_endpoint()
+    body = get_transition_to_planned_body(fix_version.id_)
     response = __execute_post_query(endpoint, body)
 
     return response
@@ -82,9 +82,9 @@ def get_transition_to_planned_body(fix_version_id) -> dict:
 
 
 def transition_challenge_request_to_in_progress(
-    challenge_request: ChallengeRequestIssue,
+    challenge_request_issue: ChallengeRequestIssue,
 ) -> Response:
-    endpoint = challenge_request.get_transition_endpoint()
+    endpoint = challenge_request_issue.get_transition_endpoint()
     body = get_transition_to_in_progress_body()
     response = __execute_post_query(endpoint, body)
 
@@ -96,9 +96,9 @@ def get_transition_to_in_progress_body() -> dict:
 
 
 def get_application_creation_related_to_challenge(
-    challenge_creation: ChallengeCreationIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
 ) -> ApplicationCreationIssue:
-    endpoint = challenge_creation.get_issue_endpoint()
+    endpoint = challenge_creation_issue.get_issue_endpoint()
     response = __execute_get_query(endpoint)
     application_creation_id = utils.parse_application_creation_from_response(response)
 
@@ -106,9 +106,9 @@ def get_application_creation_related_to_challenge(
 
 
 def get_challenge_creation_issues_linked_to_application(
-    application_creation: ApplicationCreationIssue,
+    application_creation_issue: ApplicationCreationIssue,
 ) -> List[ChallengeCreationIssue]:
-    endpoint = application_creation.get_issue_endpoint()
+    endpoint = application_creation_issue.get_issue_endpoint()
     response = __execute_get_query(endpoint)
     challenge_creation_ids = utils.parse_linked_challenges_from_response(response)
 
@@ -116,28 +116,30 @@ def get_challenge_creation_issues_linked_to_application(
 
 
 def link_challenge_request_to_challenge_creation_(
-    challenge_request: ChallengeRequestIssue, challenge_creation: ChallengeCreationIssue
+    challenge_request_issue: ChallengeRequestIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
 ) -> Response:
     endpoint = jira.LINKED_ISSUES_ENDPOINT
-    body = get_issue_link_body(challenge_request, challenge_creation)
+    body = get_issue_link_body(challenge_request_issue, challenge_creation_issue)
 
     return __execute_post_query(endpoint, body)
 
 
 def get_issue_link_body(
-    challenge_request: ChallengeRequestIssue, challenge_creation: ChallengeCreationIssue
+    challenge_request_issue: ChallengeRequestIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
 ) -> dict:
     return {
         "type": {"name": "Relates"},
-        "outwardIssue": {jira.RESPONSE_KEY: challenge_request.get_issue_id()},
-        "inwardIssue": {jira.RESPONSE_KEY: challenge_creation.get_issue_id()},
+        "outwardIssue": {jira.RESPONSE_KEY: challenge_request_issue.get_issue_id()},
+        "inwardIssue": {jira.RESPONSE_KEY: challenge_creation_issue.get_issue_id()},
     }
 
 
 def transition_challenge_request_to_closed_with_comment(
-    challenge_request: ChallengeRequestIssue, comment
+    challenge_request_issue: ChallengeRequestIssue, comment
 ) -> Response:
-    endpoint = challenge_request.get_transition_endpoint()
+    endpoint = challenge_request_issue.get_transition_endpoint()
     body = get_transition_closed_with_comment_body(comment)
 
     return __execute_post_query(endpoint, body)
@@ -151,9 +153,9 @@ def get_transition_closed_with_comment_body(comment: str) -> dict:
 
 
 def transition_challenge_creation_to_feedback_open(
-    challenge_creation: ChallengeCreationIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
 ) -> Response:
-    endpoint = challenge_creation.get_transition_endpoint()
+    endpoint = challenge_creation_issue.get_transition_endpoint()
     body = get_feedback_open_body()
 
     return __execute_post_query(endpoint, body)
@@ -164,9 +166,9 @@ def get_feedback_open_body() -> dict:
 
 
 def transition_challenge_creation_to_feedback_review(
-    challenge_creation: ChallengeCreationIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
 ) -> Response:
-    endpoint = challenge_creation.get_transition_endpoint()
+    endpoint = challenge_creation_issue.get_transition_endpoint()
     body = get_feedback_review_body()
 
     return __execute_post_query(endpoint, body)
@@ -177,11 +179,11 @@ def get_feedback_review_body() -> dict:
 
 
 def update_challenge_creation_assignee_and_link_challenge_request(
-    application_creation: ApplicationCreationIssue,
-    challenge_request: ChallengeRequestIssue,
+    challenge_creation_issue: ChallengeCreationIssue,
+    challenge_request_issue: ChallengeRequestIssue,
 ) -> Response:
-    endpoint = application_creation.get_issue_endpoint()
-    body = get_update_challenge_request_body(challenge_request)
+    endpoint = challenge_creation_issue.get_issue_endpoint()
+    body = get_update_challenge_request_body(challenge_request_issue)
 
     return __execute_put_query(endpoint, body)
 

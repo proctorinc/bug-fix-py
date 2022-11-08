@@ -7,6 +7,9 @@ from .fix_version import FixVersion
 
 INWARD_ISSUE = "outwardIssue"
 OUTWARD_ISSUE = "inwardIssue"
+FIELDS = "fields"
+ISSUE_LINKS = "issuelinks"
+PARENT = "parent"
 
 
 def append_project_type_if_not_present(
@@ -20,9 +23,6 @@ def append_project_type_if_not_present(
 
 
 def parse_linked_issues(issue_links) -> List[str]:
-    """
-    Parses json issue links and returns list of all linked CHLC's
-    """
     chlcs = []
     issue = ""
     for link in issue_links:
@@ -48,12 +48,12 @@ def project_type_exists_in_response(project_type, response) -> bool:
 def parse_application_creation_from_response(response) -> str:
     json_response = json.loads(response.text)
 
-    return str(json_response["fields"]["parent"][jira.RESPONSE_KEY])
+    return str(json_response[FIELDS][PARENT][jira.RESPONSE_KEY])
 
 
 def parse_linked_challenges_from_response(response) -> List[str]:
     json_response = json.loads(response.text)
-    return parse_linked_issues(json_response["fields"]["issuelinks"])
+    return parse_linked_issues(json_response[FIELDS][ISSUE_LINKS])
 
 
 def parse_fix_version_from_response(response) -> FixVersion:
@@ -69,4 +69,4 @@ def parse_fix_version_from_response(response) -> FixVersion:
             version_name = version["name"]
             version_id = version["id"]
 
-    return FixVersion(version_id=version_id, version_name=version_name)
+    return FixVersion(id_=version_id, name=version_name)
