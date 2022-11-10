@@ -1,16 +1,15 @@
 from typing import List, Optional
-
 from requests import Response
 
+from bugfixpy.jira.fix_version import FixVersion
+from bugfixpy.utils import user_input
+from bugfixpy.jira import api
+from bugfixpy.constants import colors
 from bugfixpy.jira.issue import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
-from bugfixpy.jira.fix_version import FixVersion
-from bugfixpy.utils import user_input
-from bugfixpy.jira import api
-from bugfixpy.constants import colors
 
 
 def transition_jira_issues(
@@ -41,15 +40,9 @@ def transition_jira_issues(
             print("\n[Enter Application CHLC]")
             application_creation_issue = user_input.get_application_creation_issue()
 
-        print(
-            f"Application CHLC: {colors.WARNING}{application_creation_issue.get_issue_id()}{colors.ENDC}"
-        )
-
         linked_issues = api.get_challenge_creation_issues_linked_to_application(
             application_creation_issue
         )
-
-        print(f"Challenges to bulk transition: {len(linked_issues)}")
 
     else:
         if not challenge_creation_issue:
@@ -64,6 +57,10 @@ def transition_jira_issues(
 def transition_challenge_request_issue(
     challenge_request_issue: ChallengeRequestIssue, fix_version: FixVersion, fix_message
 ) -> None:
+    input(
+        f"Press Enter to auto transition {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
+    )
+
     print(
         f"\nTransitioning {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
     )
@@ -100,13 +97,13 @@ def transition_chlcs(
     challenge_creation_issues: list[ChallengeCreationIssue],
     challenge_request_issue: ChallengeRequestIssue,
 ) -> None:
-    print(
-        f"\nTransitioning [{colors.OKCYAN}{len(challenge_creation_issues)}{colors.ENDC}] {colors.HEADER}CHLC's{colors.ENDC}"
+    input(
+        f"Press Enter to auto transition [{colors.OKBLUE}{len(challenge_creation_issues)}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
     )
 
     for issue in challenge_creation_issues:
 
-        print(f"Transitioning {colors.HEADER}{issue}{colors.ENDC}:")
+        print(f"Transitioning {colors.HEADER}{issue.get_issue_id()}{colors.ENDC}:")
         print("\tTo Feedback Open\t", end="")
         feedback_open_result = api.transition_challenge_creation_to_feedback_open(issue)
         check_transition_result(feedback_open_result)

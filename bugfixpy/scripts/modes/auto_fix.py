@@ -1,4 +1,5 @@
 import sys
+
 from bugfixpy.scraper import CmsScraper
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.git.repository import Repository
@@ -8,6 +9,10 @@ from bugfixpy.formatter import Text
 from bugfixpy.utils import user_input, validate
 from bugfixpy.scripts.cms import scrape_cms
 from bugfixpy.exceptions import RequestFailedError
+from bugfixpy.jira.issue import (
+    ApplicationCreationIssue,
+    ChallengeCreationIssue,
+)
 
 
 def run(test_mode: bool) -> None:
@@ -50,13 +55,15 @@ def run(test_mode: bool) -> None:
         Text("Error getting repository", colors.FAIL).display()
         sys.exit(1)
 
+    # Change scraper data to have this built in
+    # Change scraper data to be challenge object
+    challenge_creation_issue = ChallengeCreationIssue(scraper_data.challenge.chlc)
+    application_creation_issue = ApplicationCreationIssue(scraper_data.application.chlc)
+
     Text("[Done]", colors.OKGREEN).display()
 
-    # Print CMS details from scraper
     Text("Application CHLC:", scraper_data.application.chlc, colors.OKCYAN).display()
     Text("Challenge CHLC:", scraper_data.challenge.chlc, colors.OKCYAN).display()
-
-    # Print repository details from Repository
     Text("Repo:", scraper_data.application.repository_name, colors.OKCYAN).display()
     Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
 
@@ -66,8 +73,10 @@ def run(test_mode: bool) -> None:
     else:
         Text("Type:", "Minified App", colors.OKCYAN).display()
 
+    challenge_request_issue = user_input.get_challenge_request_issue()
+
     # Run bug fix on repository
-    fix_branches_in_repository(repository)
+    fix_branches_in_repository(repository, challenge_request_issue)
 
     # If test mode, don't push to repository
     if test_mode:
@@ -84,13 +93,12 @@ def run(test_mode: bool) -> None:
     is_chunk_fixing_required = repository.did_number_of_lines_change()
 
     try:
-        # Automatically transition jira tickets
         transition.transition_jira_issues(
             fix_messages,
             repo_was_cherrypicked,
-            None,
-            scraper_data.challenge.chlc,
-            scraper_data.application.chlc,
+            challenge_request_issue,
+            challenge_creation_issue,
+            application_creation_issue,
         )
 
     except Exception as err:

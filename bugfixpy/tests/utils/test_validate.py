@@ -98,4 +98,5 @@ class TestValidate(TestCase):
             self.assertFalse(is_valid_repository_name(repository))
 
     def test_has_valid_credentials(self) -> None:
-        self.assertFalse(has_valid_credentials())
+        # Figure out how to test the case of not having valid credentials
+        self.assertTrue(has_valid_credentials())

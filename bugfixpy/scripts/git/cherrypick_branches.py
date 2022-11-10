@@ -64,7 +64,7 @@ from bugfixpy.constants import colors
 # def cherry_pick(repository_dir, branches, commit_id, debug):
 def cherrypick_commit_across_all_branches(repository: Repository, commit_id) -> None:
 
-    debug = True
+    debug = False
     repository_dir = repository.get_repository_dir()
     branches = repository.get_filtered_branches()
 

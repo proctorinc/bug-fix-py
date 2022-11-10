@@ -5,13 +5,13 @@ from typing import Callable, List
 from bugfixpy.exceptions import InvalidIssueIdError
 from bugfixpy.constants import colors, jira
 from bugfixpy.git.repository import Repository
+from bugfixpy.utils import validate
+from bugfixpy.formatter import completer
 from bugfixpy.jira.issue import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
-from bugfixpy.utils import validate
-from bugfixpy.formatter import completer
 
 
 def __get_valid_input(
@@ -51,7 +51,7 @@ def get_challenge_creation_issue() -> ChallengeCreationIssue:
 
     while not challenge_creation:
         challenge_id = input(
-            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+            f"Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
         )
 
         try:
@@ -59,7 +59,7 @@ def get_challenge_creation_issue() -> ChallengeCreationIssue:
 
         except InvalidIssueIdError:
             print(
-                f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
+                f"{colors.OKCYAN}CHLC-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
             )
     return challenge_creation
 
@@ -69,7 +69,7 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
     while not application_creation:
         challenge_id = input(
-            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+            f"Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
         )
 
         try:
@@ -77,7 +77,7 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
         except InvalidIssueIdError:
             print(
-                f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
+                f"{colors.OKCYAN}CHLC-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
             )
     return application_creation
 
@@ -134,20 +134,62 @@ def get_challenge_id() -> str:
     return challenge_id
 
 
-def get_next_branch(branches: List[str], repository: Repository) -> str:
+def get_next_branch(repository: Repository) -> str:
     """
     Prompts user for next branch to checkout to
     """
-    # Enable tab completion
+    branches = repository.get_filtered_branches()
     readline.parse_and_bind("tab: complete")
-
-    # Set completion to list of branches
     readline.set_completer(completer.get_list_completer(branches))
 
-    # Prompt user for branch where the fix will be made
     branch = input(f"\nEnter name of branch to fix: {colors.WHITE}")
 
     print(colors.ENDC, end="")
+
+    # Check that user input is a valid branch
+    while branch not in branches:
+
+        # Alert user branch name is invalid
+        print(f'{colors.FAIL}"{branch}" is not a valid branch name{colors.ENDC}')
+
+        # Check if user entered "secure" on a minified app. Suggest minified secure branch
+        if (not repository.is_full_app) and branch == jira.FULL_APP_SECURE_BRANCH:
+            minified_secure_branches = repository.get_minified_secure_branch()
+            print(
+                f"\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure"
+                f" branch: {colors.HEADER}"
+            )
+            for branch in minified_secure_branches:
+                print(branch, end=" ")
+            print(colors.ENDC)
+
+        # Prompt user for branch again
+        branch = input(f"Enter name of branch to fix: {colors.WHITE}")
+
+        print(colors.ENDC, end="")
+
+    # Disable tab completion
+    readline.parse_and_bind("tab: repository-insert")
+
+    return branch
+
+
+def get_next_branch_or_continue(repository: Repository) -> str:
+    """
+    Prompts user for next branch to checkout to
+    """
+    branches = repository.get_filtered_branches()
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer(completer.get_list_completer(branches))
+
+    branch = input(
+        f"\nEnter name of branch to fix another {colors.WHITE}(continue){colors.ENDC}: {colors.WHITE}"
+    )
+
+    print(colors.ENDC, end="")
+
+    if branch == "":
+        return ""
 
     # Check that user input is a valid branch
     while branch not in branches:

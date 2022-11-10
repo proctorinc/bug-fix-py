@@ -8,7 +8,7 @@ def run():
     Run method for transition mode
     """
     # If parameter not entered, prompt user for CHRLQ
-    chlrq = user_input.get_chlrq()
+    challenge_request_issue = user_input.get_challenge_request_issue()
 
     did_cherrypick = False
 
@@ -26,4 +26,6 @@ def run():
     print(colors.ENDC)
 
     # Automatically transition jira tickets
-    transition.transition_jira_issues([fix_message], did_cherrypick, chlrq)
+    transition.transition_jira_issues(
+        [fix_message], did_cherrypick, challenge_request_issue
+    )
