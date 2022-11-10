@@ -5,13 +5,11 @@ Instruction constants to direct users through bug fix process
 
 from . import colors
 
-PROMPT_FOR_ENTER_PUSH_ENABLED = f"""{colors.HEADER}
-Press [ENTER] to push to repo
-{colors.ENDC}"""
+PROMPT_FOR_ENTER_PUSH_ENABLED = f"""\n{colors.HEADER}Press {colors.OKGREEN}[Enter]{colors.HEADER} to push to repo{colors.ENDC}"""
 
-PROMPT_FOR_ENTER_PUSH_DISABLED = f"""{colors.HEADER}
-Push Disabled. Press [ENTER] to continue
-{colors.ENDC}"""
+PROMPT_FOR_ENTER_PUSH_DISABLED = (
+    f"""\n{colors.HEADER}Push Disabled. Press [ENTER] to continue{colors.ENDC}"""
+)
 
 CHERRY_PICKING_MANUAL_STEPS = f"""{colors.WARNING}
 Follow these steps in the open tab
@@ -57,12 +55,11 @@ BUG_FIX_COMPLETE = f"""{colors.OKGREEN}{colors.BOLD}{colors.UNDERLINE}
 Bug Fix Complete.{colors.ENDC}"""
 
 
-PROMPT_USER_TO_MAKE_FIX = f"""{colors.UNDERLINE}{colors.OKGREEN}{colors.BOLD}
-Make the fix in VS Code{colors.ENDC}"""
+PROMPT_USER_TO_MAKE_FIX = f"""\n{colors.UNDERLINE}{colors.OKGREEN}{colors.BOLD}Make the fix in VS Code{colors.ENDC}"""
 
 PROMPT_USER_THAT_NO_FIX_WAS_MADE = f"""{colors.ENDC}{colors.FAIL}
-No Changes have been made, please make a fix before continuing
-Press {colors.UNDERLINE}ctrl+s{colors.ENDC}{colors.FAIL} to confirm changes"""
+No Changes detected in repository.
+Press {colors.UNDERLINE}ctrl+s{colors.ENDC}{colors.FAIL} to save changes{colors.ENDC}"""
 
 WARN_USER_OF_MERGE_CONFLICT = (
     "{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"

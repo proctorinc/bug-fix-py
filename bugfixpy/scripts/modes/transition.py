@@ -3,16 +3,14 @@ from bugfixpy.constants import colors
 from bugfixpy.scripts import transition
 
 
-def run():
+def run() -> None:
     """
     Run method for transition mode
     """
-    # If parameter not entered, prompt user for CHRLQ
     challenge_request_issue = user_input.get_challenge_request_issue()
 
     did_cherrypick = False
 
-    # Ask user if bulk transition is required
     if (
         input(
             f"Is bulk transition required? ({colors.BOLD}{colors.WHITE}Y{colors.ENDC}/n): {colors.WHITE}"

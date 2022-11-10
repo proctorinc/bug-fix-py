@@ -21,7 +21,7 @@ def __get_valid_input(
     print(colors.ENDC, end="")
 
     while not is_valid(value):
-        print(f"{colors.FAIL}{invalid_message}{value}{colors.ENDC}")
+        print(f'{colors.FAIL}"{value}" {invalid_message}{colors.ENDC}')
         value = input(prompt)
         print(colors.ENDC, end="")
 
@@ -33,7 +33,7 @@ def get_challenge_request_issue() -> ChallengeRequestIssue:
 
     while not challenge_request:
         challenge_id = input(
-            f"Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
+            f"{colors.ENDC}Enter {colors.OKCYAN}CHLRQ{colors.ENDC} ticket number: {colors.WHITE}"
         )
 
         try:
@@ -51,7 +51,7 @@ def get_challenge_creation_issue() -> ChallengeCreationIssue:
 
     while not challenge_creation:
         challenge_id = input(
-            f"Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
+            f"{colors.ENDC}Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
         )
 
         try:
@@ -69,7 +69,7 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
     while not application_creation:
         challenge_id = input(
-            f"Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
+            f"{colors.ENDC}Enter {colors.OKCYAN}CHLC{colors.ENDC} ticket number: {colors.WHITE}"
         )
 
         try:
@@ -124,8 +124,8 @@ def get_challenge_id() -> str:
     """
     Get challenge ID from user
     """
-    prompt = "Enter Challenge ID: "
-    invalid_message = "'{value}' is not a valid Challenge ID"
+    prompt = f"Enter Challenge ID: {colors.WHITE}"
+    invalid_message = "is not a valid Challenge ID"
 
     challenge_id = __get_valid_input(
         prompt, invalid_message, validate.is_valid_challenge_id
@@ -142,7 +142,7 @@ def get_next_branch(repository: Repository) -> str:
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
 
-    branch = input(f"\nEnter name of branch to fix: {colors.WHITE}")
+    branch = input(f"{colors.ENDC}\nEnter name of branch to fix: {colors.WHITE}")
 
     print(colors.ENDC, end="")
 
@@ -164,7 +164,7 @@ def get_next_branch(repository: Repository) -> str:
             print(colors.ENDC)
 
         # Prompt user for branch again
-        branch = input(f"Enter name of branch to fix: {colors.WHITE}")
+        branch = input(f"{colors.ENDC}Enter name of branch to fix: {colors.WHITE}")
 
         print(colors.ENDC, end="")
 
@@ -183,7 +183,7 @@ def get_next_branch_or_continue(repository: Repository) -> str:
     readline.set_completer(completer.get_list_completer(branches))
 
     branch = input(
-        f"\nEnter name of branch to fix another {colors.WHITE}(continue){colors.ENDC}: {colors.WHITE}"
+        f"\n{colors.ENDC}Enter name of branch to fix another {colors.WHITE}(continue){colors.ENDC}: {colors.WHITE}"
     )
 
     print(colors.ENDC, end="")
@@ -209,7 +209,7 @@ def get_next_branch_or_continue(repository: Repository) -> str:
             print(colors.ENDC)
 
         # Prompt user for branch again
-        branch = input(f"Enter name of branch to fix: {colors.WHITE}")
+        branch = input(f"{colors.ENDC}Enter name of branch to fix: {colors.WHITE}")
 
         print(colors.ENDC, end="")
 
@@ -258,7 +258,7 @@ def get_repository_name() -> str:
     Gets the name of the git repository
     """
     prompt = "Enter repo name: "
-    invalid_message = "'{value}' is not a valid Git repository"
+    invalid_message = "is not a valid Git repository"
 
     repo_name = __get_valid_input(
         prompt, invalid_message, validate.is_valid_repository_name

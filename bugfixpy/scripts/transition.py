@@ -58,7 +58,7 @@ def transition_challenge_request_issue(
     challenge_request_issue: ChallengeRequestIssue, fix_version: FixVersion, fix_message
 ) -> None:
     input(
-        f"Press Enter to auto transition {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
+        f"Press {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
     )
 
     print(
