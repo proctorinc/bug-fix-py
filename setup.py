@@ -5,7 +5,7 @@ setup(name='bugfixpy',
       description='SCW automated bug fix program',
       author='Matt Proctor',
       author_email='matthewalanproctor@gmail.com',
-      packages=['bugfixpy'],
+      packages=['bugfix'],
       license="MIT",
       install_requires=[
         'GitPython==3.1.27',
