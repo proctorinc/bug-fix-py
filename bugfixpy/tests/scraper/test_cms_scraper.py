@@ -1,4 +1,3 @@
-# from bugfixpy.scripts.cms import scrape_cms
 import unittest
 
 from bugfixpy.exceptions import RequestFailedError
@@ -82,23 +81,6 @@ class TestCmsScraper(unittest.TestCase):
         # Run scraping challenge screen
 
         # Run scraping application screen
-
-        # Assert that scraped data exists
-
-    def test_update_application_branches(self) -> None:
-        """Test that updating the application branches runs successfully"""
-
-        # Create scraper
-
-        # Get csrf_token
-
-        # Login to cms
-
-        # Run scraping challenge screen????
-
-        # Run scraping application screen????
-
-        # Update application branches
 
         # Assert that scraped data exists
 

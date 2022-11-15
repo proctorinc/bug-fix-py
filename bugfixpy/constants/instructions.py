@@ -8,7 +8,7 @@ from . import colors
 PROMPT_FOR_ENTER_PUSH_ENABLED = f"""\n{colors.HEADER}Press {colors.OKGREEN}[Enter]{colors.HEADER} to push to repo{colors.ENDC}"""
 
 PROMPT_FOR_ENTER_PUSH_DISABLED = (
-    f"""\n{colors.HEADER}Push Disabled. Press [ENTER] to continue{colors.ENDC}"""
+    f"""\n\n{colors.HEADER}Push Disabled. Press [ENTER] to continue{colors.ENDC}"""
 )
 
 CHERRY_PICKING_MANUAL_STEPS = f"""{colors.WARNING}

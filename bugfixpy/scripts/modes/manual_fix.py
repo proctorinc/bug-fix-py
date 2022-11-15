@@ -12,7 +12,7 @@ from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.git.repository import Repository
 from bugfixpy.utils import user_input
 from bugfixpy.formatter import Text, text
-from bugfixpy.scripts.git import fix_branches_in_repository
+from bugfixpy.scripts.git import make_changes_in_repository
 
 
 def run(test_mode: bool) -> None:
@@ -37,7 +37,7 @@ def run(test_mode: bool) -> None:
 
     challenge_request_issue = user_input.get_challenge_request_issue()
 
-    fix_branches_in_repository(repository, challenge_request_issue)
+    make_changes_in_repository(repository, challenge_request_issue)
 
     if test_mode:
         print(instructions.PROMPT_FOR_ENTER_PUSH_DISABLED)

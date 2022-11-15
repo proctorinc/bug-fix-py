@@ -3,18 +3,16 @@ from git import GitCommandError
 from bugfixpy.git.repository import Repository
 from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.jira.issue import ChallengeRequestIssue
+from bugfixpy.git.fix_result import FixResult
 from bugfixpy.utils import user_input
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
 
-def fix_branches_in_repository(
+def make_changes_in_repository(
     repository: Repository, challenge_request_issue: ChallengeRequestIssue
-) -> None:
-    """
-    Run bug fix. Loop over branches to fix. After fixing, prompt
-    user if they want to fix another
-    """
+) -> FixResult:
     fix_messages = []
+    repo_was_cherrypicked = False
 
     # Get next branch to fix
     current_branch = user_input.get_next_branch(repository)
@@ -46,7 +44,7 @@ def fix_branches_in_repository(
                 cherrypick_commit_across_all_branches(repository, commit_id)
 
                 # Confirm that cherrypick occurred
-                repository.set_cherrypick_ran()
+                repo_was_cherrypicked = True
 
         # Catch keyboard interrupt to cancel fixing the current branch
         except KeyboardInterrupt:
@@ -57,6 +55,12 @@ def fix_branches_in_repository(
         current_branch = user_input.get_next_branch_or_continue(repository)
 
         print(colors.ENDC, end="")
+
+    return FixResult(
+        fix_messages=fix_messages,
+        repo_was_cherrypicked=repo_was_cherrypicked,
+        is_chunk_fixing_required=True,
+    )
 
 
 def __make_fix_and_commit(

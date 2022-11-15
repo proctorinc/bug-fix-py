@@ -1,24 +1,27 @@
-from typing import List, Optional
+from typing import Optional
 from requests import Response
 
+from bugfixpy.git.fix_result import FixResult
 from bugfixpy.jira.fix_version import FixVersion
+from bugfixpy.scraper.scraper_data import ScraperData
 from bugfixpy.utils import user_input
 from bugfixpy.jira import api
 from bugfixpy.constants import colors
 from bugfixpy.jira.issue import (
-    ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
 
 
 def transition_jira_issues(
-    fix_messages: List[str],
-    is_cherrypick_required: bool,
+    fix_result: FixResult,
+    challenge_data: ScraperData,
     challenge_request_issue: Optional[ChallengeRequestIssue] = None,
-    challenge_creation_issue: Optional[ChallengeCreationIssue] = None,
-    application_creation_issue: Optional[ApplicationCreationIssue] = None,
 ) -> None:
+    fix_messages = fix_result.fix_messages
+    challenge_creation_issue = challenge_data.challenge.chlc
+    application_creation_issue = challenge_data.application.chlc
+    repo_was_cherrypicked = fix_result.repo_was_cherrypicked
     fix_version = api.get_current_fix_version()
     fix_message = user_input.format_messages(fix_messages)
 
@@ -34,7 +37,7 @@ def transition_jira_issues(
         challenge_request_issue, fix_version, fix_message
     )
 
-    if is_cherrypick_required:
+    if repo_was_cherrypicked:
 
         if not application_creation_issue:
             print("\n[Enter Application CHLC]")
@@ -57,68 +60,79 @@ def transition_jira_issues(
 def transition_challenge_request_issue(
     challenge_request_issue: ChallengeRequestIssue, fix_version: FixVersion, fix_message
 ) -> None:
-    input(
-        f"Press {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
-    )
+    try:
+        input(
+            f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
+        )
 
-    print(
-        f"\nTransitioning {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
-    )
+        print(
+            f"\nTransitioning {colors.OKCYAN}{challenge_request_issue.get_issue_id()}{colors.ENDC}"
+        )
 
-    # Transition to in planned, include fix version
-    print(f"\tTo Planned [Fix Version: {fix_version.name}]", end="")
+        # Transition to in planned, include fix version
+        print(f"\tTo Planned [Fix Version: {fix_version.name}]", end="")
 
-    # If api returns 204, transition was successful
-    planned_result = api.transition_challenge_request_to_planned(
-        challenge_request_issue, fix_version
-    )
-    check_transition_result(planned_result)
+        # If api returns 204, transition was successful
+        planned_result = api.transition_challenge_request_to_planned(
+            challenge_request_issue, fix_version
+        )
+        check_transition_result(planned_result)
 
-    # Transition to in progress
-    print("\tTo In Progress\t\t\t", end="")
+        # Transition to in progress
+        print("\tTo In Progress\t\t\t", end="")
 
-    # If api returns 204, transition was successful
-    in_progress_result = api.transition_challenge_request_to_in_progress(
-        challenge_request_issue
-    )
-    check_transition_result(in_progress_result)
+        # If api returns 204, transition was successful
+        in_progress_result = api.transition_challenge_request_to_in_progress(
+            challenge_request_issue
+        )
+        check_transition_result(in_progress_result)
 
-    # Transition CHLRQ to closed w/ fix message
-    print("\tTo Closed [with description of fix]", end="")
+        # Transition CHLRQ to closed w/ fix message
+        print("\tTo Closed [with description of fix]", end="")
 
-    # If api returns 204, transition was successful
-    closed_result = api.transition_challenge_request_to_closed_with_comment(
-        challenge_request_issue, fix_message
-    )
-    check_transition_result(closed_result)
+        # If api returns 204, transition was successful
+        closed_result = api.transition_challenge_request_to_closed_with_comment(
+            challenge_request_issue, fix_message
+        )
+        check_transition_result(closed_result)
+
+    except KeyboardInterrupt:
+        print(f"{colors.FAIL}\nSkipped auto transitioning{colors.ENDC}")
 
 
 def transition_chlcs(
     challenge_creation_issues: list[ChallengeCreationIssue],
     challenge_request_issue: ChallengeRequestIssue,
 ) -> None:
-    input(
-        f"Press Enter to auto transition [{colors.OKBLUE}{len(challenge_creation_issues)}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
-    )
-
-    for issue in challenge_creation_issues:
-
-        print(f"Transitioning {colors.HEADER}{issue.get_issue_id()}{colors.ENDC}:")
-        print("\tTo Feedback Open\t", end="")
-        feedback_open_result = api.transition_challenge_creation_to_feedback_open(issue)
-        check_transition_result(feedback_open_result)
-
-        print("\tTo Feedback Review\t", end="")
-        feedback_review_result = api.transition_challenge_creation_to_feedback_review(
-            issue
+    try:
+        input(
+            f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{len(challenge_creation_issues)}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
         )
-        check_transition_result(feedback_review_result)
 
-        print("\tAdding assignee and comment", end="")
-        edit_result = api.update_challenge_creation_assignee_and_link_challenge_request(
-            issue, challenge_request_issue
-        )
-        check_transition_result(edit_result)
+        for issue in challenge_creation_issues:
+
+            print(f"Transitioning {colors.HEADER}{issue.get_issue_id()}{colors.ENDC}:")
+            print("\tTo Feedback Open\t", end="")
+            feedback_open_result = api.transition_challenge_creation_to_feedback_open(
+                issue
+            )
+            check_transition_result(feedback_open_result)
+
+            print("\tTo Feedback Review\t", end="")
+            feedback_review_result = (
+                api.transition_challenge_creation_to_feedback_review(issue)
+            )
+            check_transition_result(feedback_review_result)
+
+            print("\tAdding assignee and comment", end="")
+            edit_result = (
+                api.update_challenge_creation_assignee_and_link_challenge_request(
+                    issue, challenge_request_issue
+                )
+            )
+            check_transition_result(edit_result)
+    except KeyboardInterrupt:
+        print(f"{colors.FAIL}\nSkipped auto transitioning{colors.ENDC}")
 
 
 def check_transition_result(result: Response) -> None:

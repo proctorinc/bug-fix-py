@@ -1,31 +1,21 @@
 from dataclasses import dataclass
 
+from bugfixpy.jira.issue import ApplicationCreationIssue, ChallengeCreationIssue
+
 
 @dataclass
 class ChallengeScreenData:
-    """
-    Models data scraped from CMS challenge screen
-    """
-
     application_endpoint: str
-    chlc: str
+    chlc: ChallengeCreationIssue
 
 
 @dataclass
 class ApplicationScreenData:
-    """
-    Models data scraped from CMS application screen
-    """
-
-    chlc: str
+    chlc: ApplicationCreationIssue
     repository_name: str
 
 
 @dataclass
 class ScraperData:
-    """
-    Models data retrieved from CMS scraper
-    """
-
     challenge: ChallengeScreenData
     application: ApplicationScreenData
