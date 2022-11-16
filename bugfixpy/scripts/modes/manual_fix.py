@@ -10,7 +10,7 @@ import webbrowser
 from git import GitError
 from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.git.repository import Repository
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import make_changes_in_repository
 
@@ -19,7 +19,7 @@ def run(test_mode: bool) -> None:
     if test_mode:
         Text(headers.TEST_MODE, colors.HEADER).display()
 
-    repo_name = user_input.get_repository_name()
+    repo_name = prompt_user.for_repository_name()
 
     try:
         repository = Repository(repo_name)
@@ -35,7 +35,7 @@ def run(test_mode: bool) -> None:
     else:
         Text("Type:", "Minified App", colors.OKCYAN).display()
 
-    challenge_request_issue = user_input.get_challenge_request_issue()
+    challenge_request_issue = prompt_user.get_challenge_request_issue()
 
     make_changes_in_repository(repository, challenge_request_issue)
 
@@ -55,7 +55,7 @@ def run(test_mode: bool) -> None:
 
     if repo_was_cherrypicked:
 
-        application_creation_issue = user_input.get_application_creation_issue()
+        application_creation_issue = prompt_user.get_application_creation_issue()
 
         webbrowser.open(
             jira.BULK_TRANSITION_JQL_URL.format(

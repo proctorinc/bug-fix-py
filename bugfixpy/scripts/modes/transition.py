@@ -1,29 +1,19 @@
-from bugfixpy.utils import user_input
-from bugfixpy.constants import colors
+from bugfixpy.git.fix_result import FixResult
+from bugfixpy.utils import prompt_user
 from bugfixpy.scripts import transition
+from bugfixpy.scripts.modes.utils import scrape_challenge_data_from_cms
 
 
 def run() -> None:
-    """
-    Run method for transition mode
-    """
-    challenge_request_issue = user_input.get_challenge_request_issue()
+    challenge_data = scrape_challenge_data_from_cms()
+    challenge_request_issue = prompt_user.get_challenge_request_issue()
 
-    did_cherrypick = False
+    is_bulk_transition_required = prompt_user.if_bulk_transition_is_required()
 
-    if (
-        input(
-            f"Is bulk transition required? ({colors.BOLD}{colors.WHITE}Y{colors.ENDC}/n): {colors.WHITE}"
-        )
-        != "n"
-    ):
-        did_cherrypick = True
+    fix_message = prompt_user.for_descripton_of_fix()
 
-    fix_message = input(f"{colors.ENDC}Enter fix message: {colors.WHITE}")
-
-    print(colors.ENDC)
-
-    # Automatically transition jira tickets
     transition.transition_jira_issues(
-        [fix_message], did_cherrypick, challenge_request_issue
+        FixResult([fix_message], is_bulk_transition_required, False),
+        challenge_data,
+        challenge_request_issue,
     )

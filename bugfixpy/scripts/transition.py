@@ -4,7 +4,7 @@ from requests import Response
 from bugfixpy.git.fix_result import FixResult
 from bugfixpy.jira.fix_version import FixVersion
 from bugfixpy.scraper.scraper_data import ScraperData
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.jira import api
 from bugfixpy.constants import colors
 from bugfixpy.jira.issue import (
@@ -23,15 +23,10 @@ def transition_jira_issues(
     application_creation_issue = challenge_data.application.chlc
     repo_was_cherrypicked = fix_result.repo_was_cherrypicked
     fix_version = api.get_current_fix_version()
-    fix_message = user_input.format_messages(fix_messages)
-
-    if not fix_version.id_:
-        raise Exception(
-            "Unable to determine fix version. Cannot auto-transition tickets. Exiting."
-        )
+    fix_message = prompt_user.format_messages(fix_messages)
 
     if not challenge_request_issue:
-        challenge_request_issue = user_input.get_challenge_request_issue()
+        challenge_request_issue = prompt_user.get_challenge_request_issue()
 
     transition_challenge_request_issue(
         challenge_request_issue, fix_version, fix_message
@@ -39,19 +34,11 @@ def transition_jira_issues(
 
     if repo_was_cherrypicked:
 
-        if not application_creation_issue:
-            print("\n[Enter Application CHLC]")
-            application_creation_issue = user_input.get_application_creation_issue()
-
         linked_issues = api.get_challenge_creation_issues_linked_to_application(
             application_creation_issue
         )
 
     else:
-        if not challenge_creation_issue:
-            print("\n[Enter Challenge CHLC]")
-            challenge_creation_issue = user_input.get_challenge_creation_issue()
-
         linked_issues = [challenge_creation_issue]
 
     transition_chlcs(linked_issues, challenge_request_issue)

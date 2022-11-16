@@ -5,7 +5,7 @@
 
 import sys
 from git import GitError
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.formatter import Text
 from bugfixpy.git.repository import Repository
 from bugfixpy.constants import colors
@@ -19,7 +19,7 @@ def run() -> None:
     # Allow a user to enter either a challenge id or an application name to open repo
 
     # Get name of the git repository
-    repo_name = user_input.get_repository_name()
+    repo_name = prompt_user.for_repository_name()
 
     # Attempt to create repository
     try:

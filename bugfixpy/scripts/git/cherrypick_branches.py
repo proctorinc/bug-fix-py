@@ -4,7 +4,7 @@ Cherrypick script takes a commit id and runs git cherry-pick on all branches in 
 
 import subprocess
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.git.repository import Repository
 from bugfixpy.constants import colors
 

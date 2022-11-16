@@ -1,8 +1,28 @@
 import sys
 
 from bugfixpy.formatter import Text
+from bugfixpy.utils import validate, prompt_user
 from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.utils import validate
+from bugfixpy.scraper.cms_scraper import CmsScraper
+from bugfixpy.scraper.scraper_data import ScraperData
+from bugfixpy.exceptions.request_failed_error import RequestFailedError
+
+
+def scrape_challenge_data_from_cms() -> ScraperData:
+    try:
+        challenge_id = prompt_user.get_challenge_id()
+        print("Collecting data from CMS...", end="")
+        scraper_data = CmsScraper.scrape_challenge_data(challenge_id)
+
+        print_scraper_data(scraper_data)
+    except RequestFailedError as err:
+        Text(f"\n{err}", colors.FAIL).display()
+        sys.exit(1)
+    except Exception as err:
+        Text("\nUnknown Error", err, colors.FAIL).display()
+        sys.exit(1)
+
+    return scraper_data
 
 
 def print_mode_headers(test_mode) -> None:

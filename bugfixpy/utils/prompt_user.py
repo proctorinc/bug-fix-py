@@ -83,9 +83,6 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
 
 def format_messages(messages: List[str]) -> str:
-    """
-    Formats all messages from list into multiple lines
-    """
     formatted_message = ""
     for i, message in enumerate(messages):
         if message != "-":
@@ -98,9 +95,6 @@ def format_messages(messages: List[str]) -> str:
 
 
 def prompt_user_to_resolve_merge_conflict() -> None:
-    """
-    Prompt user to resolve merge conflict
-    """
     input(
         f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
         f" changes have been made{colors.ENDC}"
@@ -108,9 +102,6 @@ def prompt_user_to_resolve_merge_conflict() -> None:
 
 
 def prompt_user_to_exit_or_continue() -> None:
-    """
-    Prompt user to exit of continue
-    """
     # Prompt user to exit program
     exit_program = input("Would you like to exit? (Y/n): ")
 
@@ -121,9 +112,6 @@ def prompt_user_to_exit_or_continue() -> None:
 
 
 def get_challenge_id() -> str:
-    """
-    Get challenge ID from user
-    """
     prompt = f"Enter Challenge ID: {colors.WHITE}"
     invalid_message = "is not a valid Challenge ID"
 
@@ -135,9 +123,6 @@ def get_challenge_id() -> str:
 
 
 def get_next_branch(repository: Repository) -> str:
-    """
-    Prompts user for next branch to checkout to
-    """
     branches = repository.get_filtered_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
@@ -175,9 +160,6 @@ def get_next_branch(repository: Repository) -> str:
 
 
 def get_next_branch_or_continue(repository: Repository) -> str:
-    """
-    Prompts user for next branch to checkout to
-    """
     branches = repository.get_filtered_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
@@ -219,10 +201,7 @@ def get_next_branch_or_continue(repository: Repository) -> str:
     return branch
 
 
-def get_fix_message() -> str:
-    """
-    Prompts user for description of fix that was made. Fix message cannot be blank
-    """
+def for_descripton_of_fix() -> str:
     prompt = f"Enter description of fix: {colors.WHITE}"
 
     fix_message = __get_valid_input(prompt, "", validate.is_valid_fix_message)
@@ -233,35 +212,29 @@ def get_fix_message() -> str:
     return fix_message
 
 
-def prompt_want_to_continue() -> bool:
-    """
-    Return true if the user wants to continue, otherwise return false
-    """
-    will_continue = input(
-        f"\nFix another branch? (y/{colors.BOLD}{colors.WHITE}N{colors.ENDC}){colors.ENDC}:"
-        f" {colors.WHITE}"
-    )
-    return will_continue.upper() != "Y"
-
-
-def prompt_user_to_press_enter() -> None:
-    """
-    Prompts user to press enter, blocks until enter is pressed
-    """
+def to_press_enter() -> None:
     input(
         f"{colors.UNDERLINE}{colors.OKGREEN}{colors.BOLD}\nPress [Enter] after fix{colors.ENDC}"
     )
 
 
-def get_repository_name() -> str:
-    """
-    Gets the name of the git repository
-    """
+def for_repository_name() -> str:
     prompt = "Enter repo name: "
     invalid_message = "is not a valid Git repository"
 
-    repo_name = __get_valid_input(
+    repo_name: str = __get_valid_input(
         prompt, invalid_message, validate.is_valid_repository_name
     )
 
     return repo_name
+
+
+def if_bulk_transition_is_required() -> bool:
+
+    user_input = input(
+        f"Is bulk transition required? ({colors.BOLD}{colors.WHITE}n{colors.ENDC}/Y): {colors.WHITE}"
+    )
+    if user_input.lower() == "y":
+        return True
+
+    return False

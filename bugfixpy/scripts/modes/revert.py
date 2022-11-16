@@ -2,7 +2,7 @@
 
 import sys
 from git import GitError
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.git.repository import Repository
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.formatter import Text
@@ -20,7 +20,7 @@ def run(test_mode):
         Text(headers.TEST_MODE, colors.HEADER).display()
 
     # Get name of the git repository
-    repo_name = user_input.get_repository_name()
+    repo_name = prompt_user.for_repository_name()
 
     # Attempt to create repository
     try:

@@ -4,7 +4,7 @@ from bugfixpy.git.repository import Repository
 from bugfixpy.constants import jira, colors, instructions
 from bugfixpy.jira.issue import ChallengeRequestIssue
 from bugfixpy.git.fix_result import FixResult
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
 
@@ -15,7 +15,7 @@ def make_changes_in_repository(
     repo_was_cherrypicked = False
 
     # Get next branch to fix
-    current_branch = user_input.get_next_branch(repository)
+    current_branch = prompt_user.get_next_branch(repository)
 
     # Continue to fix branches until user is done
     while current_branch != "":
@@ -52,7 +52,7 @@ def make_changes_in_repository(
                 f'\n{colors.FAIL}Fixing branch "{current_branch}" aborted.{colors.ENDC}'
             )
 
-        current_branch = user_input.get_next_branch_or_continue(repository)
+        current_branch = prompt_user.get_next_branch_or_continue(repository)
 
         print(colors.ENDC, end="")
 
@@ -86,7 +86,7 @@ def __make_fix_and_commit(
     repository.open_code_in_editor()
 
     # Prompt for user to enter commit message
-    fix_message = user_input.get_fix_message()
+    fix_message = prompt_user.for_descripton_of_fix()
 
     # Continue until a valid commit is successful
     while not successful_commit:
@@ -104,7 +104,7 @@ def __make_fix_and_commit(
             print(instructions.PROMPT_USER_THAT_NO_FIX_WAS_MADE)
 
             # Prompt user to press enter when fix is made
-            user_input.prompt_user_to_press_enter()
+            prompt_user.to_press_enter()
 
         else:
             successful_commit = True

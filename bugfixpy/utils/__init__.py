@@ -1,1 +1,1 @@
-from . import user_input, validate
+from . import prompt_user, validate

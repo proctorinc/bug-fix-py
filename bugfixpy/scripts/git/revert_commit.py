@@ -3,7 +3,7 @@
 from git import GitError
 from bugfixpy.constants import colors
 from bugfixpy.exceptions import MergeConflictError
-from bugfixpy.utils import user_input
+from bugfixpy.utils import prompt_user
 
 
 def revert_commit_in_repository(repository, commit_id: str) -> None:
@@ -38,7 +38,7 @@ def revert_commit_in_repository(repository, commit_id: str) -> None:
                     f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
                 )
                 repository.open_code_in_editor()
-                user_input.prompt_user_to_resolve_merge_conflict()
+                prompt_user.prompt_user_to_resolve_merge_conflict()
 
                 try:
                     repository.add_changes_to_branch()
