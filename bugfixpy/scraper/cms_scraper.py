@@ -33,16 +33,12 @@ class CmsScraper:
 
         scraper = cls(challenge_id)
 
-        csrf_token = scraper.fetch_csrf_token()
-
-        scraper.login_to_cms(csrf_token)
+        scraper.login_to_cms()
 
         challenge_screen_data = scraper.scrape_challenge_screen()
 
-        application_endpoint = challenge_screen_data.application_endpoint
-
         application_screen_data = scraper.scrape_application_screen(
-            application_endpoint
+            challenge_screen_data.application_endpoint
         )
 
         return ScraperData(challenge_screen_data, application_screen_data)
@@ -57,8 +53,10 @@ class CmsScraper:
 
         return csrf_token
 
-    def login_to_cms(self, csrf_token: str) -> None:
+    def login_to_cms(self) -> None:
         email, password = self.__credentials
+
+        csrf_token = self.fetch_csrf_token()
 
         payload = {
             "_username": email,

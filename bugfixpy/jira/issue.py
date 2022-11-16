@@ -5,8 +5,6 @@ from . import utils
 
 
 class Issue(ABC):
-    """Abstract class for challenge issues"""
-
     CHLRQ = "CHLRQ"
     CHLC = "CHLC"
 
