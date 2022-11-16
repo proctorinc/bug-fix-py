@@ -3,11 +3,13 @@ from bugfix.api import (
     check_chlc_exists,
 )
 
+
 def isValidTicketNumber(ticket):
     """
     Validate ticket number input format
     """
     return len(ticket) > 1 and ticket.isdigit()
+
 
 def is_valid_chlrq(chlrq):
     """
@@ -16,10 +18,11 @@ def is_valid_chlrq(chlrq):
     isValid = False
 
     # Confirm chlrq is valid number and is a chlrq in Jira
-    if chlrq and isValidTicketNumber(chlrq) and check_chlrq_exists(chlrq):
+    if chlrq and isValidTicketNumber(chlrq):  # and check_chlrq_exists(chlrq)
         isValid = True
 
     return isValid
+
 
 def is_valid_chlc(chlc):
     """
@@ -28,7 +31,7 @@ def is_valid_chlc(chlc):
     isValid = False
 
     # Confirm chlc is valid number and is a chlc in Jira
-    if chlc and isValidTicketNumber(chlc) and check_chlc_exists(chlc):
+    if chlc and isValidTicketNumber(chlc):  # and check_chlc_exists(chlc)
         isValid = True
 
     return isValid
