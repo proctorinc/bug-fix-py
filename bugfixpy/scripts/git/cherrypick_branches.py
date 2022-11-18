@@ -1,11 +1,8 @@
-"""
-Cherrypick script takes a commit id and runs git cherry-pick on all branches in the repository
-"""
-
 import subprocess
+
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
 from bugfixpy.utils import prompt_user
-from bugfixpy.git.repository import Repository
+from bugfixpy.git import Repository
 from bugfixpy.constants import colors
 
 
@@ -26,7 +23,7 @@ from bugfixpy.constants import colors
 #         except CheckoutFailedError as err:
 #             print("Exception occurred while checking out to branch")
 #             print(err)
-#             user_input.prompt_user_to_exit_or_continue()
+#             user_input.if_they_want_to_continue()
 
 #         # Successful checkout to branch
 #         else:
@@ -39,7 +36,7 @@ from bugfixpy.constants import colors
 #                 # print(instructions.WARN_USER_OF_MERGE_CONFLICT.format(branch=branch))
 #                 print(f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT")
 #                 repository.open_code_in_editor()
-#                 user_input.prompt_user_to_resolve_merge_conflict()
+#                 user_input.to_resolve_merge_conflict()
 
 #                 # Attempt to add changes and continue cherrypick
 #                 try:

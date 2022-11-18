@@ -2,7 +2,7 @@ import re
 
 from bugfixpy.jira import api
 from bugfixpy.constants import cms, jira
-from bugfixpy.jira.issue import Issue
+from bugfixpy.jira import Issue
 
 
 def is_valid_issue(issue: Issue) -> bool:

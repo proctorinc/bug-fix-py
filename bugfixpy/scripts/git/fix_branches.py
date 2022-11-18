@@ -1,9 +1,8 @@
 from git import GitCommandError
 
-from bugfixpy.git.repository import Repository
+from bugfixpy.git import Repository, FixResult
 from bugfixpy.constants import jira, colors, instructions
-from bugfixpy.jira.issue import ChallengeRequestIssue
-from bugfixpy.git.fix_result import FixResult
+from bugfixpy.jira import ChallengeRequestIssue
 from bugfixpy.utils import prompt_user
 from bugfixpy.scripts.git import cherrypick_commit_across_all_branches
 
@@ -15,7 +14,7 @@ def make_changes_in_repository(
     repo_was_cherrypicked = False
 
     # Get next branch to fix
-    current_branch = prompt_user.get_next_branch(repository)
+    current_branch = prompt_user.for_branch_in_repository(repository)
 
     # Continue to fix branches until user is done
     while current_branch != "":
@@ -52,7 +51,7 @@ def make_changes_in_repository(
                 f'\n{colors.FAIL}Fixing branch "{current_branch}" aborted.{colors.ENDC}'
             )
 
-        current_branch = prompt_user.get_next_branch_or_continue(repository)
+        current_branch = prompt_user.for_next_branch_or_to_continue(repository)
 
         print(colors.ENDC, end="")
 
@@ -66,13 +65,6 @@ def make_changes_in_repository(
 def __make_fix_and_commit(
     branch: str, repository: Repository, challenge_request_issue: ChallengeRequestIssue
 ) -> str:
-    """
-    Checks the user out to a branch of their choice, making sure it is a valid branch.
-    Opens VS Code for user to make the fix and prompts user to press ENTER when done.
-    Continues process if changes were made successfully and commits with a message.
-    Returns the commit message and the branch the user successfully fixed.
-    """
-
     # Default commit to unsuccessful
     successful_commit = False
 

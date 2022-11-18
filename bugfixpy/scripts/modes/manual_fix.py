@@ -1,15 +1,9 @@
-"""
-Manual bug fixing script that prints manual instructions to the console to lead the user through
-fixing a bug in the Git repository, committing, cherrypicking, and manually transitioning Jira
-issues
-"""
-
-
 import sys
 import webbrowser
 from git import GitError
+
 from bugfixpy.constants import colors, headers, instructions, jira
-from bugfixpy.git.repository import Repository
+from bugfixpy.git import Repository
 from bugfixpy.utils import prompt_user
 from bugfixpy.formatter import Text, text
 from bugfixpy.scripts.git import make_changes_in_repository

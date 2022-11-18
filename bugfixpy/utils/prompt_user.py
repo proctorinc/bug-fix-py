@@ -1,13 +1,15 @@
 import sys
 import readline
-from typing import Callable, List
+from typing import Callable
+
+from pyparsing import Optional
 
 from bugfixpy.exceptions import InvalidIssueIdError
 from bugfixpy.constants import colors, jira
-from bugfixpy.git.repository import Repository
+from bugfixpy.git import Repository
 from bugfixpy.utils import validate
 from bugfixpy.formatter import completer
-from bugfixpy.jira.issue import (
+from bugfixpy.jira import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
@@ -82,27 +84,14 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
     return application_creation
 
 
-def format_messages(messages: List[str]) -> str:
-    formatted_message = ""
-    for i, message in enumerate(messages):
-        if message != "-":
-            if i < len(messages) - 1:
-                formatted_message += message + "\n"
-            else:
-                formatted_message += message
-
-    return formatted_message
-
-
-def prompt_user_to_resolve_merge_conflict() -> None:
+def to_resolve_merge_conflict() -> None:
     input(
         f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
         f" changes have been made{colors.ENDC}"
     )
 
 
-def prompt_user_to_exit_or_continue() -> None:
-    # Prompt user to exit program
+def if_they_want_to_continue() -> None:
     exit_program = input("Would you like to exit? (Y/n): ")
 
     if exit_program.upper() == "N":
@@ -111,7 +100,7 @@ def prompt_user_to_exit_or_continue() -> None:
         sys.exit(1)
 
 
-def get_challenge_id() -> str:
+def for_challenge_id() -> str:
     prompt = f"Enter Challenge ID: {colors.WHITE}"
     invalid_message = "is not a valid Challenge ID"
 
@@ -122,7 +111,7 @@ def get_challenge_id() -> str:
     return challenge_id
 
 
-def get_next_branch(repository: Repository) -> str:
+def for_branch_in_repository(repository: Repository) -> str:
     branches = repository.get_filtered_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
@@ -159,7 +148,7 @@ def get_next_branch(repository: Repository) -> str:
     return branch
 
 
-def get_next_branch_or_continue(repository: Repository) -> str:
+def for_next_branch_or_to_continue(repository: Repository) -> str:
     branches = repository.get_filtered_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
@@ -227,6 +216,16 @@ def for_repository_name() -> str:
     )
 
     return repo_name
+
+
+def for_repository_name_or_challenge_id() -> str:
+    name_or_id = input("Enter repository name or challenge id: ")
+    is_challenge_id = False
+
+    if validate.is_valid_challenge_id(name_or_id):
+        is_challenge_id = True
+
+    return name_or_id
 
 
 def if_bulk_transition_is_required() -> bool:

@@ -1,13 +1,12 @@
-from typing import Optional
 from requests import Response
 
-from bugfixpy.git.fix_result import FixResult
-from bugfixpy.jira.fix_version import FixVersion
-from bugfixpy.scraper.scraper_data import ScraperData
-from bugfixpy.utils import prompt_user
-from bugfixpy.jira import api
+from bugfixpy.git import FixResult
+from bugfixpy.scraper import ScraperData
+from bugfixpy.utils import combine_messages_into_string
 from bugfixpy.constants import colors
-from bugfixpy.jira.issue import (
+from bugfixpy.jira import (
+    api,
+    FixVersion,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
@@ -16,17 +15,14 @@ from bugfixpy.jira.issue import (
 def transition_jira_issues(
     fix_result: FixResult,
     challenge_data: ScraperData,
-    challenge_request_issue: Optional[ChallengeRequestIssue] = None,
+    challenge_request_issue: ChallengeRequestIssue,
 ) -> None:
     fix_messages = fix_result.fix_messages
     challenge_creation_issue = challenge_data.challenge.chlc
     application_creation_issue = challenge_data.application.chlc
     repo_was_cherrypicked = fix_result.repo_was_cherrypicked
     fix_version = api.get_current_fix_version()
-    fix_message = prompt_user.format_messages(fix_messages)
-
-    if not challenge_request_issue:
-        challenge_request_issue = prompt_user.get_challenge_request_issue()
+    fix_message = combine_messages_into_string(fix_messages)
 
     transition_challenge_request_issue(
         challenge_request_issue, fix_version, fix_message

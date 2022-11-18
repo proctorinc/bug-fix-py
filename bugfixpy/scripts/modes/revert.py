@@ -1,18 +1,14 @@
-"""Mode to revert previous commits in repository"""
-
 import sys
 from git import GitError
+
 from bugfixpy.utils import prompt_user
-from bugfixpy.git.repository import Repository
+from bugfixpy.git import Repository
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.formatter import Text
 from bugfixpy.scripts.git import revert_commit_in_repository
 
 
-def run(test_mode):
-    """
-    Revert a commit in the git repository
-    """
+def run(test_mode) -> None:
     commit_id = None
     Text("Revert mode enabled", colors.HEADER).display()
 

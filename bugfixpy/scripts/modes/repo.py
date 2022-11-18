@@ -1,44 +1,35 @@
-"""Quick way to check an application's code in VS Code without running fix mode"""
-
-# Enter app name with autofill from what is in repo's already
-# Or could we get a list of the repos in the github?
-
-import sys
-from git import GitError
-from bugfixpy.utils import prompt_user
-from bugfixpy.formatter import Text
-from bugfixpy.git.repository import Repository
-from bugfixpy.constants import colors
+from bugfixpy.utils import prompt_user, validate
+from bugfixpy.git import Repository
+from . import utils
 
 
 def run() -> None:
-    """
-    Opens repository in VS Code and allows user to run other modes from this repo
-    """
+    repository = clone_repository_from_challenge_id_or_repository_name()
 
-    # Allow a user to enter either a challenge id or an application name to open repo
+    open_branch_from_repository_in_code_editor(repository)
 
-    # Get name of the git repository
-    repo_name = prompt_user.for_repository_name()
+    print("Running other modes from this repo is not supported yet.")
 
-    # Attempt to create repository
-    try:
-        repository = Repository(repo_name)
-    except GitError:
-        print(f"{colors.FAIL}Git Error: configure SSH key first{colors.ENDC}")
-        sys.exit(1)
 
-    # Print Details about the repository
-    Text("Repo:", repo_name, colors.OKCYAN).display()
-    Text("Branches:", repository.get_num_branches(), colors.OKCYAN).display()
+def open_branch_from_repository_in_code_editor(repository) -> None:
+    branch = prompt_user.for_branch_in_repository(repository)
 
-    # Print whether the repository is a full app or minified app
-    if repository.is_full_app():
-        Text("Type:", "Full App", colors.OKCYAN).display()
-    else:
-        Text("Type:", "Minified App", colors.OKCYAN).display()
+    repository.checkout_to_branch(branch)
 
     repository.open_code_in_editor()
 
-    print("Running other modes is not supported yet.")
-    print("Program finished.")
+
+def clone_repository_from_challenge_id_or_repository_name() -> Repository:
+    name_or_id = input("Enter repository name or challenge id: ")
+
+    if validate.is_valid_challenge_id(name_or_id):
+        print(f"Looking for challenge ID: {name_or_id}")
+        challenge_data = utils.scrape_challenge_data_from_cms(name_or_id)
+        repo_name = challenge_data.application.repository_name
+    else:
+        print(f"Looking for repository: {name_or_id}")
+        repo_name = name_or_id
+
+    repository = utils.clone_the_challenge_repository(repo_name)
+
+    return repository
