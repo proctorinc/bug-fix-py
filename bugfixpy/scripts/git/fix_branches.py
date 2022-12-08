@@ -13,7 +13,6 @@ def make_changes_in_repository(
     fix_messages = []
     repo_was_cherrypicked = False
 
-    # Get next branch to fix
     current_branch = prompt_user.for_branch_in_repository(repository)
 
     # Continue to fix branches until user is done

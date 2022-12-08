@@ -1,10 +1,17 @@
 import sys
 import argparse
 
-from bugfixpy.scripts import modes
 from bugfixpy.constants import colors
 from bugfixpy.utils import validate
 from bugfixpy.formatter import Text
+from bugfixpy.modes import (
+    TransitionIssues,
+    AutomaticFix,
+    ManualFix,
+    ViewRepository,
+    RevertCommit,
+    SetupCredentials,
+)
 
 
 def main() -> None:
@@ -55,21 +62,21 @@ def main() -> None:
         parser.error("Multiple flags cannot be enabled at the same time")
 
     if args.setup:
-        modes.setup.run()
+        SetupCredentials.run()
     elif args.transition:
-        modes.transition.run()
+        TransitionIssues.run()
     elif args.revert:
-        modes.revert.run(args.test)
+        RevertCommit.run(args.test)
     elif args.manual:
-        modes.manual_fix.run(args.test)
+        ManualFix.run(args.test)
     elif not args.test and not validate.has_valid_credentials():
         print(
             f"{colors.FAIL}Credentials are not setup\nRun: python3 bugfixpy --setup{colors.ENDC}"
         )
     elif args.auto:
-        modes.auto_fix.run(args.test)
+        AutomaticFix.run(args.test)
     else:
-        modes.repo.run()
+        ViewRepository.run()
 
 
 try:

@@ -101,7 +101,7 @@ def if_they_want_to_continue() -> None:
 
 
 def for_challenge_id() -> str:
-    prompt = f"Enter Challenge ID: {colors.WHITE}"
+    prompt = f"{colors.ENDC}Enter Challenge ID: {colors.WHITE}"
     invalid_message = "is not a valid Challenge ID"
 
     challenge_id = __get_valid_input(
@@ -116,7 +116,7 @@ def for_branch_in_repository(repository: Repository) -> str:
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
 
-    branch = input(f"{colors.ENDC}\nEnter name of branch to fix: {colors.WHITE}")
+    branch = input(f"{colors.ENDC}\nEnter name of branch: {colors.WHITE}")
 
     print(colors.ENDC, end="")
 
@@ -138,7 +138,7 @@ def for_branch_in_repository(repository: Repository) -> str:
             print(colors.ENDC)
 
         # Prompt user for branch again
-        branch = input(f"{colors.ENDC}Enter name of branch to fix: {colors.WHITE}")
+        branch = input(f"{colors.ENDC}Enter name of branch: {colors.WHITE}")
 
         print(colors.ENDC, end="")
 
@@ -180,7 +180,7 @@ def for_next_branch_or_to_continue(repository: Repository) -> str:
             print(colors.ENDC)
 
         # Prompt user for branch again
-        branch = input(f"{colors.ENDC}Enter name of branch to fix: {colors.WHITE}")
+        branch = input(f"{colors.ENDC}Enter name of branch: {colors.WHITE}")
 
         print(colors.ENDC, end="")
 
@@ -191,7 +191,7 @@ def for_next_branch_or_to_continue(repository: Repository) -> str:
 
 
 def for_descripton_of_fix() -> str:
-    prompt = f"Enter description of fix: {colors.WHITE}"
+    prompt = f"{colors.ENDC}Enter description of fix: {colors.WHITE}"
 
     fix_message = __get_valid_input(prompt, "", validate.is_valid_fix_message)
 
@@ -231,7 +231,7 @@ def for_repository_name_or_challenge_id() -> str:
 def if_bulk_transition_is_required() -> bool:
 
     user_input = input(
-        f"Is bulk transition required? ({colors.BOLD}{colors.WHITE}n{colors.ENDC}/Y): {colors.WHITE}"
+        f"{colors.ENDC}Is bulk transition required? ({colors.BOLD}{colors.WHITE}N{colors.ENDC}/y): {colors.WHITE}"
     )
     if user_input.lower() == "y":
         return True

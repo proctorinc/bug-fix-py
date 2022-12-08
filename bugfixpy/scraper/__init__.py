@@ -1,2 +1,2 @@
 from .cms_scraper import CmsScraper
-from .cms_scraper import ScraperData
+from .scraper_data import ScraperData, ApplicationScreenData, ChallengeScreenData

@@ -120,8 +120,6 @@ def transition_chlcs(
 
 def check_transition_result(result: Response) -> None:
     if result.status_code == 204:
-        print(f"\t{colors.OKGREEN}[COMPLETE]{colors.ENDC}")
+        print(f"\t✅")
     else:
-        print(
-            f"\t{colors.FAIL}[FAILED - {result.status_code}: {result.reason}]{colors.ENDC}"
-        )
+        print(f"\t❌{colors.FAIL} [{result.reason}]{colors.ENDC}")
