@@ -28,8 +28,6 @@ class CmsScraper:
         self.__password = cms.PASSWORD
         self.__challenge_id = challenge_id
 
-        print(self.__email, self.__password)
-
     def __del__(self) -> None:
         self.__session.close()
 
@@ -45,7 +43,6 @@ class CmsScraper:
         application_screen_data = scraper.scrape_application_screen(
             challenge_screen_data.application_endpoint
         )
-        print(challenge_screen_data.application_endpoint)
 
         return ScraperData(challenge_screen_data, application_screen_data)
 

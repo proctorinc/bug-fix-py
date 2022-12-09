@@ -112,7 +112,7 @@ def for_challenge_id() -> str:
 
 
 def for_branch_in_repository(repository: Repository) -> str:
-    branches = repository.get_filtered_branches()
+    branches = repository.get_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
 
@@ -149,7 +149,7 @@ def for_branch_in_repository(repository: Repository) -> str:
 
 
 def for_next_branch_or_to_continue(repository: Repository) -> str:
-    branches = repository.get_filtered_branches()
+    branches = repository.get_branches()
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
 

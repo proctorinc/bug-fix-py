@@ -1,221 +1,187 @@
-"""
-Git Repository class for running git actions on SCW content repositories
-"""
-
-# TODO: Change implementation to use Github CLI https://pypi.org/project/github-cli/
-
 import os
-import sys
 from typing import List
 import subprocess
-from git import GitCommandError, GitError
-from git.repo import Repo
+import shutil
+
+from git import Repo, GitCommandError, GitError, NoSuchPathError
 from bugfixpy.constants import git, jira
-from bugfixpy.exceptions import MergeConflictError
+from bugfixpy.exceptions import (
+    MergeConflictError,
+    CheckoutFailedError,
+    ContinueCherryPickingFailedError,
+)
 
 
 class Repository:
-    """
-    Wrapper class around GitPython library for git repository functionality
-    """
 
-    __repo_name: str
-    __repository: Repo
-    __fix_messages: List[str]
-    __did_cherrypick: bool
+    name: str
+    repository: Repo
+    branches: list[str]
+    fix_messages: List[str]
+    has_cherrypicked: bool
 
-    def __init__(self, repo_name: str) -> None:
-        self.__repo_name = repo_name
-        self.__repository = self.__clone_repository()
-        self.__fix_messages = []
-        self.__did_cherrypick = False
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.fix_messages = []
+        self.has_cherrypicked = False
+        self.__delete_local_and_clone_repository()
+        self.branches = self.__get_filtered_branches()
+
+    def get_branches(self) -> list[str]:
+        return self.branches
+
+    def __delete_local_and_clone_repository(self) -> None:
+        self.__delete_repository_if_exists()
+        self.repository = self.clone_repository()
+
+    def __delete_repository_if_exists(self) -> None:
+        try:
+            path = self.get_repository_dir()
+            shutil.rmtree(path)
+        except OSError as err:
+            print(err)
+
+    def __get_local_or_clone_repository(self) -> None:
+        path = self.get_repository_dir()
+
+        try:
+            self.repository = Repo(path)
+            self.__reset_and_pull_all_branches()
+        except NoSuchPathError:
+            self.repository = self.clone_repository()
+
+    def __reset_and_pull_all_branches(self) -> None:
+        self.repository.git.reset("HEAD", "--hard")
+        self.repository.remotes.origin.pull()
 
     def get_num_branches(self) -> int:
-        """
-        Get the number of branches in this repository
-        """
-        return len(self.get_filtered_branches())
+        return len(self.branches)
 
     def is_full_app(self) -> bool:
-        """
-        Get whether the app is minified or full
-        """
-        branches = self.get_filtered_branches()
+        branches = self.branches
 
         return jira.FULL_APP_SECURE_BRANCH in branches
 
     def get_fix_messages(self) -> List[str]:
-        """
-        Get fix messages created from commits to repo
-        """
-        return self.__fix_messages
+        return self.fix_messages
 
     def did_cherrypick_run(self) -> bool:
-        """
-        Return whether cherrypick has been run or not
-        """
-        # TODO: This value needs to be modified in the cherrypick script!
-        return self.__did_cherrypick
+        return self.has_cherrypicked
 
-    def set_cherrypick_ran(self) -> None:
-        """
-        Set whether the repository was cherrypicked to True
-        """
-        self.__did_cherrypick = True
+    def set_was_cherrypicked(self) -> None:
+        self.has_cherrypicked = True
 
-    # TODO: fix method functionality
     def did_number_of_lines_change(self) -> bool:
-        """
-        Check if the commit added or removed any lines. Return true if lines were added or removed
-        """
-        # added_or_removed_lines = False
+        commit = self.repository.head.commit
+        previous_commit = commit.parents[0]
 
-        # diff = repository.git.diff('--numstat', 'HEAD^').split("\n")
+        diffs = previous_commit.diff(commit)
 
-        # for edited_file_stat in diff:
-        #     stat = edited_file_stat.split()
+        modified_filenames = [diff.b_path for diff in diffs]
 
-        #     if stat[0] == '-':
-        #         added = 0
-        #     else:
-        #         added = int(stat[0])
+        for diff in diffs:
+            if diff.a_blob is None or diff.b_blob is None:
+                if diff.a_blob is None:
+                    modified_filenames.append((diff.b_path, "+"))
+                else:
+                    modified_filenames.append((diff.b_path, "-"))
 
-        #     if stat[1] == '-':
-        #         removed = 0
-        #     else:
-        #         removed = stat[1]
+        return len(modified_filenames) > 0
 
-        #     if added - removed != 0:
-        #         added_or_removed_lines = True
+    def get_list_of_files_changed_in_commit(self, commit) -> list[str]:
+        previous_commit = commit.parents[0]
 
-        # return added_or_removed_lines
-        return True
+        diffs = previous_commit.diff(commit)
 
-    def push_fix_to_github(self) -> None:
-        """
-        Push repository changes to github
-        """
-        # Push commit to the repository
-        subprocess.check_output(
-            f"git -C {self.get_repository_dir()} push --all", shell=True
-        )
+        modified_filenames = [diff.b_path for diff in diffs]
+
+        return modified_filenames
+
+    def get_whether_commit_changed_length_of_file(self, commit) -> bool:
+        return len(self.get_files_that_changed_length_due_to_commit(commit)) > 0
+
+    def get_files_that_changed_length_due_to_commit(self, commit) -> list[str]:
+        modified_files = []
+        previous_commit = commit.parents[0]
+
+        diffs = previous_commit.diff(commit)
+
+        for diff in diffs:
+            if diff.a_blob is not None and diff.b_blob is not None:
+                if diff.a_blob.size != diff.b_blob.size:
+                    modified_files.append(diff.b_path)
+
+        return modified_files
+
+    def push_all_branches(self) -> None:
+        self.repository.git.push(all=True)
 
     def checkout_to_branch(self, branch: str) -> None:
-        """
-        Checkout to a branch in the git repository
-        """
-        result = subprocess.check_output(
-            f"git -C {self.get_repository_dir()} checkout {branch} &>/dev/null",
-            shell=True,
-        ).decode("utf-8")
+        try:
+            self.repository.git.checkout(branch)
+        except GitCommandError as err:
+            raise CheckoutFailedError(err) from err
 
-        errors = ["error", "fatal"]
+    def add_changes(self) -> None:
+        self.repository.git.add(u=True)
 
-        if "fatal: cherry-pick failed" in result:
-            print("ERROR! Cherry Pick failed. Exiting...")
-            sys.exit(1)
+    def continue_cherrypicking(self) -> None:
+        try:
+            print("continuing in repo class")
+            self.repository.git.cherry_pick("--continue")
+            print("done continuing in repo class")
 
-        if (
-            "Your local changes to the following files would be overwritten by checkout"
-            in result
-        ):
-            print("Attempting to force checkout")
-            result = subprocess.check_output(
-                f"git -C {self.get_repository_dir()} checkout -f {branch} &>/dev/null",
-                shell=True,
-            ).decode("utf-8")
-
-        # Check if error exists in result
-        if any(error in errors for error in result):
-            print("Checkout Failed - Determine if you want to continue")
-            # TODO: throw fatal checkout error
-
-    def add_changes_to_branch(self) -> None:
-        """
-        Add all current changes to commit
-        """
-        subprocess.call(
-            f"git -C {self.get_repository_dir()} add .",
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-    def continue_cherrypicking_branch(self) -> None:
-        """
-        Run git command to continue cherrypicking
-        """
-        subprocess.call(
-            f"git -C {self.get_repository_dir()} cherry-pick --continue", shell=True
-        )
+        except GitCommandError as err:
+            print("continueing failed err in repo class")
+            raise ContinueCherryPickingFailedError() from err
+        except Exception as err:
+            print(f"unhandled err: {err}")
 
     def commit_changes_with_message(self, message) -> None:
-        """
-        Commit changes with a message
-        """
-        self.__repository.git.commit("-m", f'"{message}"')
+        self.repository.git.commit("-m", f'"{message}"')
 
     def commit_changes_allow_empty(self) -> None:
-        """
-        Commit changes with empty commit message
-        """
-        subprocess.call(
-            f"git -C {self.get_repository_dir()} commit --allow-empty",
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        self.repository.git.commit("--allow-empty", "-m", "Empty Commit")
 
-    def cherrypick_branch(self, commit_id) -> None:
-        """
-        Cherrypick commit id in current branch
-        """
-        # Cherry-pick branch
-        result = subprocess.check_output(
-            f"git -C {self.get_repository_dir()} cherry-pick {commit_id} &>/dev/null",
-            shell=True,
-        ).decode("utf-8")
+    def cherry_pick(self, commit_id) -> None:
+        print(f"commit id: {commit_id}")
+        try:
+            print("In repository class")
+            result = self.repository.git.cherry_pick(commit_id)
+            print(f"success cherry pick {result}")
 
-        if not result or "CONFLICT" in result:
-            raise MergeConflictError("Merge conflict occurred")
+        except GitCommandError as err:
+            print(f"GitCommand ERROR: {err}")
+
+            if "exit code(1)" in str(err):
+                raise MergeConflictError() from err
+
+            print(f"Uncaught exception {err}")
 
     def get_repository_dir(self) -> str:
-        """
-        Returns absolute url for repository folder
-        """
-        return os.path.join(git.REPO_DIR, self.__repo_name)
+        return os.path.join(git.REPO_DIR, self.name)
 
-    def get_filtered_branches(self) -> List[str]:
-        """
-        Parse branches from remote refs and remove unwanted branches
-        """
-        remote_refs = self.__repository.remote().refs
-        filtered_branches = []
+    def __is_not_excluded_branch(self, branch_name) -> bool:
+        return branch_name not in jira.IGNORE_BRANCHES
 
-        # Loop over remote references
-        for refs in remote_refs:
-
-            # Remove origin/ from branch name
-            branch = str(refs.name.split("origin/", 1)[1])
-
-            # Filter branches
-            if branch not in jira.IGNORE_BRANCHES:
-                filtered_branches.append(branch)
+    def __get_filtered_branches(self) -> List[str]:
+        branch_names = [
+            self.__parse_name_from_remote_branch(branch)
+            for branch in self.repository.remote().refs
+        ]
+        filtered_branches = list(filter(self.__is_not_excluded_branch, branch_names))
 
         return filtered_branches
 
-    def get_last_commit_id(self) -> str:
-        """
-        Returns commit id of last commit
-        """
-        return str(self.__repository.rev_parse("HEAD"))
+    def __parse_name_from_remote_branch(self, branch):
+        return branch.name.split("origin/")[1]
 
-    def branch_contains_commit_id(self, commit_id):
-        """
-        Check if branch contains commit id
-        """
+    def get_last_commit_id(self) -> str:
+        return str(self.repository.rev_parse("HEAD"))
+
+    def branch_contains_commit_id(self, commit_id) -> bool:
         try:
-            self.__repository.git.branch("--contains", commit_id)
+            self.repository.git.branch("--contains", commit_id)
 
         except GitCommandError as err:
             print("NOPE!", err)
@@ -224,10 +190,6 @@ class Repository:
         return True
 
     def revert_commit(self, commit_id) -> None:
-        """
-        Revert a commit in the repository
-        """
-        # Revert commit
         result = subprocess.check_output(
             f"git -C {self.get_repository_dir()} revert {commit_id} &>/dev/null",
             shell=True,
@@ -240,41 +202,31 @@ class Repository:
         if "CONFLICT" in result:
             raise MergeConflictError("Merge conflict occurred")
 
-    def open_code_in_editor(self):
-        """Opens repository code in VS Code"""
+    def has_merge_conflict(self) -> bool:
+        print(
+            "STATUS", self.repository.git.status(), "\n********************************"
+        )
+        # conflict = "Unmerged" in self.repository.git.status()
+        # print(f"MERGE CONFLICT? {conflict}")
+        return "Unmerged" in self.repository.git.status()
+        # diff = self.repository.index.diff()
+        # print("DIFF", diff, "\n********************************")
+        # return len(diff.index.conflicts) > 0
+
+    def open_code_in_editor(self) -> None:
         subprocess.check_output(f"code {self.get_repository_dir()}", shell=True)
 
     def get_minified_secure_branch(self) -> List[str]:
-        """
-        Gets the secure branch of a minified app. Minified app's secure branch starts with 'secure'
-        """
         secure_branches = []
 
-        for branch in self.get_filtered_branches():
-
-            # Check if branch starts with 'secure'
+        for branch in self.branches:
             if jira.FULL_APP_SECURE_BRANCH in branch:
                 secure_branches.append(branch)
 
         return secure_branches
 
-    def __clone_repository(self) -> Repo:
-        """
-        Clone repository and return valid instance. Handle errors for invalid repository
-        """
-        git_url = f"{jira.SCW_GIT_URL}/{self.__repo_name}.git"
+    def clone_repository(self) -> Repo:
+        git_url = f"{jira.SCW_GIT_URL}/{self.name}.git"
         repository_dir = self.get_repository_dir()
 
-        # If repo folder already exists, remove it
-        if os.path.isdir(repository_dir):
-
-            # Delete repository
-            subprocess.check_output(f"sudo rm -r {repository_dir}", shell=True)
-
-        # Clone repository
-        Repo.clone_from(git_url, repository_dir)
-
-        # Create repository object
-        repo = Repo(repository_dir)
-
-        return repo
+        return Repo.clone_from(git_url, repository_dir)

@@ -67,7 +67,7 @@ class AutomaticFix(UseScraper):
                 print(f"{colors.HEADER}Test mode enabled. Push skipped{colors.ENDC}")
             else:
                 input(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
-                self.repository.push_fix_to_github()
+                self.repository.push_all_branches()
         except KeyboardInterrupt:
             print(f"\n{colors.FAIL}Skipped push to repository{colors.ENDC}")
 

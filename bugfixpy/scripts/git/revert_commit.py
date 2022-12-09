@@ -7,7 +7,7 @@ from bugfixpy.utils import prompt_user
 
 def revert_commit_in_repository(repository, commit_id: str) -> None:
     """Reverts commit based off of commit id"""
-    branches = repository.get_filtered_branches()
+    branches = repository.get_branches()
 
     try:
         repository.checkout_to_branch(branches[0])
