@@ -32,7 +32,7 @@ class ManualFix:
 
         challenge_request_issue = prompt_user.get_challenge_request_issue()
 
-        FixBranches(repository, challenge_request_issue).run()
+        FixBranches(repository, challenge_request_issue).run_fix()
 
         if test_mode:
             print(instructions.PROMPT_FOR_ENTER_PUSH_DISABLED)

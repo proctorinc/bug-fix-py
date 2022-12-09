@@ -1,5 +1,4 @@
 import sys
-from typing import Optional
 
 from bugfixpy.classes import UseScraper
 from bugfixpy.git import FixResult, Repository, FixBranches
@@ -16,7 +15,7 @@ from . import utils
 class AutomaticFix(UseScraper):
 
     test_mode: bool
-    challenge_data: Optional[ScraperData]
+    challenge_data: ScraperData
     fix_result: FixResult
     challenge_request_issue: ChallengeRequestIssue
     repository: Repository
@@ -41,7 +40,7 @@ class AutomaticFix(UseScraper):
         auto_fix.set_repository(repository)
         challenge_request_issue = prompt_user.get_challenge_request_issue()
         auto_fix.set_challenge_request_issue(challenge_request_issue)
-        fix_result = FixBranches(repository, challenge_request_issue)
+        fix_result = FixBranches(repository, challenge_request_issue).get_results()
         auto_fix.set_fix_result(fix_result)
         auto_fix.push_fix_to_github_if_not_in_test_mode()
         auto_fix.transition_challenge_issues_with_results()
