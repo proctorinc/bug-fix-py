@@ -127,12 +127,9 @@ class Repository:
 
     def continue_cherrypicking(self) -> None:
         try:
-            print("continuing in repo class")
             self.repository.git.cherry_pick("--continue")
-            print("done continuing in repo class")
 
         except GitCommandError as err:
-            print("continueing failed err in repo class")
             raise ContinueCherryPickingFailedError() from err
         except Exception as err:
             print(f"unhandled err: {err}")
@@ -144,19 +141,12 @@ class Repository:
         self.repository.git.commit("--allow-empty", "-m", "Empty Commit")
 
     def cherry_pick(self, commit_id) -> None:
-        print(f"commit id: {commit_id}")
         try:
-            print("In repository class")
-            result = self.repository.git.cherry_pick(commit_id)
-            print(f"success cherry pick {result}")
+            self.repository.git.cherry_pick(commit_id)
 
         except GitCommandError as err:
-            print(f"GitCommand ERROR: {err}")
-
             if "exit code(1)" in str(err):
                 raise MergeConflictError() from err
-
-            print(f"Uncaught exception {err}")
 
     def get_repository_dir(self) -> str:
         return os.path.join(git.REPO_DIR, self.name)
@@ -183,8 +173,7 @@ class Repository:
         try:
             self.repository.git.branch("--contains", commit_id)
 
-        except GitCommandError as err:
-            print("NOPE!", err)
+        except GitCommandError:
             return False
 
         return True
@@ -196,7 +185,6 @@ class Repository:
         ).decode("utf-8")
 
         if not result:
-            print("Bad commit id!")
             raise GitError("Error reverting commit")
 
         if "CONFLICT" in result:
@@ -206,12 +194,7 @@ class Repository:
         print(
             "STATUS", self.repository.git.status(), "\n********************************"
         )
-        # conflict = "Unmerged" in self.repository.git.status()
-        # print(f"MERGE CONFLICT? {conflict}")
         return "Unmerged" in self.repository.git.status()
-        # diff = self.repository.index.diff()
-        # print("DIFF", diff, "\n********************************")
-        # return len(diff.index.conflicts) > 0
 
     def open_code_in_editor(self) -> None:
         subprocess.check_output(f"code {self.get_repository_dir()}", shell=True)

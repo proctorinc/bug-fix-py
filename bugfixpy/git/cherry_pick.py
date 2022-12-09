@@ -14,7 +14,7 @@ class CherryPick:
 
     def __init__(self, repository, commit_id) -> None:
         self.repository = repository
-        self.branches = repository.get_branches()
+        self.branches = self.__get_branches_without_secure()
         self.commit_id = commit_id
 
     def across_all_branches(self) -> None:
@@ -22,22 +22,25 @@ class CherryPick:
             self.__checkout_to_and_cherrypick_branch(branch)
             self.__display_percentage_complete(i)
 
+    def __get_branches_without_secure(self):
+        branches = self.repository.get_branches()
+        branches.remove("secure")
+        return branches
+
     def __checkout_to_and_cherrypick_branch(self, branch) -> None:
         try:
             self.repository.checkout_to_branch(branch)
             self.__cherry_pick_branch(branch)
 
         except CheckoutFailedError as err:
-            print("Exception occurred while checking out to branch")
-            print(err)
+            print(f"Exception occurred while checking out to branch: {err}")
             prompt_user.if_they_want_to_continue()
 
     def __cherry_pick_branch(self, branch) -> None:
         try:
             self.repository.cherry_pick(self.commit_id)
 
-        except MergeConflictError as err:
-            print(err)
+        except MergeConflictError:
             self.__alert_user_merge_conflict_occured(branch)
             self.__resolve_merge_conflict()
 

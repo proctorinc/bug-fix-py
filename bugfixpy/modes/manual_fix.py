@@ -3,10 +3,9 @@ import webbrowser
 from git import GitError
 
 from bugfixpy.constants import colors, headers, instructions, jira
-from bugfixpy.git import Repository
+from bugfixpy.git import Repository, FixBranches
 from bugfixpy.utils import prompt_user
 from bugfixpy.formatter import Text, text
-from bugfixpy.scripts.git import make_changes_in_repository
 
 
 class ManualFix:
@@ -33,13 +32,13 @@ class ManualFix:
 
         challenge_request_issue = prompt_user.get_challenge_request_issue()
 
-        make_changes_in_repository(repository, challenge_request_issue)
+        FixBranches(repository, challenge_request_issue).run()
 
         if test_mode:
             print(instructions.PROMPT_FOR_ENTER_PUSH_DISABLED)
         else:
             print(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
-            repository.push_fix_to_github()
+            repository.push_all_branches()
 
         fix_messages = repository.get_fix_messages()
         repo_was_cherrypicked = repository.did_cherrypick_run()
