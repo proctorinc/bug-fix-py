@@ -3,7 +3,8 @@ from typing import List
 import subprocess
 import shutil
 
-from git import Repo, GitCommandError, GitError, NoSuchPathError
+from git import GitCommandError, GitError, NoSuchPathError
+from git.repo import Repo
 from bugfixpy.constants import git, jira
 from bugfixpy.exceptions import (
     MergeConflictError,

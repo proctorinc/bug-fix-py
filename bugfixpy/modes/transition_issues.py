@@ -1,10 +1,10 @@
 from bugfixpy.git import FixResult
+from bugfixpy.jira import TransitionIssues
 from bugfixpy.utils import prompt_user
-from bugfixpy.scripts import transition
 from . import utils
 
 
-class TransitionIssues:
+class TransitionIssuesMode:
     @staticmethod
     def run() -> None:
         challenge_data = utils.scrape_challenge_data_from_cms()
@@ -14,8 +14,8 @@ class TransitionIssues:
 
         fix_message = prompt_user.for_descripton_of_fix()
 
-        transition.transition_jira_issues(
+        TransitionIssues(
             FixResult([fix_message], is_bulk_transition_required, False),
             challenge_data,
             challenge_request_issue,
-        )
+        ).run()

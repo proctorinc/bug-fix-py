@@ -5,7 +5,7 @@ from bugfixpy.constants import colors
 from bugfixpy.utils import validate
 from bugfixpy.formatter import Text
 from bugfixpy.modes import (
-    TransitionIssues,
+    TransitionIssuesMode,
     AutomaticFix,
     ManualFix,
     ViewRepository,
@@ -64,7 +64,7 @@ def main() -> None:
     if args.setup:
         SetupCredentials.run()
     elif args.transition:
-        TransitionIssues.run()
+        TransitionIssuesMode.run()
     elif args.revert:
         RevertCommit.run(args.test)
     elif args.manual:

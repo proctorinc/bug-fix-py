@@ -1,5 +1,5 @@
 from .view_repository import ViewRepository
-from .transition_issues import TransitionIssues
+from .transition_issues import TransitionIssuesMode
 from .automatic_fix import AutomaticFix
 from .manual_fix import ManualFix
 from .setup_credentials import SetupCredentials
