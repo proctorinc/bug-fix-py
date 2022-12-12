@@ -1,1 +1,0 @@
-from .revert_commit import revert_commit_in_repository

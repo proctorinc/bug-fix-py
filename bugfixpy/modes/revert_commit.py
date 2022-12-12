@@ -1,12 +1,12 @@
+from bugfixpy.git.revert_commit import RevertCommit
 from bugfixpy.utils import validate
 from bugfixpy.git import Repository
 from bugfixpy.constants import colors, headers, instructions
 from bugfixpy.formatter import Text
-from bugfixpy.scripts.git import revert_commit_in_repository
 from . import utils
 
 
-class RevertCommit:
+class RevertCommitMode:
 
     test_mode: bool
     repository: Repository
@@ -35,7 +35,7 @@ class RevertCommit:
             if not self.repository.branch_contains_commit_id(commit_id):
                 commit_id = None
 
-        revert_commit_in_repository(self.repository, commit_id)
+        RevertCommit(self.repository, commit_id).run()
 
     # TODO: duplicate in automatic_fix
     def push_fix_to_github_if_not_in_test_mode(self) -> None:
@@ -44,7 +44,7 @@ class RevertCommit:
                 print(f"{colors.HEADER}Test mode enabled. Push skipped{colors.ENDC}")
             else:
                 input(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
-                self.repository.push_fix_to_github()
+                self.repository.push_all_branches()
         except KeyboardInterrupt:
             print(f"\n{colors.FAIL}Skipped push to repository{colors.ENDC}")
 
