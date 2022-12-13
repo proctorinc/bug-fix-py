@@ -1,16 +1,17 @@
 import sys
 from getpass import getpass
 import keyring
-from bugfixpy.constants import jira, cms
+
+from bugfixpy import cms, jira
 
 
 class SetupCredentials:
     @staticmethod
     def run() -> None:
-        api_email = jira.API_EMAIL
-        api_key = jira.API_KEY
-        cms_email = cms.EMAIL
-        cms_password = cms.PASSWORD
+        api_email = jira.constants.API_EMAIL
+        api_key = jira.constants.API_KEY
+        cms_email = cms.constants.EMAIL
+        cms_password = cms.constants.PASSWORD
 
         if api_email and api_key and cms_email and cms_password:
             print("All credentials are setup")

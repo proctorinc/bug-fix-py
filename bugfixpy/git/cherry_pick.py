@@ -1,4 +1,4 @@
-from bugfixpy.constants import colors
+from bugfixpy.utils.text import colors
 from bugfixpy.exceptions import ContinueCherryPickingFailedError
 from bugfixpy.utils import prompt_user
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError

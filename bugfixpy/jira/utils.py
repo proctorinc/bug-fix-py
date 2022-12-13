@@ -2,8 +2,8 @@ import json
 from datetime import datetime, date
 from typing import List
 
-from bugfixpy.constants import jira
 from .fix_version import FixVersion
+from . import constants
 
 INWARD_ISSUE = "outwardIssue"
 OUTWARD_ISSUE = "inwardIssue"
@@ -27,9 +27,9 @@ def parse_linked_issues(issue_links) -> List[str]:
     issue = ""
     for link in issue_links:
         if OUTWARD_ISSUE in link:
-            issue = str(link[OUTWARD_ISSUE][jira.RESPONSE_KEY])
+            issue = str(link[OUTWARD_ISSUE][constants.RESPONSE_KEY])
         elif INWARD_ISSUE in link:
-            issue = str(link[INWARD_ISSUE][jira.RESPONSE_KEY])
+            issue = str(link[INWARD_ISSUE][constants.RESPONSE_KEY])
 
         if issue and "CHLC-" in issue:
             chlcs.append(issue)
@@ -40,15 +40,15 @@ def parse_linked_issues(issue_links) -> List[str]:
 def project_type_exists_in_response(project_type, response) -> bool:
     json_response = json.loads(response.text)
     return (
-        jira.RESPONSE_KEY in json_response
-        and project_type in json_response[jira.RESPONSE_KEY]
+        constants.RESPONSE_KEY in json_response
+        and project_type in json_response[constants.RESPONSE_KEY]
     )
 
 
 def parse_application_creation_from_response(response) -> str:
     json_response = json.loads(response.text)
 
-    return str(json_response[FIELDS][PARENT][jira.RESPONSE_KEY])
+    return str(json_response[FIELDS][PARENT][constants.RESPONSE_KEY])
 
 
 def parse_linked_challenges_from_response(response) -> List[str]:

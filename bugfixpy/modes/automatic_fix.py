@@ -2,8 +2,8 @@ import sys
 
 from bugfixpy.classes import UseScraper
 from bugfixpy.git import FixResult, Repository, FixBranches
-from bugfixpy.constants import colors, instructions
-from bugfixpy.scraper import ScraperData
+from bugfixpy.utils.text import colors, instructions
+from bugfixpy.cms import ScraperData
 from bugfixpy.scripts import transition
 from bugfixpy.utils import prompt_user
 from bugfixpy.jira import (

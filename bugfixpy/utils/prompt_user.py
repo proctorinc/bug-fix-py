@@ -2,18 +2,16 @@ import sys
 import readline
 from typing import Callable
 
-from pyparsing import Optional
-
 from bugfixpy.exceptions import InvalidIssueIdError
-from bugfixpy.constants import colors, jira
 from bugfixpy.git import Repository
 from bugfixpy.utils import validate
-from bugfixpy.formatter import completer
+from bugfixpy.utils.text import completer
 from bugfixpy.jira import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
+from bugfixpy.utils.text import colors
 
 
 def __get_valid_input(

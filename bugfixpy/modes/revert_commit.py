@@ -1,8 +1,7 @@
-from bugfixpy.git.revert_commit import RevertCommit
-from bugfixpy.utils import validate
-from bugfixpy.git import Repository
-from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.formatter import Text
+from bugfixpy.utils import validate, Text
+from bugfixpy.git import Repository, RevertCommit
+from bugfixpy.utils.text import colors, instructions, headers
+
 from . import utils
 
 

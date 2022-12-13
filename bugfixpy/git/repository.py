@@ -5,12 +5,13 @@ import shutil
 
 from git import GitCommandError, GitError, NoSuchPathError
 from git.repo import Repo
-from bugfixpy.constants import git, jira
+from bugfixpy import git
 from bugfixpy.exceptions import (
     MergeConflictError,
     CheckoutFailedError,
     ContinueCherryPickingFailedError,
 )
+from . import constants
 
 
 class Repository:
@@ -39,8 +40,8 @@ class Repository:
         try:
             path = self.get_repository_dir()
             shutil.rmtree(path)
-        except OSError as err:
-            print(err)
+        except OSError:
+            pass
 
     def __get_local_or_clone_repository(self) -> None:
         path = self.get_repository_dir()
@@ -61,7 +62,7 @@ class Repository:
     def is_full_app(self) -> bool:
         branches = self.branches
 
-        return jira.FULL_APP_SECURE_BRANCH in branches
+        return git.constants.FULL_APP_SECURE_BRANCH in branches
 
     def get_fix_messages(self) -> List[str]:
         return self.fix_messages
@@ -150,10 +151,10 @@ class Repository:
                 raise MergeConflictError() from err
 
     def get_repository_dir(self) -> str:
-        return os.path.join(git.REPO_DIR, self.name)
+        return os.path.join(constants.REPO_DIR, self.name)
 
     def __is_not_excluded_branch(self, branch_name) -> bool:
-        return branch_name not in jira.IGNORE_BRANCHES
+        return branch_name not in constants.IGNORE_BRANCHES
 
     def __get_filtered_branches(self) -> List[str]:
         branch_names = [
@@ -204,13 +205,13 @@ class Repository:
         secure_branches = []
 
         for branch in self.branches:
-            if jira.FULL_APP_SECURE_BRANCH in branch:
+            if constants.FULL_APP_SECURE_BRANCH in branch:
                 secure_branches.append(branch)
 
         return secure_branches
 
     def clone_repository(self) -> Repo:
-        git_url = f"{jira.SCW_GIT_URL}/{self.name}.git"
+        git_url = f"{constants.SCW_GIT_URL}/{self.name}.git"
         repository_dir = self.get_repository_dir()
 
         return Repo.clone_from(git_url, repository_dir)

@@ -1,11 +1,10 @@
 import sys
-import webbrowser
 from git import GitError
 
-from bugfixpy.constants import colors, headers, instructions, jira
 from bugfixpy.git import Repository, FixBranches
-from bugfixpy.utils import prompt_user
-from bugfixpy.formatter import Text, text
+from bugfixpy.jira import browser
+from bugfixpy.utils import prompt_user, Text, formatter
+from bugfixpy.utils.text import colors, headers, instructions
 
 
 class ManualFix:
@@ -45,18 +44,14 @@ class ManualFix:
         is_chunk_fixing_required = repository.did_number_of_lines_change()
 
         print(instructions.STEP_ONE_CLOSE_CHLRQ)
-        print(text.format_fix_messages(fix_messages))
+        print(formatter.format_fix_messages(fix_messages))
         print(instructions.STEP_TWO_LINK_CHLRQ)
 
         if repo_was_cherrypicked:
 
             application_creation_issue = prompt_user.get_application_creation_issue()
 
-            webbrowser.open(
-                jira.BULK_TRANSITION_JQL_URL.format(
-                    chlc=application_creation_issue.get_issue_id()
-                )
-            )
+            browser.open_issue_in_browser(application_creation_issue)
 
             print(instructions.CHERRY_PICKING_MANUAL_STEPS)
         else:

@@ -2,31 +2,32 @@ from typing import List
 import requests
 from requests import Response
 
-from bugfixpy.constants import jira
 from bugfixpy.jira import (
     Issue,
     ChallengeRequestIssue,
     ChallengeCreationIssue,
     ApplicationCreationIssue,
 )
+
 from .fix_version import FixVersion
 from . import utils
+from . import constants
 
 
 def __execute_get_query(endpoint: str) -> Response:
     response = requests.get(
-        url=f"{jira.SCW_API_URL}/{endpoint}",
-        headers=jira.REQUEST_HEADERS,
-        auth=jira.AUTH,
+        url=f"{constants.SCW_API_URL}/{endpoint}",
+        headers=constants.REQUEST_HEADERS,
+        auth=constants.AUTH,
     )
     return response
 
 
 def __execute_post_query(endpoint: str, body: dict) -> Response:
     response = requests.post(
-        url=f"{jira.SCW_API_URL}/{endpoint}",
-        headers=jira.REQUEST_HEADERS,
-        auth=jira.AUTH,
+        url=f"{constants.SCW_API_URL}/{endpoint}",
+        headers=constants.REQUEST_HEADERS,
+        auth=constants.AUTH,
         json=body,
     )
     return response
@@ -34,9 +35,9 @@ def __execute_post_query(endpoint: str, body: dict) -> Response:
 
 def __execute_put_query(endpoint: str, body: dict) -> Response:
     response = requests.put(
-        url=f"{jira.SCW_API_URL}/{endpoint}",
-        headers=jira.REQUEST_HEADERS,
-        auth=jira.AUTH,
+        url=f"{constants.SCW_API_URL}/{endpoint}",
+        headers=constants.REQUEST_HEADERS,
+        auth=constants.AUTH,
         json=body,
     )
     return response
@@ -51,7 +52,7 @@ def get_response_code_from_query_to_verify_credentials() -> int:
 
 
 def get_current_fix_version() -> FixVersion:
-    endpoint = jira.LINKED_ISSUES_ENDPOINT
+    endpoint = constants.LINKED_ISSUES_ENDPOINT
     response = __execute_get_query(endpoint)
 
     return utils.parse_fix_version_from_response(response)
@@ -76,7 +77,7 @@ def transition_challenge_request_to_planned(
 
 def get_transition_to_planned_body(fix_version_id) -> dict:
     return {
-        "transition": {"id": jira.TRANSITION_PLANNED},
+        "transition": {"id": constants.TRANSITION_PLANNED},
         "update": {"fixVersions": [{"add": {"id": fix_version_id}}]},
     }
 
@@ -92,7 +93,7 @@ def transition_challenge_request_to_in_progress(
 
 
 def get_transition_to_in_progress_body() -> dict:
-    return {"transition": {"id": jira.TRANSITION_IN_PROGRESS}}
+    return {"transition": {"id": constants.TRANSITION_IN_PROGRESS}}
 
 
 def get_application_creation_related_to_challenge(
@@ -119,7 +120,7 @@ def link_challenge_request_to_challenge_creation_(
     challenge_request_issue: ChallengeRequestIssue,
     challenge_creation_issue: ChallengeCreationIssue,
 ) -> Response:
-    endpoint = jira.LINKED_ISSUES_ENDPOINT
+    endpoint = constants.LINKED_ISSUES_ENDPOINT
     body = get_issue_link_body(challenge_request_issue, challenge_creation_issue)
 
     return __execute_post_query(endpoint, body)
@@ -131,8 +132,12 @@ def get_issue_link_body(
 ) -> dict:
     return {
         "type": {"name": "Relates"},
-        "outwardIssue": {jira.RESPONSE_KEY: challenge_request_issue.get_issue_id()},
-        "inwardIssue": {jira.RESPONSE_KEY: challenge_creation_issue.get_issue_id()},
+        "outwardIssue": {
+            constants.RESPONSE_KEY: challenge_request_issue.get_issue_id()
+        },
+        "inwardIssue": {
+            constants.RESPONSE_KEY: challenge_creation_issue.get_issue_id()
+        },
     }
 
 
@@ -147,7 +152,7 @@ def transition_challenge_request_to_closed_with_comment(
 
 def get_transition_closed_with_comment_body(comment: str) -> dict:
     return {
-        "transition": {"id": jira.TRANSITION_TO_CLOSED_ID},
+        "transition": {"id": constants.TRANSITION_TO_CLOSED_ID},
         "update": {"comment": [{"add": {"body": comment}}]},
     }
 
@@ -162,7 +167,7 @@ def transition_challenge_creation_to_feedback_open(
 
 
 def get_feedback_open_body() -> dict:
-    return {"transition": {"id": jira.TRANSITION_FEEDBACK_OPEN}}
+    return {"transition": {"id": constants.TRANSITION_FEEDBACK_OPEN}}
 
 
 def transition_challenge_creation_to_feedback_review(
@@ -175,7 +180,7 @@ def transition_challenge_creation_to_feedback_review(
 
 
 def get_feedback_review_body() -> dict:
-    return {"transition": {"id": jira.TRANSITION_FEEDBACK_REVIEW}}
+    return {"transition": {"id": constants.TRANSITION_FEEDBACK_REVIEW}}
 
 
 def update_challenge_creation_assignee_and_link_challenge_request(
@@ -193,6 +198,6 @@ def get_update_challenge_request_body(
 ) -> dict:
     challenge_request_id = challenge_request.get_issue_id()
     return {
-        "fields": {"assignee": {"accountId": jira.THOMAS_ACCT_ID}},
+        "fields": {"assignee": {"accountId": constants.THOMAS_ACCT_ID}},
         "update": {"comment": [{"add": {"body": challenge_request_id}}]},
     }

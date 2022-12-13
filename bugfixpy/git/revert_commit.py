@@ -1,6 +1,6 @@
 from git import GitError
 
-from bugfixpy.constants import colors
+from bugfixpy.utils.text import colors
 from bugfixpy.exceptions import MergeConflictError
 from bugfixpy.utils import prompt_user
 

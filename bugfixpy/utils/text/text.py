@@ -4,7 +4,7 @@ Text class formats colors for text output to console
 
 
 from typing import List
-from bugfixpy.constants import colors
+from bugfixpy.utils.text import colors
 
 
 class Text:
@@ -56,36 +56,3 @@ class Text:
         Overrides string output with returning the value of color formatted text
         """
         return self.__value
-
-
-def format_fix_messages(fix_messages: List[str]) -> str:
-    """
-    Print fix message
-    """
-    formatted_message = ""
-    for message in fix_messages:
-        formatted_message += f"{colors.WHITE}\t{message}{colors.ENDC}"
-
-    return formatted_message
-
-
-def format_missing_credentials() -> str:
-    """Print missing credentials"""
-    return "missing credentials"
-    # Text('Credentials not setup. Run \'bug-fix.py --setup\' to set up environment variables', colors.FAIL).display()
-
-    # # Notify that no email is present
-    # if not constants.JIRA_API_EMAIL:
-    #     Text('No API email present', colors.FAIL).display()
-
-    # # Notify that no api key is present
-    # if not constants.JIRA_API_KEY:
-    #     Text('No API key present', colors.FAIL).display()
-
-    # # Notify that no email is present
-    # if not constants.CMS_EMAIL:
-    #     Text('No CMS email present', colors.FAIL).display()
-
-    # # Notify that no api key is present
-    # if not constants.CMS_PASSWORD:
-    #     Text('No CMS password present', colors.FAIL).display()

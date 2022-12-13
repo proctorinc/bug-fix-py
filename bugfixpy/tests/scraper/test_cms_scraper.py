@@ -1,7 +1,7 @@
 import unittest
 
 from bugfixpy.exceptions import RequestFailedError
-from bugfixpy.scraper import CmsScraper
+from bugfixpy.cms import CmsScraper
 
 # Test constants
 VALID_CHALLENGE_ID = "5dfb305304d5c305ad11fe63"

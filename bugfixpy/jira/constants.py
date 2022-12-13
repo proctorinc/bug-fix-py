@@ -10,15 +10,6 @@ API_KEY = keyring.get_password("system", "JIRA_API_KEY")
 # Create authentication object for API calls
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)
 
-# Branches to ignore
-IGNORE_BRANCHES = {"HEAD", "master", "review", "main", "temp", "empty"}
-
-# SCW Content Github Url
-SCW_GIT_URL = "git@github.com:SCWContent"
-
-# Full app secure branch name
-FULL_APP_SECURE_BRANCH = "secure"
-
 # Thomas account id to link in jira
 THOMAS_ACCT_ID = "5bcd95bc3aa82432ce729fcf"
 

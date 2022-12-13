@@ -1,9 +1,8 @@
 import sys
 import argparse
 
-from bugfixpy.constants import colors
-from bugfixpy.utils import validate
-from bugfixpy.formatter import Text
+from bugfixpy.utils.text import colors
+from bugfixpy.utils import validate, Text
 from bugfixpy.modes import (
     TransitionIssuesMode,
     AutomaticFix,

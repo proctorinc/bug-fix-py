@@ -1,6 +1,6 @@
 from bugfixpy.utils import prompt_user, validate
 from bugfixpy.git import Repository
-from bugfixpy.constants import colors
+from bugfixpy.utils.text import colors
 from . import utils
 
 

@@ -1,8 +1,3 @@
-"""
-CMS Constants
-"""
-
-
 import keyring
 
 # CMS email

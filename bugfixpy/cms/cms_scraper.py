@@ -2,11 +2,11 @@ from typing import Optional
 from requests import Session, Response
 
 from bugfixpy.exceptions import RequestFailedError
-from bugfixpy.constants import cms
 from bugfixpy.utils import validate
 
 from .scraper_data import ApplicationScreenData, ChallengeScreenData, ScraperData
 from . import soup_parser
+from . import constants
 
 
 class CmsScraper:
@@ -24,8 +24,8 @@ class CmsScraper:
             raise ValueError(f"Invalid challenge_id: {challenge_id}")
 
         self.__session = Session()
-        self.__email = cms.EMAIL
-        self.__password = cms.PASSWORD
+        self.__email = constants.EMAIL
+        self.__password = constants.PASSWORD
         self.__challenge_id = challenge_id
 
     def __del__(self) -> None:
@@ -48,7 +48,7 @@ class CmsScraper:
 
     def update_branches_for_application(self, application_endpoint) -> None:
         update_endpoint = self.get_update_endpoint(application_endpoint)
-        result = self.__session.post(f"{cms.URL}{update_endpoint}")
+        result = self.__session.post(f"{constants.URL}{update_endpoint}")
 
         if not result.ok:
             raise RequestFailedError("Scraper Error: scraping application page failed")
@@ -72,7 +72,7 @@ class CmsScraper:
         return self.parse_csrf_token_from_response(response)
 
     def create_csrf_token(self) -> Response:
-        response = self.__session.get(cms.LOGIN_URL)
+        response = self.__session.get(constants.LOGIN_URL)
 
         if not response.ok:
             raise RequestFailedError("Scraper Error: Failed to fetch CSRF token")
@@ -90,7 +90,7 @@ class CmsScraper:
         }
 
         response = self.__session.post(
-            cms.LOGIN_URL,
+            constants.LOGIN_URL,
             data=payload,
         )
 
@@ -111,7 +111,7 @@ class CmsScraper:
         return self.parse_application_screen_response(response)
 
     def get_challenge_screen_by_id(self) -> Response:
-        result = self.__session.get(f"{cms.SEARCH_URL}?q={self.__challenge_id}")
+        result = self.__session.get(f"{constants.SEARCH_URL}?q={self.__challenge_id}")
 
         if not result.content:
             raise RequestFailedError("Scraper Error: scraping application page failed")
@@ -119,7 +119,7 @@ class CmsScraper:
         return result
 
     def get_application_screen_by_url(self, application_url) -> Response:
-        response = self.__session.get(f"{cms.URL}{application_url}")
+        response = self.__session.get(f"{constants.URL}{application_url}")
 
         if not response.ok:
             raise RequestFailedError("Scraper Error: scraping application page failed")

@@ -1,10 +1,9 @@
 import sys
 
-from bugfixpy.formatter.text import Text
-from bugfixpy.scraper import ScraperData, CmsScraper
+from bugfixpy.cms import ScraperData, CmsScraper
 from bugfixpy.exceptions import RequestFailedError
-from bugfixpy.constants import colors
-from bugfixpy.utils import prompt_user
+from bugfixpy.utils.text import colors
+from bugfixpy.utils import prompt_user, Text
 
 
 class UseScraper:

@@ -2,9 +2,9 @@ import re
 from bs4 import BeautifulSoup
 from requests import Response
 
-from bugfixpy.constants import git, jira
+from bugfixpy import git, jira
 from bugfixpy.jira.issue import ApplicationCreationIssue, ChallengeCreationIssue
-from bugfixpy.scraper.scraper_data import ApplicationScreenData, ChallengeScreenData
+from bugfixpy.cms.scraper_data import ApplicationScreenData, ChallengeScreenData
 
 
 def __create_soup(result: Response) -> BeautifulSoup:
@@ -12,11 +12,11 @@ def __create_soup(result: Response) -> BeautifulSoup:
 
 
 def __parse_chlc_number(soup: BeautifulSoup) -> str:
-    return __parse_value_from_link(soup, jira.SCW_BROWSE_URL)
+    return __parse_value_from_link(soup, jira.constants.SCW_BROWSE_URL)
 
 
 def __parse_git_repository(soup: BeautifulSoup) -> str:
-    return __parse_value_from_link(soup, git.SCW_CONTENT_URL)
+    return __parse_value_from_link(soup, git.constants.SCW_CONTENT_URL)
 
 
 def __parse_value_from_link(soup: BeautifulSoup, url_pattern: str) -> str:

@@ -1,13 +1,13 @@
 from git import GitCommandError
 
-from bugfixpy.constants import instructions, jira
-from bugfixpy.constants import colors
+from bugfixpy.utils.text import colors, instructions
 from bugfixpy.jira import ChallengeRequestIssue
 from bugfixpy.utils import prompt_user
 
 from .repository import Repository
 from .cherry_pick import CherryPick
 from .fix_result import FixResult
+from . import constants
 
 
 class FixBranches:
@@ -80,7 +80,7 @@ class FixBranches:
     def __is_cherry_pick_is_required(self) -> bool:
         return (
             self.__repository.is_full_app()
-            and self.__current_branch == jira.FULL_APP_SECURE_BRANCH
+            and self.__current_branch == constants.FULL_APP_SECURE_BRANCH
         )
 
     def __attempt_to_commit_until_successful(self, fix_message: str) -> None:

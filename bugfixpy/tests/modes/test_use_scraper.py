@@ -1,8 +1,9 @@
 import unittest
 from unittest.mock import Mock, patch
-from bugfixpy.jira.issue import ApplicationCreationIssue, ChallengeCreationIssue
+
+from bugfixpy.jira import ApplicationCreationIssue, ChallengeCreationIssue
 from bugfixpy.classes import UseScraper
-from bugfixpy.scraper import (
+from bugfixpy.cms import (
     ApplicationScreenData,
     ChallengeScreenData,
     ScraperData,

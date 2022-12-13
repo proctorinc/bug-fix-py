@@ -1,2 +1,4 @@
 from . import prompt_user, validate
-from .general import combine_messages_into_string
+from . import text
+from . import formatter
+from .text import Text

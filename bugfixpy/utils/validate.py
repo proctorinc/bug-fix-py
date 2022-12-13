@@ -1,8 +1,7 @@
 import re
 
-from bugfixpy.jira import api
-from bugfixpy.constants import cms, jira
-from bugfixpy.jira import Issue
+from bugfixpy import jira, cms
+from bugfixpy.jira import api, Issue
 
 
 def is_valid_issue(issue: Issue) -> bool:
@@ -48,8 +47,8 @@ def has_valid_credentials() -> bool:
 
 def credentials_are_loaded() -> bool:
     return (
-        jira.API_EMAIL != ""
-        and jira.API_KEY != ""
-        and cms.EMAIL != ""
-        and cms.PASSWORD != ""
+        jira.constants.API_EMAIL != ""
+        and jira.constants.API_KEY != ""
+        and cms.constants.EMAIL != ""
+        and cms.constants.PASSWORD != ""
     )

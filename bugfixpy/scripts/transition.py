@@ -1,15 +1,15 @@
 from requests import Response
 
 from bugfixpy.git import FixResult
-from bugfixpy.scraper import ScraperData
-from bugfixpy.utils import combine_messages_into_string
-from bugfixpy.constants import colors
+from bugfixpy.cms import ScraperData
+from bugfixpy.utils.text import colors
 from bugfixpy.jira import (
     api,
     FixVersion,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
 )
+from bugfixpy.utils import formatter
 
 
 def transition_jira_issues(
@@ -22,7 +22,7 @@ def transition_jira_issues(
     application_creation_issue = challenge_data.application.chlc
     repo_was_cherrypicked = fix_result.repo_was_cherrypicked
     fix_version = api.get_current_fix_version()
-    fix_message = combine_messages_into_string(fix_messages)
+    fix_message = formatter.combine_messages_into_string(fix_messages)
 
     transition_challenge_request_issue(
         challenge_request_issue, fix_version, fix_message

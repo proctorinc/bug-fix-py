@@ -1,8 +1,8 @@
 from typing import Callable
 from requests import Response
 
-from bugfixpy.constants import colors
-from bugfixpy.scraper import ScraperData
+from bugfixpy.utils.text import colors
+from bugfixpy.cms import ScraperData
 from bugfixpy.git import FixResult
 from bugfixpy.jira import api
 from bugfixpy import utils
