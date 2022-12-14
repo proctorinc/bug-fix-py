@@ -235,3 +235,15 @@ def if_bulk_transition_is_required() -> bool:
         return True
 
     return False
+
+
+def to_press_enter_to_transition_request_issue(issue: ChallengeRequestIssue):
+    input(
+        f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{issue.get_issue_id()}{colors.ENDC}"
+    )
+
+
+def to_press_enter_to_transition_creation_issues(number_of_issues: int):
+    input(
+        f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{number_of_issues}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
+    )

@@ -1,11 +1,12 @@
 import sys
 
-from bugfixpy.formatter import Text
+from bugfixpy.utils import Text
 from bugfixpy.git import Repository
 from bugfixpy.utils import validate, prompt_user
-from bugfixpy.constants import colors, headers, instructions
-from bugfixpy.scraper import CmsScraper, ScraperData
+from bugfixpy.utils.text import headers
+from bugfixpy.cms import CmsScraper, ScraperData
 from bugfixpy.exceptions import RequestFailedError
+from bugfixpy.utils.text import colors, instructions
 
 
 def scrape_challenge_data_from_cms(challenge_id=None) -> ScraperData:

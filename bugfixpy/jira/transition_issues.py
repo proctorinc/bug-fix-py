@@ -1,11 +1,10 @@
-from typing import Callable
 from requests import Response
 
+from bugfixpy.utils import formatter, prompt_user
 from bugfixpy.utils.text import colors
 from bugfixpy.cms import ScraperData
 from bugfixpy.git import FixResult
 from bugfixpy.jira import api
-from bugfixpy import utils
 
 from .fix_version import FixVersion
 from .issue import (
@@ -36,16 +35,19 @@ class TransitionIssues:
         self.__application_creation_issue = challenge_data.application.chlc
         self.__repo_was_cherrypicked = fix_result.repo_was_cherrypicked
         self.__fix_version = api.get_current_fix_version()
-        self.__fix_message = utils.combine_messages_into_string(fix_result.fix_messages)
+        self.__fix_message = formatter.combine_messages_into_string(
+            fix_result.fix_messages
+        )
         self.__creation_issues = self.__get_creation_issues_to_transition()
 
     def run(self) -> None:
-        input(
-            f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{self.__challenge_request_issue.get_issue_id()}{colors.ENDC}"
+        prompt_user.to_press_enter_to_transition_request_issue(
+            self.__challenge_request_issue
         )
         self.__transition_request_issue()
-        input(
-            f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{len(self.__creation_issues)}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
+
+        prompt_user.to_press_enter_to_transition_creation_issues(
+            len(self.__creation_issues)
         )
         self.__transition_creation_issues()
 
@@ -67,26 +69,25 @@ class TransitionIssues:
 
     def __transition_to_planned(self) -> None:
         print(f"\tTo Planned [Fix Version: {self.__fix_version.name}]", end="")
-        self.__transition_issue(
-            self.__challenge_request_issue,
-            api.transition_challenge_request_to_planned,
-            self.__fix_version,
+        result = api.transition_challenge_request_to_planned(
+            self.__challenge_request_issue, self.__fix_version
         )
+        self.__display_transition_result(result)
 
     def __transition_to_in_progress(self) -> None:
         print("\tTo In Progress\t\t\t", end="")
-        self.__transition_issue(
-            self.__challenge_request_issue,
-            api.transition_challenge_request_to_in_progress,
+        result = api.transition_challenge_request_to_in_progress(
+            self.__challenge_request_issue
         )
+        self.__display_transition_result(result)
 
     def __transition_to_closed(self) -> None:
         print("\tTo Closed [with description of fix]", end="")
-        self.__transition_issue(
+        result = api.transition_challenge_request_to_closed_with_comment(
             self.__challenge_request_issue,
-            api.transition_challenge_request_to_closed_with_comment,
             self.__fix_message,
         )
+        self.__display_transition_result(result)
 
     def __transition_creation_issues(self) -> None:
         for issue in self.__creation_issues:
@@ -100,30 +101,20 @@ class TransitionIssues:
 
     def __transition_to_feedback_open(self, issue: ChallengeCreationIssue) -> None:
         print("\tTo Feedback Open\t", end="")
-        self.__transition_issue(
-            issue,
-            api.transition_challenge_creation_to_feedback_open,
-        )
+        result = api.transition_challenge_creation_to_feedback_open(issue)
+        self.__display_transition_result(result)
 
     def __transition_to_feedback_review(self, issue: ChallengeCreationIssue) -> None:
         print("\tTo Feedback Review\t", end="")
-        self.__transition_issue(
-            issue,
-            api.transition_challenge_creation_to_feedback_review,
-        )
+        result = api.transition_challenge_creation_to_feedback_review(issue)
+        self.__display_transition_result(result)
 
     def __add_assignee_and_comment(self, issue: ChallengeCreationIssue) -> None:
         print("\tAdding assignee and comment", end="")
-        self.__transition_issue(
+        result = api.update_challenge_creation_assignee_and_link_challenge_request(
             issue,
-            api.update_challenge_creation_assignee_and_link_challenge_request,
             self.__challenge_request_issue,
         )
-
-    def __transition_issue(
-        self, issue: Issue, transition_function: Callable, *params
-    ) -> None:
-        result = transition_function(issue, params)
         self.__display_transition_result(result)
 
     def __display_transition_result(self, result: Response) -> None:
