@@ -1,8 +1,3 @@
-"""
-Instruction constants to direct users through bug fix process
-"""
-
-
 from . import colors
 
 PROMPT_FOR_ENTER_PUSH_ENABLED = f"""\n{colors.HEADER}Press {colors.OKGREEN}[Enter]{colors.HEADER} to push to repo{colors.ENDC}"""

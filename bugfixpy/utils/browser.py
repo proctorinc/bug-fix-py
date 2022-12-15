@@ -1,8 +1,8 @@
 import webbrowser
 
-from .issue import Issue
+from ..jira.issue import Issue
 
-from . import constants
+from ..jira import constants
 
 
 def open_issue_in_browser(issue: Issue) -> None:

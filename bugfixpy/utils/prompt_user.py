@@ -2,6 +2,7 @@ import sys
 import readline
 from typing import Callable
 
+from bugfixpy import git
 from bugfixpy.exceptions import InvalidIssueIdError
 from bugfixpy.git import Repository
 from bugfixpy.utils import validate
@@ -125,7 +126,9 @@ def for_branch_in_repository(repository: Repository) -> str:
         print(f'{colors.FAIL}"{branch}" is not a valid branch name{colors.ENDC}')
 
         # Check if user entered "secure" on a minified app. Suggest minified secure branch
-        if (not repository.is_full_app) and branch == jira.FULL_APP_SECURE_BRANCH:
+        if (
+            not repository.is_full_app
+        ) and branch == git.constants.FULL_APP_SECURE_BRANCH:
             minified_secure_branches = repository.get_minified_secure_branch()
             print(
                 f"\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure"
@@ -167,7 +170,9 @@ def for_next_branch_or_to_continue(repository: Repository) -> str:
         print(f'{colors.FAIL}"{branch}" is not a valid branch name{colors.ENDC}')
 
         # Check if user entered "secure" on a minified app. Suggest minified secure branch
-        if (not repository.is_full_app) and branch == jira.FULL_APP_SECURE_BRANCH:
+        if (
+            not repository.is_full_app
+        ) and branch == git.constants.FULL_APP_SECURE_BRANCH:
             minified_secure_branches = repository.get_minified_secure_branch()
             print(
                 f"\nThis app is {colors.OKCYAN}Minified{colors.ENDC}, enter the correct secure"

@@ -67,7 +67,7 @@ class Repository:
     def get_fix_messages(self) -> List[str]:
         return self.fix_messages
 
-    def did_cherrypick_run(self) -> bool:
+    def was_cherry_picked(self) -> bool:
         return self.has_cherrypicked
 
     def set_was_cherrypicked(self) -> None:
@@ -215,3 +215,6 @@ class Repository:
         repository_dir = self.get_repository_dir()
 
         return Repo.clone_from(git_url, repository_dir)
+
+    def __str__(self) -> str:
+        return self.name

@@ -1,10 +1,8 @@
 import sys
 
-from bugfixpy.classes import UseScraper
 from bugfixpy.git import FixResult, Repository, FixBranches
 from bugfixpy.utils.text import colors, instructions
 from bugfixpy.cms import ScraperData
-from bugfixpy.scripts import transition
 from bugfixpy.utils import prompt_user
 from bugfixpy.jira import (
     ChallengeRequestIssue,
@@ -12,7 +10,7 @@ from bugfixpy.jira import (
 from . import utils
 
 
-class AutomaticFix(UseScraper):
+class AutomaticFix:
 
     test_mode: bool
     challenge_data: ScraperData
@@ -23,7 +21,6 @@ class AutomaticFix(UseScraper):
     def __init__(self, test_mode) -> None:
         super().__init__()
         self.test_mode = test_mode
-        self.challenge_data = None
 
     @classmethod
     def run(cls, test_mode: bool) -> None:
@@ -74,13 +71,14 @@ class AutomaticFix(UseScraper):
     def transition_challenge_issues_with_results(
         self,
     ) -> None:
-        try:
-            transition.transition_jira_issues(
-                self.fix_result,
-                self.challenge_data,
-                self.challenge_request_issue,
-            )
+        # try:
+        #     transition.transition_jira_issues(
+        #         self.fix_result,
+        #         self.challenge_data,
+        #         self.challenge_request_issue,
+        #     )
 
-        except Exception as err:
-            print(err)
-            sys.exit(1)
+        # except Exception as err:
+        #     print(err)
+        #     sys.exit(1)
+        pass

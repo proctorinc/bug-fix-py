@@ -6,7 +6,7 @@ from bugfixpy.utils import validate, Text
 from bugfixpy.modes import (
     TransitionIssuesMode,
     AutomaticFix,
-    ManualFix,
+    ManualMode,
     ViewRepository,
     RevertCommit,
     SetupCredentials,
@@ -45,7 +45,7 @@ def main() -> None:
 
     parser.add_argument(
         "--manual",
-        type=str,
+        action="store_true",
         help="Enter repo name to run in repo mode. Opens repo in VS Code",
     )
 
@@ -57,7 +57,9 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if len(sys.argv) > 2 and not (args.test and (args.auto or args.revert)):
+    if len(sys.argv) > 2 and not (
+        args.test and (args.auto or args.revert or args.manual)
+    ):
         parser.error("Multiple flags cannot be enabled at the same time")
 
     if args.setup:
@@ -67,7 +69,7 @@ def main() -> None:
     elif args.revert:
         RevertCommit.run(args.test)
     elif args.manual:
-        ManualFix.run(args.test)
+        ManualMode(args.test).start()
     elif not args.test and not validate.has_valid_credentials():
         print(
             f"{colors.FAIL}Credentials are not setup\nRun: python3 bugfixpy --setup{colors.ENDC}"
