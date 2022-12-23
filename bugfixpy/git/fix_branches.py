@@ -19,13 +19,17 @@ class FixBranches:
     __has_been_cherrypicked: bool
 
     def __init__(
-        self, repository: Repository, challenge_request_issue: ChallengeRequestIssue
+        self,
+        repository: Repository,
+        challenge_request_issue: ChallengeRequestIssue,
+        is_manual=False,
     ) -> None:
         self.__repository = repository
         self.__challenge_request_issue = challenge_request_issue
         self.__fix_messages = []
         self.__has_been_cherrypicked = False
         self.__current_branch = self.__get_next_branch()
+        self.__is_manual = is_manual
 
     def get_results(self) -> FixResult:
         self.run_fix()
@@ -56,7 +60,7 @@ class FixBranches:
         return FixResult(
             fix_messages=self.__fix_messages,
             repo_was_cherrypicked=self.__has_been_cherrypicked,
-            is_chunk_fixing_required=True,
+            is_chunk_fixing_required=self.__is_manual,
         )
 
     def __fix_and_cherry_pick_if_required(self) -> None:
@@ -74,8 +78,11 @@ class FixBranches:
         self.__attempt_to_commit_until_successful(fix_message)
 
     def __cherry_pick_repository(self) -> None:
-        print("Cherry picking commit...")
-        CherryPick(self.__repository).across_all_branches()
+        self.display_cherry_pick_to_user()
+        CherryPick(self.__repository, is_manual=True).across_all_branches()
+
+    def display_cherry_pick_to_user(self) -> None:
+        input("Cherry picking required. Press [ENTER] to start")
 
     def __is_cherry_pick_is_required(self) -> bool:
         return (

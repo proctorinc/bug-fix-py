@@ -5,9 +5,11 @@ from bugfixpy.utils.text import colors, headers, Text
 
 class RunnableMode(ABC):
 
-    test_mode = bool
+    mode: str
+    test_mode: bool
 
-    def __init__(self, test_mode=False) -> None:
+    def __init__(self, mode, test_mode=False) -> None:
+        self.mode = mode
         self.test_mode = test_mode
 
     def start(self) -> None:
@@ -16,6 +18,7 @@ class RunnableMode(ABC):
         self.display_results()
 
     def display_headers(self) -> None:
+        Text(f"### MODE: {self.mode}", colors.HEADER).display()
         if self.test_mode:
             Text(headers.TEST_MODE, colors.HEADER).display()
 

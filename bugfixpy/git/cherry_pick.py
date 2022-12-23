@@ -1,4 +1,4 @@
-from bugfixpy.utils.text import colors
+from bugfixpy.utils.text import colors, instructions
 from bugfixpy.exceptions import ContinueCherryPickingFailedError
 from bugfixpy.utils import prompt_user
 from bugfixpy.exceptions import CheckoutFailedError, MergeConflictError
@@ -11,11 +11,13 @@ class CherryPick:
     __repository: Repository
     __commit_id: str
     __branches: list[str]
+    __is_manual: bool
 
-    def __init__(self, repository: Repository) -> None:
+    def __init__(self, repository: Repository, is_manual=False) -> None:
         self.__repository = repository
         self.__commit_id = repository.get_last_commit_id()
         self.__branches = self.__get_branches_without_secure()
+        self.__is_manual = is_manual
 
     def across_all_branches(self) -> None:
         for i, branch in enumerate(self.__branches):
@@ -58,6 +60,8 @@ class CherryPick:
             self.__repository.commit_changes_allow_empty()
 
     def __alert_user_merge_conflict_occured(self, branch: str) -> None:
+        if self.__is_manual:
+            print(instructions.MERGE_CONFLICT_STEPS)
         print(
             f"{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
         )

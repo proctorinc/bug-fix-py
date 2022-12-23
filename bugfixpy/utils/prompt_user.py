@@ -44,6 +44,7 @@ def get_challenge_request_issue() -> ChallengeRequestIssue:
             print(
                 f"{colors.OKCYAN}CHLRQ-{challenge_id}{colors.ENDC} is not valid. Enter 2-4 digits."
             )
+    print(colors.ENDC)
     return challenge_request
 
 
@@ -115,7 +116,7 @@ def for_branch_in_repository(repository: Repository) -> str:
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.get_list_completer(branches))
 
-    branch = input(f"{colors.ENDC}\nEnter name of branch: {colors.WHITE}")
+    branch = input(f"{colors.ENDC}Enter name of branch: {colors.WHITE}")
 
     print(colors.ENDC, end="")
 

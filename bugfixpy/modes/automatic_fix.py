@@ -1,5 +1,3 @@
-import sys
-
 from bugfixpy.git import FixResult, Repository, FixBranches
 from bugfixpy.utils.text import colors, instructions
 from bugfixpy.cms import ScraperData
@@ -7,10 +5,11 @@ from bugfixpy.utils import prompt_user
 from bugfixpy.jira import (
     ChallengeRequestIssue,
 )
+from .runnable_mode import RunnableMode
 from . import utils
 
 
-class AutomaticFix:
+class AutomaticFix(RunnableMode):
 
     test_mode: bool
     challenge_data: ScraperData
