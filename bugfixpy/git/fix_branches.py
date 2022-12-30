@@ -22,7 +22,7 @@ class FixBranches:
         self,
         repository: Repository,
         challenge_request_issue: ChallengeRequestIssue,
-        is_manual=False,
+        is_manual: bool = False,
     ) -> None:
         self.__repository = repository
         self.__challenge_request_issue = challenge_request_issue
@@ -52,7 +52,6 @@ class FixBranches:
     def __make_fix_in_branch(self) -> None:
         try:
             self.__fix_and_cherry_pick_if_required()
-
         except KeyboardInterrupt:
             self.__display_aborted_branch_fix()
 
@@ -74,7 +73,6 @@ class FixBranches:
         print(instructions.PROMPT_USER_TO_MAKE_FIX)
         self.__repository.open_code_in_editor()
         fix_message = prompt_user.for_descripton_of_fix()
-
         self.__attempt_to_commit_until_successful(fix_message)
 
     def __cherry_pick_repository(self) -> None:

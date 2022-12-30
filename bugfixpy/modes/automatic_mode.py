@@ -2,14 +2,15 @@ from bugfixpy.git import FixResult, Repository, FixBranches
 from bugfixpy.utils.text import colors, instructions
 from bugfixpy.cms import ScraperData
 from bugfixpy.utils import prompt_user
-from bugfixpy.jira import (
-    ChallengeRequestIssue,
-)
+from bugfixpy.jira import ChallengeRequestIssue, TransitionIssues
+
 from .runnable_mode import RunnableMode
+from .use_scraper import UseScraper
+
 from . import utils
 
 
-class AutomaticFix(RunnableMode):
+class AutomaticMode(RunnableMode, UseScraper):
 
     test_mode: bool
     challenge_data: ScraperData
@@ -18,36 +19,27 @@ class AutomaticFix(RunnableMode):
     repository: Repository
 
     def __init__(self, test_mode) -> None:
-        super().__init__()
+        super().__init__("AUTO", test_mode)
         self.test_mode = test_mode
 
-    @classmethod
-    def run(cls, test_mode: bool) -> None:
-        auto_fix = cls(test_mode)
-        utils.print_mode_headers(test_mode)
-
-        # challenge_data = utils.scrape_challenge_data_from_cms()
-        # auto_fix.set_challenge_data(challenge_data)
-        auto_fix.run_scraper()
+    def run(self) -> None:
+        # self.challenge_data = utils.scrape_challenge_data_from_cms(self.challenge_id)
+        self.run_scraper()
         repository = utils.clone_the_challenge_repository(
-            # challenge_data.application.repository_name
-            auto_fix.get_scraper_data().application.repository_name
+            self.get_scraper_data().application.repository_name
         )
-        auto_fix.set_repository(repository)
+        self.set_repository(repository)
         challenge_request_issue = prompt_user.get_challenge_request_issue()
-        auto_fix.set_challenge_request_issue(challenge_request_issue)
-        fix_result = FixBranches(repository, challenge_request_issue).get_results()
-        auto_fix.set_fix_result(fix_result)
-        auto_fix.push_fix_to_github_if_not_in_test_mode()
-        auto_fix.transition_challenge_issues_with_results()
+        self.set_challenge_request_issue(challenge_request_issue)
+        self.fix_result = FixBranches(repository, challenge_request_issue).get_results()
+        self.push_fix_to_github_if_not_in_test_mode()
+        self.transition_challenge_issues_with_results()
 
-        utils.print_end_instructions_based_off_of_results(fix_result)
+    def display_results(self) -> None:
+        utils.print_end_instructions_based_off_of_results(self.fix_result)
 
     def set_repository(self, repository: Repository) -> None:
         self.repository = repository
-
-    def set_fix_result(self, fix_result: FixResult) -> None:
-        self.fix_result = fix_result
 
     def set_challenge_data(self, challenge_data: ScraperData) -> None:
         self.challenge_data = challenge_data
@@ -70,14 +62,8 @@ class AutomaticFix(RunnableMode):
     def transition_challenge_issues_with_results(
         self,
     ) -> None:
-        # try:
-        #     transition.transition_jira_issues(
-        #         self.fix_result,
-        #         self.challenge_data,
-        #         self.challenge_request_issue,
-        #     )
-
-        # except Exception as err:
-        #     print(err)
-        #     sys.exit(1)
-        pass
+        TransitionIssues(
+            self.fix_result,
+            self.scraper_data,
+            self.challenge_request_issue,
+        ).run()

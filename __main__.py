@@ -5,7 +5,7 @@ from bugfixpy.utils.text import colors
 from bugfixpy.utils import validate, Text
 from bugfixpy.modes import (
     TransitionIssuesMode,
-    AutomaticFix,
+    AutomaticMode,
     ManualMode,
     ViewRepository,
     RevertCommit,
@@ -75,7 +75,7 @@ def main() -> None:
             f"{colors.FAIL}Credentials are not setup\nRun: python3 bugfixpy --setup{colors.ENDC}"
         )
     elif args.auto:
-        AutomaticFix.run(args.test)
+        AutomaticMode(args.test).start()
     else:
         ViewRepository.run()
 
