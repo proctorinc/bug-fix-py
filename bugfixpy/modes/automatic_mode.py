@@ -46,4 +46,5 @@ class AutomaticMode(RunnableMode, RepositoryMode, ScraperMode):
         ).run()
 
     def display_results(self) -> None:
-        utils.print_end_instructions_based_off_of_results(self.__fix_result)
+        is_chunk_fixing_required = self.__fix_result.is_chunk_fixing_required
+        utils.print_end_instructions_based_off_of_results(is_chunk_fixing_required)

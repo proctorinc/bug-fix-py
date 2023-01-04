@@ -6,6 +6,8 @@ from bugfixpy.utils.text import instructions
 from .runnable_mode import RunnableMode
 from .repository_mode import RepositoryMode
 
+from . import utils
+
 
 class ManualMode(RunnableMode, RepositoryMode):
 
@@ -37,10 +39,11 @@ class ManualMode(RunnableMode, RepositoryMode):
         ).run_fix()
 
     def display_results(self) -> None:
+        repository = self.get_repository()
+        is_chunk_fixing_required = repository.did_number_of_lines_change()
         print(instructions.CLOSE_CHALLENGE_REQUEST_STEPS)
         self.display_transition_instructions()
-        self.display_chunk_fix_instructions()
-        print(instructions.BUG_FIX_COMPLETE)
+        utils.print_end_instructions_based_off_of_results(is_chunk_fixing_required)
 
     def display_transition_instructions(self) -> None:
         repository = self.get_repository()
@@ -53,10 +56,3 @@ class ManualMode(RunnableMode, RepositoryMode):
         application_creation_issue = prompt_user.get_application_creation_issue()
         browser.open_issue_in_browser(application_creation_issue)
         print(instructions.CHERRY_PICKING_MANUAL_STEPS)
-
-    def display_chunk_fix_instructions(self) -> None:
-        repository = self.get_repository()
-        if repository.did_number_of_lines_change():
-            print(instructions.UPDATE_CMS_AND_FIX_CHUNKS_REMINDER)
-        else:
-            print(instructions.UPDATE_CMS_REMINDER)
