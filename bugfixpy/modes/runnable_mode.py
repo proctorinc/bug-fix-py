@@ -5,12 +5,18 @@ from bugfixpy.utils.text import colors, headers, Text
 
 class RunnableMode(ABC):
 
-    mode: str
-    test_mode: bool
+    __mode: str
+    __test_mode: bool
 
     def __init__(self, mode, test_mode=False) -> None:
-        self.mode = mode
-        self.test_mode = test_mode
+        self.__mode = mode
+        self.__test_mode = test_mode
+
+    def get_mode(self) -> str:
+        return self.__mode
+
+    def get_test_mode(self) -> bool:
+        return self.__test_mode
 
     def start(self) -> None:
         self.display_headers()
@@ -18,8 +24,8 @@ class RunnableMode(ABC):
         self.display_results()
 
     def display_headers(self) -> None:
-        Text(f"### MODE: {self.mode}", colors.HEADER).display()
-        if self.test_mode:
+        Text(f"### MODE: {self.__mode}", colors.HEADER).display()
+        if self.__test_mode:
             Text(headers.TEST_MODE, colors.HEADER).display()
 
     @abstractmethod

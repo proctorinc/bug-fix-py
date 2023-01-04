@@ -6,7 +6,7 @@ from bugfixpy.utils.text import colors
 from bugfixpy.utils import prompt_user, Text
 
 
-class UseScraper:
+class ScraperMode:
     scraper_data: ScraperData
     challenge_id: str
 

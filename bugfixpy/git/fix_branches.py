@@ -107,7 +107,8 @@ class FixBranches:
         return True
 
     def __add_challenge_request_id_to_message(self, fix_message: str) -> str:
-        return str(self.__challenge_request_issue.get_issue_id() + ": " + fix_message)
+        message = self.__challenge_request_issue.get_issue_id() + ": " + fix_message
+        return str(message)
 
     def __get_user_to_make_changes(self) -> None:
         print(instructions.PROMPT_USER_THAT_NO_FIX_WAS_MADE)

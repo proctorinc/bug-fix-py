@@ -84,3 +84,17 @@ def clone_the_challenge_repository(repository_name) -> Repository:
         sys.exit(1)
 
     return repository
+
+
+def push_fix_to_github_if_not_in_test_mode(
+    test_mode: bool, repository: Repository
+) -> None:
+    try:
+        if test_mode:
+            print(f"{colors.HEADER}Test mode enabled. Push skipped{colors.ENDC}")
+        else:
+            input(instructions.PROMPT_FOR_ENTER_PUSH_ENABLED)
+            repository.push_all_branches()
+            print("Pushed successfully")
+    except KeyboardInterrupt:
+        print(f"\n{colors.FAIL}Skipped push to repository{colors.ENDC}")
