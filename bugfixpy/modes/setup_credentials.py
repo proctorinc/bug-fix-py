@@ -3,11 +3,19 @@ from getpass import getpass
 import keyring
 
 from bugfixpy import cms, jira
+from bugfixpy.utils.text import colors
+
+from .types import RunnableMode
 
 
-class SetupCredentials:
-    @staticmethod
-    def run() -> None:
+class SetupCredentials(RunnableMode):
+
+    MODE = "SETUP CREDENTIALS"
+
+    def __init__(self) -> None:
+        super().__init__(self.MODE, test_mode=False)
+
+    def run(self) -> None:
         api_email = jira.constants.API_EMAIL
         api_key = jira.constants.API_KEY
         cms_email = cms.constants.EMAIL
@@ -54,3 +62,6 @@ class SetupCredentials:
         print("--setup script is not finished!")
 
         sys.exit(0)
+
+    def display_results(self) -> None:
+        print(f"{colors.OKGREEN}Transitioning Complete{colors.ENDC}")

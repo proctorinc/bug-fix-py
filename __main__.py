@@ -4,7 +4,7 @@ import argparse
 from bugfixpy.utils.text import colors
 from bugfixpy.utils import validate
 from bugfixpy.modes import (
-    TransitionIssuesMode,
+    TransitionMode,
     AutomaticMode,
     ManualMode,
     ViewRepository,
@@ -63,9 +63,9 @@ def main() -> None:
         parser.error("Multiple flags cannot be enabled at the same time")
 
     if args.setup:
-        SetupCredentials.run()
+        SetupCredentials().start()
     elif args.transition:
-        TransitionIssuesMode().start()
+        TransitionMode().start()
     elif args.revert:
         RevertCommit.run(args.test)
     elif args.manual:

@@ -243,13 +243,17 @@ def if_bulk_transition_is_required() -> bool:
     return False
 
 
-def to_press_enter_to_transition_request_issue(issue: ChallengeRequestIssue):
+def to_press_enter_to_transition_request_issue(issue: ChallengeRequestIssue) -> None:
     input(
         f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition {colors.OKCYAN}{issue.get_issue_id()}{colors.ENDC}"
     )
 
 
-def to_press_enter_to_transition_creation_issues(number_of_issues: int):
-    input(
-        f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{number_of_issues}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
-    )
+def to_press_enter_to_transition_creation_issues(number_of_issues: int) -> None:
+
+    try:
+        input(
+            f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{number_of_issues}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
+        )
+    except KeyboardInterrupt:
+        print(f"\n{colors.FAIL}Skipped transitioning CHLCs{colors.ENDC}")

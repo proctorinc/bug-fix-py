@@ -3,7 +3,7 @@ from typing import List
 import subprocess
 import shutil
 
-from git import GitCommandError, GitError, NoSuchPathError
+from git import GitCommandError, GitError
 from git.repo import Repo
 from bugfixpy import git
 from bugfixpy.exceptions import (
@@ -42,19 +42,6 @@ class Repository:
             shutil.rmtree(path)
         except OSError:
             pass
-
-    def __get_local_or_clone_repository(self) -> None:
-        path = self.get_repository_dir()
-
-        try:
-            self.repository = Repo(path)
-            self.__reset_and_pull_all_branches()
-        except NoSuchPathError:
-            self.repository = self.clone_repository()
-
-    def __reset_and_pull_all_branches(self) -> None:
-        self.repository.git.reset("HEAD", "--hard")
-        self.repository.remotes.origin.pull()
 
     def get_num_branches(self) -> int:
         return len(self.branches)

@@ -27,7 +27,7 @@ class ManualMode(RunnableMode, RepositoryMode):
     def instruct_user_to_clone_repository(self) -> None:
         print(instructions.PROMPT_FOR_REPOSITORY_NAME)
         self.clone_repository_from_user_input()
-        self.print_repository_details()
+        # self.print_repository_details()
 
     def get_challenge_request_from_user(self) -> None:
         print(instructions.PROMPT_FOR_CHALLENGE_REQUEST)

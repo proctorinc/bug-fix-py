@@ -41,15 +41,21 @@ class TransitionIssues:
         self.__creation_issues = self.__get_creation_issues_to_transition()
 
     def run(self) -> None:
-        prompt_user.to_press_enter_to_transition_request_issue(
-            self.__challenge_request_issue
-        )
-        self.__transition_request_issue()
+        try:
+            prompt_user.to_press_enter_to_transition_request_issue(
+                self.__challenge_request_issue
+            )
+            self.__transition_request_issue()
+        except KeyboardInterrupt:
+            print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
 
-        prompt_user.to_press_enter_to_transition_creation_issues(
-            len(self.__creation_issues)
-        )
-        self.__transition_creation_issues()
+        try:
+            prompt_user.to_press_enter_to_transition_creation_issues(
+                len(self.__creation_issues)
+            )
+            self.__transition_creation_issues()
+        except KeyboardInterrupt:
+            print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
 
     def __get_creation_issues_to_transition(self) -> list[ChallengeCreationIssue]:
         if self.__repo_was_cherrypicked:
