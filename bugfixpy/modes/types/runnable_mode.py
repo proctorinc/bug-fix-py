@@ -24,7 +24,7 @@ class RunnableMode(ABC):
         self.display_results()
 
     def display_headers(self) -> None:
-        print(colors.HEADER, "### MODE: ", self.__mode, sep="")
+        print(colors.HEADER, "### MODE: ", self.__mode, colors.ENDC, sep="")
         if self.__test_mode:
             print(colors.HEADER, headers.TEST_MODE, sep="")
 

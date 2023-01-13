@@ -77,7 +77,7 @@ def main() -> None:
     elif args.auto:
         AutomaticMode(args.test).start()
     else:
-        ViewRepository.run()
+        ViewRepository().start()
 
 
 try:

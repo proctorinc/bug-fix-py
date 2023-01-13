@@ -3,8 +3,7 @@ from bugfixpy.jira import ChallengeRequestIssue
 from bugfixpy.utils import browser, prompt_user
 from bugfixpy.utils.text import instructions
 
-from .runnable_mode import RunnableMode
-from .repository_mode import RepositoryMode
+from .types import RunnableMode, RepositoryMode
 
 from . import utils
 

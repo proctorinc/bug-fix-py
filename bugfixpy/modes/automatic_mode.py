@@ -2,9 +2,7 @@ from bugfixpy.git import FixResult, FixBranches
 from bugfixpy.utils import prompt_user
 from bugfixpy.jira import ChallengeRequestIssue, TransitionIssues
 
-from .runnable_mode import RunnableMode
-from .scraper_mode import ScraperMode
-from .repository_mode import RepositoryMode
+from .types import RunnableMode, ScraperMode, RepositoryMode
 
 from . import utils
 

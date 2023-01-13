@@ -2,11 +2,10 @@ from bugfixpy.git import FixResult
 from bugfixpy.jira import TransitionIssues
 from bugfixpy.utils import prompt_user
 
-from .runnable_mode import RunnableMode
-from .scraper_mode import ScraperMode
+from .types import RunnableMode, ScraperMode
 
 
-class TransitionIssuesMode(RunnableMode, ScraperMode):
+class TransitionMode(RunnableMode, ScraperMode):
 
     MODE = "TRANSITION"
 
