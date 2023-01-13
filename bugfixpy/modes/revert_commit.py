@@ -1,4 +1,4 @@
-from bugfixpy.utils import validate, Text
+from bugfixpy.utils import validate
 from bugfixpy.git import Repository, RevertCommit
 from bugfixpy.utils.text import colors, instructions, headers
 
@@ -64,7 +64,7 @@ class RevertCommitMode:
 
     # TODO: semi duplicate in modes/utils.py
     def display_revert_mode_headers(self) -> None:
-        Text("Revert mode enabled", colors.HEADER).display()
+        print(f"{colors.HEADER}Revert mode enabled{colors.ENDC}")
 
         if self.test_mode:
-            Text(headers.TEST_MODE, colors.HEADER).display()
+            print(colors.HEADER, headers.TEST_MODE, colors.ENDC, sep="")

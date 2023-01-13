@@ -82,3 +82,5 @@ Press {colors.UNDERLINE}ctrl+s{colors.ENDC}{colors.FAIL} to save changes{colors.
 WARN_USER_OF_MERGE_CONFLICT = (
     "{colors.WARNING}[ !!! ]{colors.ENDC} {branch}: {colors.WARNING}MERGE CONFLICT"
 )
+
+DONE = f"{colors.OKGREEN}[Done]{colors.ENDC}"

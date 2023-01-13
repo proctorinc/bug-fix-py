@@ -2,7 +2,7 @@ import sys
 import argparse
 
 from bugfixpy.utils.text import colors
-from bugfixpy.utils import validate, Text
+from bugfixpy.utils import validate
 from bugfixpy.modes import (
     TransitionIssuesMode,
     AutomaticMode,
@@ -65,7 +65,7 @@ def main() -> None:
     if args.setup:
         SetupCredentials.run()
     elif args.transition:
-        TransitionIssuesMode.run()
+        TransitionIssuesMode().start()
     elif args.revert:
         RevertCommit.run(args.test)
     elif args.manual:
@@ -84,5 +84,5 @@ try:
     main()
 
 except KeyboardInterrupt:
-    Text("\nExited program.", colors.FAIL).display()
+    print(f"\n{colors.FAIL}Exited program.")
     sys.exit(0)

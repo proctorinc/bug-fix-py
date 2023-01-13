@@ -11,11 +11,13 @@ from . import utils
 
 class AutomaticMode(RunnableMode, RepositoryMode, ScraperMode):
 
+    MODE = "AUTO"
+
     __fix_result: FixResult
     __challenge_request_issue: ChallengeRequestIssue
 
     def __init__(self, test_mode) -> None:
-        super().__init__("AUTO", test_mode)
+        super().__init__(self.MODE, test_mode)
 
     def run(self) -> None:
         test_mode = self.get_test_mode()

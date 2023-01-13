@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from bugfixpy.utils.text import colors, headers, Text
+from bugfixpy.utils.text import colors, headers
 
 
 class RunnableMode(ABC):
@@ -24,9 +24,9 @@ class RunnableMode(ABC):
         self.display_results()
 
     def display_headers(self) -> None:
-        Text(f"### MODE: {self.__mode}", colors.HEADER).display()
+        print(colors.HEADER, "### MODE: ", self.__mode, sep="")
         if self.__test_mode:
-            Text(headers.TEST_MODE, colors.HEADER).display()
+            print(colors.HEADER, headers.TEST_MODE, sep="")
 
     @abstractmethod
     def run(self) -> None:

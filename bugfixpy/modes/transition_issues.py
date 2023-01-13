@@ -1,13 +1,20 @@
 from bugfixpy.git import FixResult
 from bugfixpy.jira import TransitionIssues
 from bugfixpy.utils import prompt_user
-from . import utils
+
+from .runnable_mode import RunnableMode
+from .scraper_mode import ScraperMode
 
 
-class TransitionIssuesMode:
-    @staticmethod
-    def run() -> None:
-        challenge_data = utils.scrape_challenge_data_from_cms()
+class TransitionIssuesMode(RunnableMode, ScraperMode):
+
+    MODE = "TRANSITION"
+
+    def __init__(self) -> None:
+        super().__init__(self.MODE, test_mode=False)
+
+    def run(self) -> None:
+        self.run_scraper()
         challenge_request_issue = prompt_user.get_challenge_request_issue()
 
         is_bulk_transition_required = prompt_user.if_bulk_transition_is_required()
@@ -16,6 +23,9 @@ class TransitionIssuesMode:
 
         TransitionIssues(
             FixResult([fix_message], is_bulk_transition_required, False),
-            challenge_data,
+            self.get_scraper_data(),
             challenge_request_issue,
         ).run()
+
+    def display_results(self) -> None:
+        print("Transitioning complete.")

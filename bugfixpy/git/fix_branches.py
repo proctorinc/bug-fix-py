@@ -77,7 +77,7 @@ class FixBranches:
 
     def __cherry_pick_repository(self) -> None:
         self.display_cherry_pick_to_user()
-        CherryPick(self.__repository, is_manual=True).across_all_branches()
+        CherryPick(self.__repository, is_manual=self.__is_manual).across_all_branches()
 
     def display_cherry_pick_to_user(self) -> None:
         input("Cherry picking required. Press [ENTER] to start")

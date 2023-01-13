@@ -3,7 +3,6 @@ import sys
 from bugfixpy.git import Repository
 from bugfixpy.utils import prompt_user
 from bugfixpy.utils.text import colors, instructions
-from bugfixpy.utils.text import Text
 
 
 class RepositoryMode:
@@ -19,7 +18,7 @@ class RepositoryMode:
 
             self.print_repository_details()
         except ValueError:
-            Text("Error getting repository", colors.FAIL).display()
+            print(f"{colors.FAIL}Error getting repository")
             sys.exit(1)
 
     def clone_repository_from_user_input(self) -> None:
@@ -27,13 +26,14 @@ class RepositoryMode:
         self.clone_repository(repository_name)
 
     def print_repository_details(self) -> None:
-        Text("[Done]", colors.OKGREEN).display()
-        Text("Branches:", self.__repository.get_num_branches(), colors.OKCYAN).display()
+        num_branches = len(self.__repository.get_branches())
+        print(instructions.DONE)
+        print(f"Branches: {colors.OKCYAN}{num_branches}{colors.ENDC}")
 
         if self.__repository.is_full_app():
-            Text("Type", "Full App", colors.OKCYAN).display()
+            print(f"Type {colors.OKCYAN}Full App{colors.ENDC}")
         else:
-            Text("Type:", "Minified App", colors.OKCYAN).display()
+            print(f"Type: {colors.OKCYAN}Minified App{colors.ENDC}")
 
     def push_fix_to_github_if_not_in_test_mode(self, test_mode: bool) -> None:
         try:

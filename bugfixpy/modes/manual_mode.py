@@ -11,10 +11,12 @@ from . import utils
 
 class ManualMode(RunnableMode, RepositoryMode):
 
+    MODE = "MANUAL"
+
     __challenge_request_issue: ChallengeRequestIssue
 
     def __init__(self, test_mode: bool) -> None:
-        super().__init__("MANUAL", test_mode)
+        super().__init__(self.MODE, test_mode)
 
     def run(self) -> None:
         test_mode = self.get_test_mode()
