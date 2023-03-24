@@ -16,13 +16,9 @@ class RevertCommitMode:
     @classmethod
     def run(cls, test_mode) -> None:
         revert_commit = cls(test_mode)
-
         revert_commit.display_revert_mode_headers()
-
         revert_commit.clone_repository_from_challenge_id_or_repository_name()
-
         revert_commit.get_commit_id_and_revert_commit()
-
         revert_commit.push_fix_to_github_if_not_in_test_mode()
 
         print("Revert Complete.")

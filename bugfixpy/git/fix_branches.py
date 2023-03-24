@@ -66,6 +66,7 @@ class FixBranches:
         self.__make_change_and_commit()
 
         if self.__is_cherry_pick_is_required():
+            self.__has_been_cherrypicked = True
             self.__cherry_pick_repository()
 
     def __make_change_and_commit(self) -> None:
