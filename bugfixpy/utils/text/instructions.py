@@ -28,14 +28,14 @@ Transition all Challenge Creation Issues in Jira
 (tab will automatically open issues in Jira)
 1. Bulk change all -> Select all -> Transition -> FEEDBACK OPEN -> confirm
 2. Bulk change all -> Select all -> Transition -> FEEDBACK REVIEW -> confirm
-3. Bulk change all -> Select all -> Edit -> Change assignee to 'Thomas Pieters' -> add CHLRQ-#### in comment [ex: CHLRQ-1234] -> confirm
+3. Bulk change all -> Select all -> Edit -> Change assignee to Content Team Approver -> add CHLRQ-#### in comment [ex: CHLRQ-1234] -> confirm
 {colors.ENDC}"""
 
 NO_CHERRY_PICKING_MANUAL_STEPS = f"""{colors.WARNING}
 Transition the Challenge Creation Issue in Jira
 1. Transition to FEEDBACK OPEN
 2. Transition to FEEDBACK REVIEW
-3. Set assignee to 'Thomas Pieters'
+3. Set assignee to Content Team Approver
 4. In comment, add link to CHLRQ
 {colors.ENDC}"""
 

@@ -198,6 +198,6 @@ def get_update_challenge_request_body(
 ) -> dict:
     challenge_request_id = challenge_request.get_issue_id()
     return {
-        "fields": {"assignee": {"accountId": constants.THOMAS_ACCT_ID}},
+        "fields": {"assignee": {"accountId": constants.CONTENT_VERIFIER_ID}},
         "update": {"comment": [{"add": {"body": challenge_request_id}}]},
     }

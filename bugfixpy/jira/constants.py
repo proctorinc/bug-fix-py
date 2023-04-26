@@ -10,8 +10,8 @@ API_KEY = keyring.get_password("system", "JIRA_API_KEY")
 # Create authentication object for API calls
 AUTH = HTTPBasicAuth(API_EMAIL, API_KEY)
 
-# Thomas account id to link in jira
-THOMAS_ACCT_ID = "5bcd95bc3aa82432ce729fcf"
+# Account id for the person to link for approval in jira
+CONTENT_VERIFIER_ID = "5e546930a17f930c9b959d05"
 
 # API defined headers
 REQUEST_HEADERS = {
