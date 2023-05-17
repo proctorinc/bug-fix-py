@@ -186,17 +186,22 @@ def get_feedback_review_body() -> dict:
 def update_challenge_creation_assignee_and_link_challenge_request(
     challenge_creation_issue: ChallengeCreationIssue,
     challenge_request_issue: ChallengeRequestIssue,
+    content_verifier_id: str,
 ) -> Response:
     endpoint = challenge_creation_issue.get_issue_endpoint()
-    body = get_update_challenge_request_body(challenge_request_issue)
+    body = get_update_challenge_request_body(
+        challenge_request_issue, content_verifier_id
+    )
 
     return __execute_put_query(endpoint, body)
 
 
 def get_update_challenge_request_body(
     challenge_request: ChallengeRequestIssue,
+    content_verifier_id: str,
 ) -> dict:
     challenge_request_id = challenge_request.get_issue_id()
     return {
+        "fields": {"assignee": {"accountId": content_verifier_id}},
         "update": {"comment": [{"add": {"body": challenge_request_id}}]},
     }

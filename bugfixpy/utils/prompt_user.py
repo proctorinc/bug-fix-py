@@ -1,3 +1,4 @@
+import json
 import sys
 import readline
 from typing import Callable
@@ -11,6 +12,7 @@ from bugfixpy.jira import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
+    constants,
 )
 from bugfixpy.utils.text import colors
 
@@ -257,3 +259,41 @@ def to_press_enter_to_transition_creation_issues(number_of_issues: int) -> None:
         )
     except KeyboardInterrupt:
         print(f"\n{colors.FAIL}Skipped transitioning CHLCs{colors.ENDC}")
+
+
+def to_select_content_verifier() -> dict[str, str]:
+    verifier = {"name": "Oscar", "id": constants.CONTENT_VERIFIER_ID}
+    try:
+        reviewer_file = open("bugfixpy/reviewers.json", encoding="utf-8")
+        data = json.load(reviewer_file)
+        users = data["users"]
+        reviewer_file.close()
+        reviewer_num = enter_reviewer_number(users)
+        return users[reviewer_num]
+
+    except FileNotFoundError as err:
+        print(err)
+    except Exception as err:
+        print(err)
+
+    return verifier
+
+
+def enter_reviewer_number(users: list[dict[str, str]]) -> int:
+    if len(users) > 0:
+        for i, user in enumerate(users):
+            print(f"{i}.", user["name"])
+
+        while True:
+            user_choice = input("Enter number of reviewer: ")
+
+            try:
+                reviewer_num = int(user_choice)
+                if reviewer_num < 0 or reviewer_num >= len(users):
+                    print("Invalid choice, try again")
+                else:
+                    return reviewer_num
+            except Exception:
+                print("Invalid choice, please enter a number")
+
+    return -1

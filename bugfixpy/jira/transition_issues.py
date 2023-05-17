@@ -4,14 +4,13 @@ from bugfixpy.utils import formatter, prompt_user
 from bugfixpy.utils.text import colors
 from bugfixpy.cms import ScraperData
 from bugfixpy.git import FixResult
-from bugfixpy.jira import api
+from bugfixpy.jira import api, constants
 
 from .fix_version import FixVersion
 from .issue import (
     ApplicationCreationIssue,
     ChallengeCreationIssue,
     ChallengeRequestIssue,
-    Issue,
 )
 
 
@@ -41,21 +40,23 @@ class TransitionIssues:
         self.__creation_issues = self.__get_creation_issues_to_transition()
 
     def run(self) -> None:
-        try:
-            prompt_user.to_press_enter_to_transition_request_issue(
-                self.__challenge_request_issue
-            )
-            self.__transition_request_issue()
-        except KeyboardInterrupt:
-            print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
+        test = prompt_user.to_select_content_verifier()
+        print(test)
+        # try:
+        #     prompt_user.to_press_enter_to_transition_request_issue(
+        #         self.__challenge_request_issue
+        #     )
+        #     self.__transition_request_issue()
+        # except KeyboardInterrupt:
+        #     print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
 
-        try:
-            prompt_user.to_press_enter_to_transition_creation_issues(
-                len(self.__creation_issues)
-            )
-            self.__transition_creation_issues()
-        except KeyboardInterrupt:
-            print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
+        # try:
+        #     prompt_user.to_press_enter_to_transition_creation_issues(
+        #         len(self.__creation_issues)
+        #     )
+        #     self.__transition_creation_issues()
+        # except KeyboardInterrupt:
+        #     print(f"\n{colors.FAIL}Skipped transitioning CHLRQ{colors.ENDC}")
 
     def __get_creation_issues_to_transition(self) -> list[ChallengeCreationIssue]:
         if self.__repo_was_cherrypicked:
@@ -103,7 +104,8 @@ class TransitionIssues:
     def __transition_creation_issue(self, issue) -> None:
         self.__transition_to_feedback_open(issue)
         self.__transition_to_feedback_review(issue)
-        self.__add_assignee_and_comment(issue)
+        content_verifier = self.__choose_content_verifier()
+        self.__add_assignee_and_comment(issue, content_verifier)
 
     def __transition_to_feedback_open(self, issue: ChallengeCreationIssue) -> None:
         print("\tTo Feedback Open\t", end="")
@@ -115,11 +117,18 @@ class TransitionIssues:
         result = api.transition_challenge_creation_to_feedback_review(issue)
         self.__display_transition_result(result)
 
-    def __add_assignee_and_comment(self, issue: ChallengeCreationIssue) -> None:
+    def __choose_content_verifier(self):
+        print("Oscar set as content verifier")
+        return constants.CONTENT_VERIFIER_ID
+
+    def __add_assignee_and_comment(
+        self, issue: ChallengeCreationIssue, content_verifier: str
+    ) -> None:
         print("\tAdding assignee and comment", end="")
         result = api.update_challenge_creation_assignee_and_link_challenge_request(
             issue,
             self.__challenge_request_issue,
+            content_verifier,
         )
         self.__display_transition_result(result)
 
