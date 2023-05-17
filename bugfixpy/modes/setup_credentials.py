@@ -59,7 +59,7 @@ class SetupCredentials(RunnableMode):
         keyring.set_password("system", "CMS_EMAIL", cms_email)
         keyring.set_password("system", "CMS_PASSWORD", cms_password)
 
-        print("--setup script is not finished!")
+        print("Setup complete.")
 
         sys.exit(0)
 

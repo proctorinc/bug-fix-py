@@ -9,3 +9,4 @@ build/*
 SOURCES.txt
 top_level.txt
 docs/_build/
+*.json
