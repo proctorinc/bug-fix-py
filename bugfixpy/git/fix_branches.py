@@ -103,7 +103,7 @@ class FixBranches:
         self.__repository.add_changes()
         message = self.__add_challenge_request_id_to_message(fix_message)
         self.__repository.commit_changes_with_message(message)
-        self.__fix_messages.append(fix_message)
+        self.__fix_messages.append(f"{self.__current_branch}: {fix_message}")
 
         return True
 

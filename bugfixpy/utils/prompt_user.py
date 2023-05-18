@@ -262,7 +262,7 @@ def to_press_enter_to_transition_creation_issues(number_of_issues: int) -> None:
 
 
 def to_select_content_verifier() -> dict[str, str]:
-    verifier = {"name": "Oscar", "id": constants.CONTENT_VERIFIER_ID}
+    verifier = {"name": "Default: Oscar", "id": constants.CONTENT_VERIFIER_ID}
     try:
         reviewer_file = open("bugfixpy/reviewers.json", encoding="utf-8")
         data = json.load(reviewer_file)
@@ -271,8 +271,6 @@ def to_select_content_verifier() -> dict[str, str]:
         reviewer_num = enter_reviewer_number(users)
         return users[reviewer_num]
 
-    except FileNotFoundError as err:
-        print(err)
     except Exception as err:
         print(err)
 
@@ -285,7 +283,7 @@ def enter_reviewer_number(users: list[dict[str, str]]) -> int:
             print(f"{i}.", user["name"])
 
         while True:
-            user_choice = input("Enter number of reviewer: ")
+            user_choice = input("\nEnter number of reviewer: ")
 
             try:
                 reviewer_num = int(user_choice)
