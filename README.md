@@ -56,10 +56,10 @@ This program requires multiple python libraries installed. The full list can be 
 
 * Requirements.txt
   ```
-  gitpython==3.1.27
-  requests==2.27.1
-  bs4==0.0.1
-  keyring==23.8.2
+  gitpython
+  requests
+  bs4
+  keyring
   ```
 
 ### Installation
@@ -80,24 +80,10 @@ This program requires multiple python libraries installed. The full list can be 
 ### Usage
 
 ```sh
-python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
+python3 bugfixpy [--auto][--setup][--transition]
 ```
 
 ### Program Modes
-
-#### Manual bug fix
-* Manual bug fixing mode walks through the bug fixing process with instructions for all external steps in CMS and Jira. Automates cloning the Git repository, cherry picking for fixes on the secure branch, committing, and pushing to Github. This mode does not require external API's or credentials.
-* Run
-    ```sh
-    python3 bugfixpy
-    ```
-
-#### Automatic bugfix
-* Automates the Manual bug fixing process by Automating most steps outside of the program. Scrapes the CMS to retrieve challenge and application Jira ticket numbers related to the challenge being fixed. Then automates the transitioning of those tickets after the fix is complete. This mode requires Jira and CMS credentials (see --setup mode for more details).
-* Run
-    ```sh
-    python3 bugfixpy --auto
-    ```
 
 #### Setup mode
 * Run setup mode to enter credentials. You are required to enter credentials before running in auto mode. Credentials are needed to access the Jira API for transitioning issues as well as the CMS for scraping data to automate the process.
@@ -112,6 +98,20 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
     python3 bugfixpy --setup
     ```
 
+#### Manual bug fix
+* Manual bug fixing mode walks through the bug fixing process with instructions for all external steps in CMS and Jira. Automates cloning the Git repository, cherry picking for fixes on the secure branch, committing, and pushing to Github. This mode does not require external API's or credentials.
+* Run
+    ```sh
+    python3 bugfixpy --manual
+    ```
+
+#### Automatic bugfix
+* Automates the Manual bug fixing process by Automating most steps outside of the program. Scrapes the CMS to retrieve challenge and application Jira ticket numbers related to the challenge being fixed. Then automates the transitioning of those tickets after the fix is complete. This mode requires Jira and CMS credentials (see --setup mode for more details).
+* Run
+    ```sh
+    python3 bugfixpy --auto
+    ```
+
 #### Transition mode
 * Run transition mode to run through the Jira automatic issue transitioning process. Valid Jira credentials are required to run this mode. This mode will run in automatice mode, but run this mode separately to transition a ticket without requiring a bug fix first.
 * Run
@@ -124,32 +124,15 @@ python3 bugfixpy [--auto][--setup][--transition][--repo][--revert]
 
 * Run
     ```sh
-    python3 bugfixpy --repo
+    python3 bugfixpy
     ```
-#### Revert mode
-* Run revert mode to undo a commit done on a git repository. In case a bug fix goes wrong, this is an easy method to revert the changes. (This mode is still in development)
+
+### Additional Setup
 * Run
     ```sh
-    python3 bugfixpy --revert
+    cp reviewers.json.example reviewers.json
     ```
-### Filestructure
-    
-    bugfixpy
-    │
-    ├── bugfixpy
-    │   ├── constants
-    │   ├── exceptions
-    │   ├── formatter
-    │   ├── scraper
-    │   ├── scripts
-    │   └── utils
-    │
-    ├── data
-    │   └── repos
-    │
-    ├── docs
-    ├── examples
-    └── tests
+* Edit the reviewers.json file and add users with Jira ID's to add to list of reviewers after fixing bugs.
 
 ### License
 

@@ -1,0 +1,6 @@
+{
+    "users": [
+        { "name": "Example User (Remove)", "id": "put-jira-user-id-here" },
+        { "name": "2nd Example User (Remove)", "id": "put-jira-user-id-here" },
+    ]
+}
