@@ -35,7 +35,9 @@ class AutomaticMode(RunnableMode, RepositoryMode, ScraperMode):
 
     def fix_branches_in_repository(self) -> None:
         self.__fix_result = FixBranches(
-            self.get_repository(), self.__challenge_request_issue
+            self.get_repository(),
+            self.__challenge_request_issue,
+            branches=self.get_scraper_data().application.branches,
         ).get_results()
 
     def transition_challenge_issues_with_results(self) -> None:

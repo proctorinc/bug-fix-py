@@ -40,6 +40,27 @@ def __parse_application_endpoint(soup: BeautifulSoup) -> str:
     return ""
 
 
+def __parse_challenge_branches(soup: BeautifulSoup) -> list[str]:
+    branches = []
+    tables = soup.findAll("table")
+    rows = tables[1].findAll("tr")
+
+    for table_row in rows[1:]:
+        cols = table_row.findAll("td")
+        link = cols[0].find("a", href=True)
+        span = cols[2].find("span")
+        name = link.contents[0].strip()
+        status = span.contents[0].strip()
+
+        if status != "Deprecated" and status != "Cancelled":
+            # print("good:", status)
+            branches.append(name)
+        # else:
+        #     print("bad:", status)
+
+    return branches
+
+
 def parse_csrf_token(result: Response) -> str:
     soup = __create_soup(result)
 
@@ -79,7 +100,8 @@ def parse_application_screen_data(result: Response) -> ApplicationScreenData:
 
     application_creation_number = __parse_chlc_number(soup)
     repository_name = __parse_git_repository(soup)
+    branches = __parse_challenge_branches(soup)
 
     return ApplicationScreenData(
-        ApplicationCreationIssue(application_creation_number), repository_name
+        ApplicationCreationIssue(application_creation_number), repository_name, branches
     )

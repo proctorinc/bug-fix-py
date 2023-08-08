@@ -1,3 +1,4 @@
+from typing import Optional
 from git import GitCommandError
 
 from bugfixpy.utils.text import colors, instructions
@@ -17,12 +18,14 @@ class FixBranches:
     __current_branch: str
     __fix_messages: list[str]
     __has_been_cherrypicked: bool
+    __branches: Optional[list[str]]
 
     def __init__(
         self,
         repository: Repository,
         challenge_request_issue: ChallengeRequestIssue,
         is_manual: bool = False,
+        branches: Optional[list[str]] = None,
     ) -> None:
         self.__repository = repository
         self.__challenge_request_issue = challenge_request_issue
@@ -30,6 +33,7 @@ class FixBranches:
         self.__has_been_cherrypicked = False
         self.__current_branch = self.__get_next_branch()
         self.__is_manual = is_manual
+        self.__branches = branches
 
     def get_results(self) -> FixResult:
         self.run_fix()
@@ -78,7 +82,9 @@ class FixBranches:
 
     def __cherry_pick_repository(self) -> None:
         self.display_cherry_pick_to_user()
-        CherryPick(self.__repository, is_manual=self.__is_manual).across_all_branches()
+        CherryPick(
+            self.__repository, is_manual=self.__is_manual, branches=self.__branches
+        ).across_all_branches()
 
     def display_cherry_pick_to_user(self) -> None:
         input("Cherry picking required. Press [ENTER] to start")

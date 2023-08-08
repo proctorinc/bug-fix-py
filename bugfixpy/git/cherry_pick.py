@@ -1,3 +1,4 @@
+from typing import Optional
 from bugfixpy.utils.text import colors, instructions
 from bugfixpy.exceptions import ContinueCherryPickingFailedError
 from bugfixpy.utils import prompt_user
@@ -13,10 +14,15 @@ class CherryPick:
     __branches: list[str]
     __is_manual: bool
 
-    def __init__(self, repository: Repository, is_manual=False) -> None:
+    def __init__(
+        self,
+        repository: Repository,
+        is_manual=False,
+        branches: Optional[list[str]] = None,
+    ) -> None:
         self.__repository = repository
         self.__commit_id = repository.get_last_commit_id()
-        self.__branches = self.__get_branches_without_secure()
+        self.__branches = branches if branches else self.__get_branches_without_secure()
         self.__is_manual = is_manual
 
     def across_all_branches(self) -> None:

@@ -14,6 +14,7 @@ class ChallengeScreenData:
 class ApplicationScreenData:
     chlc: ApplicationCreationIssue
     repository_name: str
+    branches: list[str]
 
 
 @dataclass
