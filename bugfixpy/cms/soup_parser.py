@@ -52,11 +52,13 @@ def __parse_challenge_branches(soup: BeautifulSoup) -> list[str]:
         name = link.contents[0].strip()
         status = span.contents[0].strip()
 
-        if status != "Deprecated" and status != "Cancelled":
-            # print("good:", status)
+        if (
+            status != "Deprecated"
+            and status != "Cancelled"
+            and status != "Todo"
+            and status != "Retired"
+        ):
             branches.append(name)
-        # else:
-        #     print("bad:", status)
 
     return branches
 
