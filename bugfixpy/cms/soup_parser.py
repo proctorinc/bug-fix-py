@@ -58,7 +58,11 @@ def __parse_challenge_branches(soup: BeautifulSoup) -> list[str]:
             and status != "Todo"
             and status != "Retired"
         ):
+            # Add branch and all incorrect branches
             branches.append(name)
+            branches.append(name + "_incorrect_0")
+            branches.append(name + "_incorrect_1")
+            branches.append(name + "_incorrect_2")
 
     return branches
 

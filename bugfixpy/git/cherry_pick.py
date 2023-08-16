@@ -22,7 +22,7 @@ class CherryPick:
     ) -> None:
         self.__repository = repository
         self.__commit_id = repository.get_last_commit_id()
-        self.__branches = self.__get_branches_without_secure()
+        self.__branches = branches if branches else self.__get_branches_without_secure()
         self.__is_manual = is_manual
 
     def across_all_branches(self) -> None:
