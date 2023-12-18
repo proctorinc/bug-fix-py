@@ -18,6 +18,10 @@ def is_valid_challenge_id(cid) -> bool:
     return bool(re.fullmatch("^([a-z0-9]{24})", cid))
 
 
+def is_valid_application_name(name: str) -> bool:
+    return len(name) > 0
+
+
 def is_valid_fix_message(message) -> bool:
     return not is_empty_string(message)
 

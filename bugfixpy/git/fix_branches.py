@@ -12,7 +12,6 @@ from . import constants
 
 
 class FixBranches:
-
     __repository: Repository
     __challenge_request_issue: ChallengeRequestIssue
     __current_branch: str

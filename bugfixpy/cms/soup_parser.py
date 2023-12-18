@@ -3,8 +3,12 @@ from bs4 import BeautifulSoup
 from requests import Response
 
 from bugfixpy import git, jira
-from bugfixpy.jira.issue import ApplicationCreationIssue, ChallengeCreationIssue
-from bugfixpy.cms.scraper_data import ApplicationScreenData, ChallengeScreenData
+from bugfixpy.jira import ApplicationCreationIssue, ChallengeCreationIssue
+from bugfixpy.cms.scraper_data import (
+    ApplicationScreenData,
+    Challenge,
+    ChallengeScreenData,
+)
 
 
 def __create_soup(result: Response) -> BeautifulSoup:
@@ -40,14 +44,42 @@ def __parse_application_endpoint(soup: BeautifulSoup) -> str:
     return ""
 
 
-def __parse_challenge_branches(soup: BeautifulSoup) -> list[str]:
+def __parse_challenge_vulnerable_branches(soup: BeautifulSoup) -> list[str]:
     branches = []
+
+    divs = soup.find_all("i", {"class": "fa fa-code-branch"})
+
+    vulnerable = divs[0].parent.contents[1].strip()
+    incorrect_1 = divs[2].parent.contents[1].strip()
+    incorrect_2 = divs[3].parent.contents[1].strip()
+    incorrect_3 = divs[4].parent.contents[1].strip()
+
+    branches.append(vulnerable)
+    branches.append(incorrect_1)
+    branches.append(incorrect_2)
+    branches.append(incorrect_3)
+
+    return branches
+
+
+def __parse_challenge_secure_branch(soup: BeautifulSoup) -> str:
+    secure_branch = "secure"
+
+    divs = soup.find_all("i", {"class": "fa fa-code-branch"})
+    secure_branch = divs[1].parent.contents[1].strip()
+
+    return secure_branch
+
+
+def __parse_challenges(soup: BeautifulSoup) -> list[Challenge]:
+    challenges = []
     tables = soup.findAll("table")
     rows = tables[1].findAll("tr")
 
     for table_row in rows[1:]:
         cols = table_row.findAll("td")
         link = cols[0].find("a", href=True)
+        url = link["href"]
         span = cols[2].find("span")
         name = link.contents[0].strip()
         status = span.contents[0].strip()
@@ -58,13 +90,43 @@ def __parse_challenge_branches(soup: BeautifulSoup) -> list[str]:
             and status != "Todo"
             and status != "Retired"
         ):
-            # Add branch and all incorrect branches
-            branches.append(name)
-            branches.append(name + "_incorrect_0")
-            branches.append(name + "_incorrect_1")
-            branches.append(name + "_incorrect_2")
+            challenges.append(
+                Challenge(
+                    name,
+                    url,
+                )
+            )
 
-    return branches
+    return challenges
+
+
+# def __parse_branches(soup: BeautifulSoup) -> list[str]:
+#     branches = []
+#     tables = soup.findAll("table")
+#     rows = tables[1].findAll("tr")
+
+#     for table_row in rows[1:]:
+#         cols = table_row.findAll("td")
+#         link = cols[0].find("a", href=True)
+#         span = cols[2].find("span")
+#         name = link.contents[0].strip()
+#         status = span.contents[0].strip()
+
+#         if (
+#             status != "Deprecated"
+#             and status != "Cancelled"
+#             and status != "Todo"
+#             and status != "Retired"
+#         ):
+#             # Add branch and all incorrect branches
+#             incorrect_zero = name + "_incorrect_0"
+#             incorrect_one = name + "_incorrect_1"
+#             incorrect_two = name + "_incorrect_2"
+#             branches.append(incorrect_zero)
+#             branches.append(incorrect_one)
+#             branches.append(incorrect_two)
+
+#     return branches
 
 
 def parse_csrf_token(result: Response) -> str:
@@ -95,9 +157,14 @@ def parse_challenge_screen_data(result: Response) -> ChallengeScreenData:
     soup = __create_soup(result)
     challenge_creation_number = __parse_chlc_number(soup)
     application_screen_endpoint = __parse_application_endpoint(soup)
+    vulnerable_branches = __parse_challenge_vulnerable_branches(soup)
+    secure_branch = __parse_challenge_secure_branch(soup)
 
     return ChallengeScreenData(
-        application_screen_endpoint, ChallengeCreationIssue(challenge_creation_number)
+        application_screen_endpoint,
+        ChallengeCreationIssue(challenge_creation_number),
+        secure_branch,
+        vulnerable_branches,
     )
 
 
@@ -106,8 +173,26 @@ def parse_application_screen_data(result: Response) -> ApplicationScreenData:
 
     application_creation_number = __parse_chlc_number(soup)
     repository_name = __parse_git_repository(soup)
-    branches = __parse_challenge_branches(soup)
+    challenges = __parse_challenges(soup)
 
     return ApplicationScreenData(
-        ApplicationCreationIssue(application_creation_number), repository_name, branches
+        ApplicationCreationIssue(application_creation_number),
+        repository_name,
+        challenges,
+    )
+
+
+def parse_application_screen_with_challenges_data(
+    result: Response,
+) -> ApplicationScreenData:
+    soup = __create_soup(result)
+
+    application_creation_number = __parse_chlc_number(soup)
+    repository_name = __parse_git_repository(soup)
+    challenges = __parse_challenges(soup)
+
+    return ApplicationScreenData(
+        ApplicationCreationIssue(application_creation_number),
+        repository_name,
+        challenges,
     )

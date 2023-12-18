@@ -45,3 +45,6 @@ class RepositoryMode:
                 print("Pushed successfully")
         except KeyboardInterrupt:
             print(f"\n{colors.FAIL}Skipped push to repository{colors.ENDC}")
+
+    def is_repo_full_app(self) -> bool:
+        return self.__repository.is_full_app()

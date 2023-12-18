@@ -10,6 +10,7 @@ from bugfixpy.modes import (
     ViewRepository,
     RevertCommit,
     SetupCredentials,
+    AlertMode,
 )
 
 
@@ -18,7 +19,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if len(sys.argv) > 2 and not (
-        args.test and (args.auto or args.revert or args.manual)
+        args.test and (args.auto or args.revert or args.manual or args.alert)
     ):
         parser.error("Multiple flags cannot be enabled at the same time")
 
@@ -36,6 +37,8 @@ def main() -> None:
         )
     elif args.auto:
         AutomaticMode(args.test).start()
+    elif args.alert:
+        AlertMode(args.test).start()
     else:
         ViewRepository().start()
 

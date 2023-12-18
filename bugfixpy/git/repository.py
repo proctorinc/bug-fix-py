@@ -15,7 +15,6 @@ from . import constants
 
 
 class Repository:
-
     name: str
     repository: Repo
     branches: list[str]
@@ -31,6 +30,9 @@ class Repository:
 
     def get_branches(self) -> list[str]:
         return self.branches
+
+    def get_current_branch(self) -> str:
+        return self.repository.active_branch.name
 
     def __delete_local_and_clone_repository(self) -> None:
         self.__delete_repository_if_exists()

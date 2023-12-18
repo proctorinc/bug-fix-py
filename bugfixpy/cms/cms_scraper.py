@@ -4,47 +4,63 @@ from requests import Session, Response
 from bugfixpy.exceptions import RequestFailedError
 from bugfixpy.utils import validate
 
-from .scraper_data import ApplicationScreenData, ChallengeScreenData, ScraperData
+from .scraper_data import (
+    ApplicationScreenData,
+    ApplicationScreenDataWithChallengeBranches,
+    ChallengeScreenData,
+    ScraperData,
+)
 from . import soup_parser
 from . import constants
 
 
 class CmsScraper:
     __session: Session
-    __challenge_id: Optional[str]
     __email: Optional[str]
     __password: Optional[str]
 
     def __init__(
         self,
-        challenge_id: Optional[str] = None,
     ) -> None:
-
-        if not validate.is_valid_challenge_id(challenge_id):
-            raise ValueError(f"Invalid challenge_id: {challenge_id}")
-
         self.__session = Session()
         self.__email = constants.EMAIL
         self.__password = constants.PASSWORD
-        self.__challenge_id = challenge_id
+        self.login_to_cms()
 
     def __del__(self) -> None:
         self.__session.close()
 
-    @classmethod
-    def scrape_challenge_data(cls, challenge_id) -> ScraperData:
+    def scrape_challenge_data(self, challenge_id: str) -> ScraperData:
+        if not validate.is_valid_challenge_id(challenge_id):
+            raise ValueError(f"Invalid challenge_id: {challenge_id}")
 
-        scraper = cls(challenge_id)
+        challenge_screen_data = self.scrape_challenge_screen(challenge_id)
 
-        scraper.login_to_cms()
-
-        challenge_screen_data = scraper.scrape_challenge_screen()
-
-        application_screen_data = scraper.scrape_application_screen(
+        application_screen_data = self.scrape_application_screen_by_url(
             challenge_screen_data.application_endpoint
         )
 
         return ScraperData(challenge_screen_data, application_screen_data)
+
+    def scrape_application_data(self, application_name: str) -> ApplicationScreenData:
+        if not validate.is_valid_application_name(application_name):
+            raise ValueError(f"Invalid application name: {application_name}")
+
+        application_data = self.scrape_application_screen_by_name(application_name)
+
+        return application_data
+
+    def scrape_application_data_with_challenge_map(
+        self, application_name: str
+    ) -> ApplicationScreenDataWithChallengeBranches:
+        if not validate.is_valid_application_name(application_name):
+            raise ValueError(f"Invalid application name: {application_name}")
+
+        application_data = self.scrape_application_screen_by_name(application_name)
+
+        return self.parse_application_screen_with_challenge_branches_response(
+            application_data
+        )
 
     def update_branches_for_application(self, application_endpoint) -> None:
         update_endpoint = self.get_update_endpoint(application_endpoint)
@@ -99,30 +115,51 @@ class CmsScraper:
     def did_login_fail(self, response) -> bool:
         return soup_parser.did_login_fail(response)
 
-    def scrape_challenge_screen(self) -> ChallengeScreenData:
-        response = self.get_challenge_screen_by_id()
+    def scrape_challenge_screen(self, challenge_id: str) -> ChallengeScreenData:
+        response = self.get_cms_page_by_query_string(challenge_id)
 
         return self.parse_challenge_screen_response(response)
 
-    def scrape_application_screen(self, application_url: str) -> ApplicationScreenData:
+    def scrape_application_screen_by_name(
+        self, application_name
+    ) -> ApplicationScreenData:
+        url_response = self.get_cms_page_by_query_string(application_name)
+        url_endpoint = url_response.url[33:] + "/show"
 
+        response = self.get_application_screen_by_url(url_endpoint)
+
+        return self.parse_application_screen_response(response)
+
+    def scrape_application_screen_by_url(
+        self, application_url: str
+    ) -> ApplicationScreenData:
         response = self.get_application_screen_by_url(application_url)
 
         return self.parse_application_screen_response(response)
 
-    def get_challenge_screen_by_id(self) -> Response:
-        result = self.__session.get(f"{constants.SEARCH_URL}?q={self.__challenge_id}")
+    def get_cms_page_by_query_string(self, query: str) -> Response:
+        result = self.__session.get(f"{constants.SEARCH_URL}?q={query}")
 
         if not result.content:
             raise RequestFailedError("Scraper Error: scraping application page failed")
 
         return result
 
-    def get_application_screen_by_url(self, application_url) -> Response:
+    def get_application_screen_by_url(self, application_url: str) -> Response:
         response = self.__session.get(f"{constants.URL}{application_url}")
 
         if not response.ok:
             raise RequestFailedError("Scraper Error: scraping application page failed")
+
+        return response
+
+    def get_challenge_screen_by_url(self, challenge_url: str):
+        response = self.__session.get(f"{constants.URL}{challenge_url}")
+
+        if not response.ok:
+            raise RequestFailedError(
+                f"Scraper Error: scraping challenge '{challenge_url}' failed"
+            )
 
         return response
 
@@ -131,3 +168,25 @@ class CmsScraper:
 
     def parse_application_screen_response(self, response) -> ApplicationScreenData:
         return soup_parser.parse_application_screen_data(response)
+
+    def parse_application_screen_with_challenge_branches_response(
+        self, application_data: ApplicationScreenData
+    ) -> ApplicationScreenDataWithChallengeBranches:
+        challenge_map = {}
+
+        for challenge in application_data.challenges:
+            response = self.get_challenge_screen_by_url(challenge.url)
+
+            challenge_data = self.parse_challenge_screen_response(response)
+
+            challenge.vulnerable_branches = challenge_data.vulnerable_branches
+            challenge.secure_branch = challenge_data.secure_branch
+
+            challenge_map[challenge.name] = challenge
+
+        return ApplicationScreenDataWithChallengeBranches(
+            application_data.chlc,
+            application_data.repository_name,
+            application_data.challenges,
+            challenge_map,
+        )

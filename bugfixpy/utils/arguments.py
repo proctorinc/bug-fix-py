@@ -44,4 +44,10 @@ def setup_parser() -> ArgumentParser:
         help="Enable testing mode. Disabled pushing to git repository",
     )
 
+    parser.add_argument(
+        "--alert",
+        action="store_true",
+        help="Enable alert fixing mode",
+    )
+
     return parser

@@ -87,10 +87,23 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
 
 def to_resolve_merge_conflict() -> None:
-    input(
+    print(
         f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
-        f" changes have been made{colors.ENDC}"
+        f" changes have been made{colors.ENDC}",
+        end="\r",
     )
+    input("")
+    print("\r\r", end="")
+
+
+def to_press_enter_after_making_changes() -> None:
+    print(
+        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
+        f" changes have been made{colors.ENDC}",
+        end="\r",
+    )
+    input("")
+    print("\r\r", end="")
 
 
 def if_they_want_to_continue() -> None:
@@ -113,6 +126,17 @@ def for_challenge_id() -> str:
     return challenge_id
 
 
+def for_application_name() -> str:
+    prompt = f"{colors.ENDC}Enter application name: {colors.WHITE}"
+    invalid_message = "is not a valid application name"
+
+    challenge_id = __get_valid_input(
+        prompt, invalid_message, validate.is_valid_application_name
+    )
+
+    return challenge_id
+
+
 def for_branch_in_repository(repository: Repository) -> str:
     branches = repository.get_branches()
     readline.parse_and_bind("tab: complete")
@@ -124,7 +148,6 @@ def for_branch_in_repository(repository: Repository) -> str:
 
     # Check that user input is a valid branch
     while branch not in branches:
-
         # Alert user branch name is invalid
         print(f'{colors.FAIL}"{branch}" is not a valid branch name{colors.ENDC}')
 
@@ -168,7 +191,6 @@ def for_next_branch_or_to_continue(repository: Repository) -> str:
 
     # Check that user input is a valid branch
     while branch not in branches:
-
         # Alert user branch name is invalid
         print(f'{colors.FAIL}"{branch}" is not a valid branch name{colors.ENDC}')
 
@@ -235,7 +257,6 @@ def for_repository_name_or_challenge_id() -> str:
 
 
 def if_bulk_transition_is_required() -> bool:
-
     user_input = input(
         f"{colors.ENDC}Is bulk transition required? ({colors.BOLD}{colors.WHITE}N{colors.ENDC}/y): {colors.WHITE}"
     )
@@ -252,7 +273,6 @@ def to_press_enter_to_transition_request_issue(issue: ChallengeRequestIssue) -> 
 
 
 def to_press_enter_to_transition_creation_issues(number_of_issues: int) -> None:
-
     try:
         input(
             f"\nPress {colors.OKGREEN}[Enter]{colors.ENDC} to auto transition [{colors.OKBLUE}{number_of_issues}{colors.ENDC}] {colors.HEADER}CHLCs{colors.ENDC}"
