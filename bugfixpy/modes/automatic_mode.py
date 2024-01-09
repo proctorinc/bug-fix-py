@@ -36,7 +36,8 @@ class AutomaticMode(RunnableMode, RepositoryMode, ScraperMode):
     def fix_branches_in_repository(self, challenge_data: ScraperData) -> None:
         branches: list[str] = []
         for challenge in challenge_data.application.challenges:
-            branches.append(challenge.secure_branch)
+            if challenge.secure_branch not in branches:
+                branches.append(challenge.secure_branch)
             branches.extend(challenge.vulnerable_branches)
 
         self.__fix_result = FixBranches(

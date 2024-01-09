@@ -36,8 +36,10 @@ class CmsScraper:
 
         challenge_screen_data = self.scrape_challenge_screen(challenge_id)
 
-        application_screen_data = self.scrape_application_screen_by_url(
-            challenge_screen_data.application_endpoint
+        application_screen_data = (
+            self.scrape_application_data_with_challenge_map_by_url(
+                challenge_screen_data.application_endpoint
+            )
         )
 
         return ScraperData(challenge_screen_data, application_screen_data)
@@ -57,6 +59,15 @@ class CmsScraper:
             raise ValueError(f"Invalid application name: {application_name}")
 
         application_data = self.scrape_application_screen_by_name(application_name)
+
+        return self.parse_application_screen_with_challenge_branches_response(
+            application_data
+        )
+
+    def scrape_application_data_with_challenge_map_by_url(
+        self, application_url: str
+    ) -> ApplicationScreenDataWithChallengeBranches:
+        application_data = self.scrape_application_screen_by_url(application_url)
 
         return self.parse_application_screen_with_challenge_branches_response(
             application_data

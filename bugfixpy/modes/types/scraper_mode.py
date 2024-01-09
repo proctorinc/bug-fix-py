@@ -18,7 +18,6 @@ class ScraperMode:
         print("Collecting challenge data from CMS...", end="")
         scraper_data = cms_scraper.scrape_challenge_data(challenge_id)
         print(instructions.DONE)
-        print(scraper_data)
 
         return scraper_data
 
@@ -49,13 +48,13 @@ class ScraperMode:
 
     def scrape_application_data(self) -> ApplicationScreenDataWithChallengeBranches:
         application_data = ApplicationScreenDataWithChallengeBranches()
-        # try:
-        application_name = prompt_user.for_application_name()
-        application_data = self.__get_application_data(application_name)
-        # except RequestFailedError as err:
-        #     print(f"{colors.FAIL}[Failed]\n{err}{colors.ENDC}")
-        #     sys.exit(1)
-        # except Exception as err:
-        #     print(f"{colors.FAIL}[Failed]\nUnknown Error: {err}{colors.ENDC}")
+        try:
+            application_name = prompt_user.for_application_name()
+            application_data = self.__get_application_data(application_name)
+        except RequestFailedError as err:
+            print(f"{colors.FAIL}[Failed]\n{err}{colors.ENDC}")
+            sys.exit(1)
+        except Exception as err:
+            print(f"{colors.FAIL}[Failed]\nUnknown Error: {err}{colors.ENDC}")
 
         return application_data
