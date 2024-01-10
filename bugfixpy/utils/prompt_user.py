@@ -126,7 +126,7 @@ def for_challenge_id() -> str:
     return challenge_id
 
 
-def for_application_name() -> str:
+def for_application_name_or_url() -> str:
     prompt = f"{colors.ENDC}Enter application name: {colors.WHITE}"
     invalid_message = "is not a valid application name"
 

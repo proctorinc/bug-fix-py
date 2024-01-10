@@ -22,12 +22,12 @@ class ScraperMode:
         return scraper_data
 
     def __get_application_data(
-        self, application_name: str
+        self, application_name_or_url: str
     ) -> ApplicationScreenDataWithChallengeBranches:
         cms_scraper = CmsScraper()
         print("Collecting application data from CMS...", end="")
         application_data = cms_scraper.scrape_application_data_with_challenge_map(
-            application_name
+            application_name_or_url
         )
         print(instructions.DONE)
 
@@ -49,8 +49,8 @@ class ScraperMode:
     def scrape_application_data(self) -> ApplicationScreenDataWithChallengeBranches:
         application_data = ApplicationScreenDataWithChallengeBranches()
         try:
-            application_name = prompt_user.for_application_name()
-            application_data = self.__get_application_data(application_name)
+            application_name_or_url: str = prompt_user.for_application_name_or_url()
+            application_data = self.__get_application_data(application_name_or_url)
         except RequestFailedError as err:
             print(f"{colors.FAIL}[Failed]\n{err}{colors.ENDC}")
             sys.exit(1)

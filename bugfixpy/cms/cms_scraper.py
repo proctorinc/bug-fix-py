@@ -1,3 +1,4 @@
+import re
 from typing import Optional
 from requests import Session, Response
 
@@ -53,12 +54,21 @@ class CmsScraper:
         return application_data
 
     def scrape_application_data_with_challenge_map(
-        self, application_name: str
+        self, application_name_or_url: str
     ) -> ApplicationScreenDataWithChallengeBranches:
-        if not validate.is_valid_application_name(application_name):
-            raise ValueError(f"Invalid application name: {application_name}")
-
-        application_data = self.scrape_application_screen_by_name(application_name)
+        # if validate.is_valid_application_url(application_name_or_url):
+        #     parsed_url = (
+        #         application_name_or_url.split("cms.securecodewarrior.com")[0]
+        #         if "cms.securecodewarrior.com" in application_name_or_url
+        #         else application_name_or_url
+        #     )
+        #     application_data = self.scrape_application_screen_by_url(parsed_url)
+        if validate.is_valid_application_name(application_name_or_url):
+            application_data = self.scrape_application_screen_by_name(
+                application_name_or_url
+            )
+        else:
+            raise ValueError(f"Invalid application name: {application_name_or_url}")
 
         return self.parse_application_screen_with_challenge_branches_response(
             application_data
@@ -136,6 +146,14 @@ class CmsScraper:
     ) -> ApplicationScreenData:
         url_response = self.get_cms_page_by_query_string(application_name)
         url_endpoint = url_response.url[33:] + "/show"
+
+        if not validate.is_valid_application_url(url_endpoint):
+            match = re.search(
+                r"/applications/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+                url_response.text,
+            )
+            if match:
+                url_endpoint = match.group(0) + "/show"
 
         response = self.get_application_screen_by_url(url_endpoint)
 

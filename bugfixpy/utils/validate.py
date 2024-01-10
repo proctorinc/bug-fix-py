@@ -22,6 +22,15 @@ def is_valid_application_name(name: str) -> bool:
     return len(name) > 0
 
 
+def is_valid_application_url(url: str) -> bool:
+    return bool(
+        re.search(
+            r"/applications/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
+            url,
+        )
+    )
+
+
 def is_valid_fix_message(message) -> bool:
     return not is_empty_string(message)
 
