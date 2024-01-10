@@ -53,7 +53,7 @@ class AlertMode(RunnableMode, RepositoryMode, ScraperMode):
             all_branches = []
 
             for challenge_key in application_data.challenge_map.keys():
-                all_branches.append(
+                all_branches.extend(
                     application_data.challenge_map[challenge_key].vulnerable_branches
                 )
 

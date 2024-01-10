@@ -88,8 +88,7 @@ def get_application_creation_issue() -> ApplicationCreationIssue:
 
 def to_resolve_merge_conflict() -> None:
     print(
-        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
-        f" changes have been made{colors.ENDC}",
+        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}",
         end="\r",
     )
     input("")
@@ -98,8 +97,7 @@ def to_resolve_merge_conflict() -> None:
 
 def to_press_enter_after_making_changes() -> None:
     print(
-        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when"
-        f" changes have been made{colors.ENDC}",
+        f"\n{colors.ENDC}{colors.BOLD}Press {colors.OKGREEN}[ENTER] {colors.ENDC}{colors.BOLD}when changes have been made{colors.ENDC}",
         end="\r",
     )
     input("")
