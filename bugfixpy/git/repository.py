@@ -50,7 +50,6 @@ class Repository:
 
     def is_full_app(self) -> bool:
         branches = self.branches
-
         return git.constants.FULL_APP_SECURE_BRANCH in branches
 
     def get_fix_messages(self) -> List[str]:

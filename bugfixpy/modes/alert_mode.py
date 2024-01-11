@@ -1,3 +1,4 @@
+from bugfixpy import git
 from bugfixpy.cms import (
     ApplicationScreenDataWithChallengeBranches,
 )
@@ -48,7 +49,16 @@ class AlertMode(RunnableMode, RepositoryMode, ScraperMode):
             self.get_repository(),
         )
 
-        if self.is_repo_full_app():
+        is_full_app = False
+
+        for challenge_key in application_data.challenge_map.keys():
+            if (
+                application_data.challenge_map[challenge_key].secure_branch
+                == git.constants.FULL_APP_SECURE_BRANCH
+            ):
+                is_full_app = True
+
+        if is_full_app:
             print(f"{colors.HEADER}Running Full App Fix{colors.ENDC}")
             all_branches = []
 
