@@ -82,11 +82,16 @@ class AlertMode(RunnableMode, RepositoryMode, ScraperMode):
                 print(
                     f"\n\n{colors.OKCYAN}Fixing secure branch: {colors.WHITE}{colors.BOLD}{secure_branch}{colors.ENDC}"
                 )
-                self.__fix_result = repo_fixer.fix_branch_and_cherry_pick(
-                    secure_branch,
-                    application_data.challenge_map[challenge_key].vulnerable_branches,
-                    challenge_request_issue,
-                )
+                try:
+                    self.__fix_result = repo_fixer.fix_branch_and_cherry_pick(
+                        secure_branch,
+                        application_data.challenge_map[
+                            challenge_key
+                        ].vulnerable_branches,
+                        challenge_request_issue,
+                    )
+                except KeyboardInterrupt:
+                    print(f"Skipping changes on {secure_branch}")
 
     def transition_challenge_issues_with_results(
         self,
