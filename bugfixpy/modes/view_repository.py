@@ -13,12 +13,7 @@ class ViewRepository(RunnableMode, RepositoryMode, ScraperMode):
 
     def run(self) -> None:
         self.clone_repository_from_challenge_id_or_repository_name()
-        self.clone_repository_from_scraper_data()
         self.open_branch_from_repository_in_code_editor()
-
-    def clone_repository_from_scraper_data(self) -> None:
-        repository_name = self.get_scraper_data().application.repository_name
-        self.clone_repository(repository_name)
 
     def open_branch_from_repository_in_code_editor(self) -> None:
         repository = self.get_repository()
@@ -32,11 +27,13 @@ class ViewRepository(RunnableMode, RepositoryMode, ScraperMode):
 
         if validate.is_valid_challenge_id(name_or_id):
             print("Challenge ID entered")
-            self.challenge_id = name_or_id
-            self.scrape_cms_and_print_results()
+            challenge_data = self.get_challenge_data(name_or_id)
+            repository_name = challenge_data.application.repository_name
+            self.clone_repository(repository_name)
         else:
             print("Repository name entered")
-            self.clone_repository(name_or_id)
+            application_data = self.get_application_data(name_or_id)
+            self.clone_repository(application_data.repository_name)
 
     def display_results(self) -> None:
         print(f"Repository opening in editor... {instructions.DONE}")

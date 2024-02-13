@@ -13,7 +13,7 @@ from bugfixpy.utils import prompt_user
 class ScraperMode:
     cms_scraper: CmsScraper
 
-    def __get_challenge_data(self, challenge_id: str) -> ScraperData:
+    def get_challenge_data(self, challenge_id: str) -> ScraperData:
         cms_scraper = CmsScraper()
         print("Collecting challenge data from CMS...", end="")
         scraper_data = cms_scraper.scrape_challenge_data(challenge_id)
@@ -21,7 +21,7 @@ class ScraperMode:
 
         return scraper_data
 
-    def __get_application_data(
+    def get_application_data(
         self, application_name_or_url: str
     ) -> ApplicationScreenDataWithChallengeBranches:
         cms_scraper = CmsScraper()
@@ -37,7 +37,7 @@ class ScraperMode:
         challenge_data = ScraperData()
         try:
             challenge_id = prompt_user.for_challenge_id()
-            challenge_data = self.__get_challenge_data(challenge_id)
+            challenge_data = self.get_challenge_data(challenge_id)
         except RequestFailedError as err:
             print(f"{colors.FAIL}[Failed]\n{err}{colors.ENDC}")
             sys.exit(1)
@@ -50,7 +50,7 @@ class ScraperMode:
         application_data = ApplicationScreenDataWithChallengeBranches()
         try:
             application_name_or_url: str = prompt_user.for_application_name_or_url()
-            application_data = self.__get_application_data(application_name_or_url)
+            application_data = self.get_application_data(application_name_or_url)
         except RequestFailedError as err:
             print(f"{colors.FAIL}[Failed]\n{err}{colors.ENDC}")
             sys.exit(1)
