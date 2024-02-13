@@ -39,8 +39,10 @@ def main() -> None:
         AutomaticMode(args.test).start()
     elif args.alert:
         AlertMode(args.test).start()
-    else:
+    elif args.view:
         ViewRepository().start()
+    else:
+        print("No mode entered. Try bugfixpy --help to see list of modes")
 
 
 try:

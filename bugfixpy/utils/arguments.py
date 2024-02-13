@@ -50,4 +50,10 @@ def setup_parser() -> ArgumentParser:
         help="Enable alert fixing mode",
     )
 
+    parser.add_argument(
+        "--view",
+        action="store_true",
+        help="Enable repository view mode",
+    )
+
     return parser
