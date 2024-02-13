@@ -119,12 +119,12 @@ python3 bugfixpy [--auto][--setup][--transition]
     python3 bugfixpy --transition
     ```
 
-#### Repository mode
+#### View Repository mode
 * Run repository mode to open the git repository in a code editor. This mode is for quickly checking the code repository without needing to run a fix on the repository.
 
 * Run
     ```sh
-    python3 bugfixpy
+    python3 bugfixpy --view
     ```
 
 ### Additional Setup
