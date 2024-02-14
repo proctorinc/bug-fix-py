@@ -80,7 +80,7 @@ This program requires multiple python libraries installed. The full list can be 
 ### Usage
 
 ```sh
-python3 bugfixpy [--auto][--setup][--transition]
+python3 bugfixpy [--auto][--manual][--alert][--setup][--transition][--view]
 ```
 
 ### Program Modes
