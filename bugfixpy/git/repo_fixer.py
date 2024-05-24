@@ -51,7 +51,8 @@ class RepoFixer:
                     fix_message, challenge_request_issue
                 )
 
-            except GitCommandError:
+            except GitCommandError as err:
+                print(err)
                 print(instructions.PROMPT_USER_THAT_NO_FIX_WAS_MADE)
                 prompt_user.to_press_enter()
 
