@@ -58,6 +58,16 @@ class AlertMode(RunnableMode, RepositoryMode, ScraperMode):
             ):
                 is_full_app = True
 
+        if not is_full_app:
+            print(
+                "WARNING: Only run full app fix on minified app if you confirmed the challenges use similar branches."
+            )
+            user_confirm = input(
+                "App is minified. Would you like run Full App fix anyways? (y/N): "
+            )
+            if user_confirm == "y":
+                is_full_app = True
+
         if is_full_app:
             print(f"{colors.HEADER}Running Full App Fix{colors.ENDC}")
             all_branches = []
