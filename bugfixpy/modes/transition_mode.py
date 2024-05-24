@@ -13,7 +13,7 @@ class TransitionMode(RunnableMode, ScraperMode):
         super().__init__(self.MODE, test_mode=False)
 
     def run(self) -> None:
-        self.scrape_challenge_data()
+        challenge_data = self.scrape_challenge_data()
         challenge_request_issue = prompt_user.get_challenge_request_issue()
 
         is_bulk_transition_required = prompt_user.if_bulk_transition_is_required()
@@ -22,7 +22,7 @@ class TransitionMode(RunnableMode, ScraperMode):
 
         TransitionIssues(
             FixResult([fix_message], is_bulk_transition_required, False),
-            self.scrape_challenge_data(),
+            challenge_data,
             challenge_request_issue,
         ).run()
 
