@@ -22,7 +22,7 @@ class TransitionMode(RunnableMode, ScraperMode):
 
         TransitionIssues(
             FixResult([fix_message], is_bulk_transition_required, False),
-            self.get_scraper_data(),
+            self.scrape_challenge_data(),
             challenge_request_issue,
         ).run()
 

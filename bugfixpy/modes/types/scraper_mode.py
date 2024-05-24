@@ -13,9 +13,6 @@ from bugfixpy.utils import prompt_user
 class ScraperMode:
     cms_scraper: CmsScraper
 
-    def get_scraper_data(self):
-        return self.get_scraper_data()
-
     def get_challenge_data(self, challenge_id: str) -> ScraperData:
         cms_scraper = CmsScraper()
         print("Collecting challenge data from CMS...", end="")
