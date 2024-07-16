@@ -46,7 +46,7 @@ def __execute_put_query(endpoint: str, body: dict) -> Response:
 
 def query_for_challenge_creation_by_application_name(application_name: str) -> Response:
     query = parse.quote_plus(
-        f'text ~ "{application_name}*" AND project = "Challenge Creation V2"'
+        f'text ~ "{application_name}" AND project = "Challenge Creation V2"'
     )
     endpoint = f"search?jql={query}"
 
