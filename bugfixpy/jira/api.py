@@ -1,4 +1,5 @@
 from typing import List
+from urllib import parse
 import requests
 from requests import Response
 
@@ -41,6 +42,15 @@ def __execute_put_query(endpoint: str, body: dict) -> Response:
         json=body,
     )
     return response
+
+
+def query_for_challenge_creation_by_application_name(application_name: str) -> Response:
+    query = parse.quote_plus(
+        f'text ~ "{application_name}*" AND project = "Challenge Creation V2"'
+    )
+    endpoint = f"search?jql={query}"
+
+    return __execute_get_query(endpoint)
 
 
 def get_response_code_from_query_to_verify_credentials() -> int:

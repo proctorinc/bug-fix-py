@@ -5,6 +5,7 @@ from bugfixpy.cms import (
 from bugfixpy.git import FixResult, RepoFixer
 from bugfixpy.jira import (
     TransitionIssueService,
+    api,
 )
 from bugfixpy.utils import prompt_user
 from bugfixpy.jira import ChallengeRequestIssue

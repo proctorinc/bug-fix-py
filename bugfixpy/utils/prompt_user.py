@@ -117,15 +117,15 @@ def for_challenge_id() -> str:
     prompt = f"{colors.ENDC}Enter Challenge ID: {colors.WHITE}"
     invalid_message = "is not a valid Challenge ID"
 
-    challenge_id = __get_valid_input(
+    application_name = __get_valid_input(
         prompt, invalid_message, validate.is_valid_challenge_id
     )
 
-    return challenge_id
+    return application_name
 
 
 def for_application_name_or_url() -> str:
-    prompt = f"{colors.ENDC}Enter application name: {colors.WHITE}"
+    prompt = f"{colors.ENDC}Enter application name or CMS url: {colors.WHITE}"
     invalid_message = "is not a valid application name"
 
     challenge_id = __get_valid_input(
@@ -309,6 +309,28 @@ def enter_reviewer_number(users: list[dict[str, str]]) -> int:
                     print("Invalid choice, try again")
                 else:
                     return reviewer_num
+            except Exception:
+                print("Invalid choice, please enter a number")
+
+    return -1
+
+
+def to_confirm_application_url(application_urls: list[str]) -> int:
+    print("Multiple application matches: ")
+
+    if len(application_urls) > 0:
+        for i, url in enumerate(application_urls):
+            print(f"{i}.", url)
+
+        while True:
+            user_choice = input("\nEnter number of reviewer: ")
+
+            try:
+                url_num = int(user_choice)
+                if url_num < 0 or url_num >= len(application_urls):
+                    print("Invalid choice, try again")
+                else:
+                    return url_num
             except Exception:
                 print("Invalid choice, please enter a number")
 
