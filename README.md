@@ -54,14 +54,6 @@ To get a local copy up and running follow these simple example steps.
 
 This program requires multiple python libraries installed. The full list can be found in bugfixpy/requirements.txt
 
-* Requirements.txt
-  ```
-  gitpython
-  requests
-  bs4
-  keyring
-  ```
-
 ### Installation
 
 1. Clone the repo
@@ -72,9 +64,17 @@ This program requires multiple python libraries installed. The full list can be 
    ```sh
    cd bugfixpy
    ```
-3. Install the 
+3. Install the required dependencies
    ```sh
-   python3 setup.py install
+   python3 -m pip install -r requirements.txt --break-system-packages
+   ```
+4. Copy reviewers.json file and add reviewer
+   ```sh
+   cp reviewers.json.example reviewers.json
+   ```
+5. Run setup
+   ```sh
+   python3 . --setup
    ```
 
 ### Usage
