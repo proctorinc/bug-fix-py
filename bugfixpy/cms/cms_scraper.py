@@ -61,6 +61,8 @@ class CmsScraper:
         if not validate.is_valid_application_url(application_name_or_url):
             application_url = self.get_cms_url(application_name_or_url)
 
+        print(f"Link to CMS: {application_url}")
+
         parsed_url = (
             application_url.split("cms.securecodewarrior.com")[1]
             if "cms.securecodewarrior.com" in application_url
