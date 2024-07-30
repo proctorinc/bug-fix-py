@@ -1,5 +1,5 @@
 from bugfixpy.git import FixBranches
-from bugfixpy.jira import ChallengeRequestIssue
+from bugfixpy.jira import ChallengeRequestIssue, constants
 from bugfixpy.utils import browser, prompt_user
 from bugfixpy.utils.text import instructions
 
@@ -55,5 +55,9 @@ class ManualMode(RunnableMode, RepositoryMode):
 
     def display_cherry_pick_transition_instructions(self) -> None:
         application_creation_issue = prompt_user.get_application_creation_issue()
+        jira_trainsition_link = constants.BULK_TRANSITION_JQL_URL.format(
+            chlc=application_creation_issue.get_issue_id()
+        )
+        print(f"Opening bulk transition link in browser: {jira_trainsition_link}")
         browser.open_issue_in_browser(application_creation_issue)
         print(instructions.CHERRY_PICKING_MANUAL_STEPS)
